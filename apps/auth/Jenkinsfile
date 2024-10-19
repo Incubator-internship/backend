@@ -3,13 +3,13 @@ pipeline {
     agent any
     environment {
         ENV_TYPE = "production"
-        PORT = 3570
+        PORT = 3571
         NAMESPACE = "excubator-xyz"
         REGISTRY_HOSTNAME = "ngisss"
-        PROJECT = "auth-prefics"
+        PROJECT = "auth-backend"
         SERVICE="auth"
         REGISTRY = "registry.hub.docker.com"
-        DEPLOYMENT_NAME = "auth-prefics-deployment"
+        DEPLOYMENT_NAME = "auth-backend-deployment"
         IMAGE_NAME = "${env.BUILD_ID}_${env.ENV_TYPE}_${env.GIT_COMMIT}"
         DOCKER_BUILD_NAME = "${env.REGISTRY_HOSTNAME}/${env.PROJECT}:${env.IMAGE_NAME}"
     }
