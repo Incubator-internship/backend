@@ -3,7 +3,7 @@ pipeline {
     agent any
     environment {
         ENV_TYPE = "production"
-        PORT = 3571
+        PORT = 3572
         NAMESPACE = "excubator-xyz"
         REGISTRY_HOSTNAME = "ngisss"
         PROJECT = "auth-backend"
