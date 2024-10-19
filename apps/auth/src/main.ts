@@ -7,7 +7,7 @@ dotenv.config();
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   console.log('rocess.env.PORT', process.env.PORT)
-  app.setGlobalPrefix('/api/v1')
+  app.setGlobalPrefix('api/v1')
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
