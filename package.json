@@ -6,6 +6,9 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "generate:auth": "npx prisma generate --schema=./apps/auth/prisma/schema.prisma",
+    "migrate:auth": "dotenv -e .auth.env -- npx prisma migrate dev --name init --schema=./apps/auth/prisma/schema.prisma",
+    "migrate:deploy-auth": "dotenv -e .auth.env -- npx prisma migrate deploy --schema=./apps/auth/prisma/schema.prisma",
     "build": "nest build",
     "build:auth": "nest build auth",
     "start:auth": "node dist/apps/auth/main",
@@ -26,7 +29,9 @@
     "@nestjs/common": "^10.0.0",
     "@nestjs/core": "^10.0.0",
     "@nestjs/platform-express": "^10.0.0",
+    "@prisma/client": "^5.21.1",
     "dotenv": "^16.4.5",
+    "dotenv-cli": "^7.4.2",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1"
   },
