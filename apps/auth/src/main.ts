@@ -2,11 +2,13 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
 import { appSettings } from '../settings/app-settings';
+import { applyAppSettings } from '../settings/apply-app-setting';
 
 dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  applyAppSettings(app);
   console.log('process.env.PORT', appSettings.api.AUTH_PORT);
   const port = appSettings.api.AUTH_PORT ?? 3000;
   app.setGlobalPrefix('api/v1');

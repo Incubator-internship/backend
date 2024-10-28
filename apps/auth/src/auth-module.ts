@@ -21,5 +21,6 @@ const repositories = [UsersRepository, UsersQueryRepository];
   imports: [CqrsModule, AuthModule],
   controllers: [UsersController, AuthController],
   providers: [PrismaService, ...commands, ...repositories],
+  exports: [PrismaService],
 })
 export class AuthModule {}
