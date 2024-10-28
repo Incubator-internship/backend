@@ -31,6 +31,8 @@
     "@nestjs/cqrs": "^10.2.7",
     "@nestjs/jwt": "^10.2.0",
     "@nestjs/platform-express": "^10.0.0",
+    "@nestjs/swagger": "^7.4.2",
+    "class-validator": "^0.14.1",
     "@prisma/client": "^5.21.1",
     "@types/bcryptjs": "^2.4.6",
     "bcryptjs": "^2.4.3",
