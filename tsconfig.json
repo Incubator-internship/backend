@@ -19,7 +19,12 @@
     "noFallthroughCasesInSwitch": false,
     "paths": {}
   },
-    "include": ["src/**/*"],
+    "include": [ "apps/**/*",
+      "apps/**/*.ts",
+      "apps/auth/**/*.ts",
+      "test/**/*.ts",
+      "**/*.spec.ts",
+      "**/*-spec.ts"],
     "exclude": ["node_modules", "dist", "test", "**/*spec.ts"],
     "envFilePath": "../shared-env/.env"
 }

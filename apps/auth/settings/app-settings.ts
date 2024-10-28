@@ -121,4 +121,3 @@ const env = new EnvironmentSettings(
 
 const api = new APISettings(process.env);
 export const appSettings = new AppSettings(env, api);
-console.log(appSettings.env.isTesting());
