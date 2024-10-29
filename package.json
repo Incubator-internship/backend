@@ -5,6 +5,9 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "prisma": {
+    "schema": "apps/auth/prisma/schema.prisma"
+  },
   "scripts": {
     "generate:auth": "npx prisma generate --schema=./apps/auth/prisma/schema.prisma",
     "migrate:auth": "dotenv -e .auth.env -- npx prisma migrate dev --name init --schema=./apps/auth/prisma/schema.prisma",

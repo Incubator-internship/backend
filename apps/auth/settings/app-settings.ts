@@ -61,12 +61,13 @@ class APISettings {
   //Email
   public readonly GMAIL_COM_PASS: string;
   // Database
-  public readonly POSTGRES_HOST;
-  public readonly POSTGRES_PORT;
-  public readonly POSTGRES_USER;
-  public readonly POSTGRES_PASSWORD;
-  public readonly POSTGRES_DATABASE;
-  public readonly POSTGRES_DATABASE_TEST;
+  public readonly DATABASE_URL;
+  // public readonly POSTGRES_HOST;
+  // public readonly POSTGRES_PORT;
+  // public readonly POSTGRES_USER;
+  // public readonly POSTGRES_PASSWORD;
+  // public readonly POSTGRES_DATABASE;
+  // public readonly POSTGRES_DATABASE_TEST;
   public readonly TTL_THROTTLER: number;
   public readonly LIMIT_THROTTLER;
 
@@ -85,12 +86,13 @@ class APISettings {
     //Email
     this.GMAIL_COM_PASS = envVariables.GMAIL_COM_PASS!;
     // Database
-    this.POSTGRES_HOST = envVariables.POSTGRES_HOST!;
-    this.POSTGRES_PORT = envVariables.POSTGRES_PORT!;
-    this.POSTGRES_USER = envVariables.POSTGRES_USER!;
-    this.POSTGRES_PASSWORD = envVariables.POSTGRES_PASSWORD!;
-    this.POSTGRES_DATABASE = envVariables.POSTGRES_DATABASE!;
-    this.POSTGRES_DATABASE_TEST = envVariables.POSTGRES_DATABASE_TEST!;
+    this.DATABASE_URL = envVariables.DATABASE_URL;
+    // this.POSTGRES_HOST = envVariables.POSTGRES_HOST!;
+    // this.POSTGRES_PORT = envVariables.POSTGRES_PORT!;
+    // this.POSTGRES_USER = envVariables.POSTGRES_USER!;
+    // this.POSTGRES_PASSWORD = envVariables.POSTGRES_PASSWORD!;
+    // this.POSTGRES_DATABASE = envVariables.POSTGRES_DATABASE!;
+    // this.POSTGRES_DATABASE_TEST = envVariables.POSTGRES_DATABASE_TEST!;
     this.TTL_THROTTLER = this.getNumberOrDefault(
       envVariables.TTL_THROTTLER as string,
       5,
