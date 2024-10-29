@@ -7,7 +7,6 @@ import {
 import { UsersRepository } from '../../../users/infrastructure/users.repository';
 import {
   exceptionHandler,
-  ExceptionResultType,
   ResultCode,
 } from '../../../../common/exception-filters/exception.handler';
 
