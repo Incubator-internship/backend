@@ -5,6 +5,16 @@ module.exports = {
     tsconfigRootDir: __dirname,
     sourceType: 'module',
   },
+  overrides: [
+    {
+      files: ['apps/auth/**/*.ts'],
+      parserOptions: {
+        project: './apps/auth/tsconfig.app.json',
+        tsconfigRootDir: __dirname,
+      },
+    },
+    // Другие микросервисы
+  ],
   plugins: ['@typescript-eslint'],
   extends: [
     'plugin:@typescript-eslint/recommended',

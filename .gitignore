@@ -2,7 +2,7 @@
 /dist
 /node_modules
 /build
-/apps/auth/shared-env/.env
+
 # Logs
 logs
 *.log
@@ -37,6 +37,7 @@ lerna-debug.log*
 
 # dotenv environment variable files
 apps/auth/shared-env/.env
+.auth.env
 .env.development.local
 .env.test.local
 .env.production.local
