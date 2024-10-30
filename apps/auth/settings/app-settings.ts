@@ -13,6 +13,7 @@ export type EnvironmentsTypes =
   | 'STAGING'
   | 'PRODUCTION'
   | 'TESTING';
+
 export const Environments = ['DEVELOPMENT', 'STAGING', 'PRODUCTION', 'TESTING'];
 
 export class EnvironmentSettings {

@@ -8,19 +8,41 @@ import { CreateUserHandler } from './users/application/use.cases/createUser.comm
 import { RegistrationUserHandler } from './auth/application/use.cases/registrationUser.command';
 import { UsersRepository } from './users/infrastructure/users.repository';
 import { CreateEmailConfirmationHandler } from './users/application/use.cases/createEmailConfirmation.command';
+import { AuthService } from './auth/application/auth.service';
+import { PassportModule } from '@nestjs/passport';
+import { SessionsRepository } from './devices/infrastructure/sessions.repository';
+import { EmailConfirmationRepository } from './users/infrastructure/emailConfirmation.repository';
+import { JWTService } from '../common/jwt/jwt.service';
+import { JwtService } from '@nestjs/jwt';
+import { LocalStrategy } from '../guards/local/local.strategy';
+import { CreateDeviceSessionHandler } from './devices/application/use.cases/createDeviceSession.command';
 
 const commands = [
   CreateUserHandler,
   RegistrationUserHandler,
   CreateEmailConfirmationHandler,
+  CreateDeviceSessionHandler,
 ];
 const service = [];
-const repositories = [UsersRepository, UsersQueryRepository];
+const repositories = [
+  UsersRepository,
+  UsersQueryRepository,
+  SessionsRepository,
+  EmailConfirmationRepository,
+];
 
 @Module({
-  imports: [CqrsModule, AuthModule],
+  imports: [CqrsModule, AuthModule, PassportModule],
   controllers: [UsersController, AuthController],
-  providers: [PrismaService, ...commands, ...repositories],
+  providers: [
+    PrismaService,
+    AuthService,
+    JWTService,
+    JwtService,
+    ...commands,
+    ...repositories,
+    LocalStrategy,
+  ],
   exports: [PrismaService],
 })
 export class AuthModule {}

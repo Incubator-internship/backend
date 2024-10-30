@@ -23,6 +23,7 @@ model User {
   updatedAt         DateTime           @updatedAt
   isDelete          Boolean            @default(false)
   emailConfirmation EmailConfirmation?
+  sessions          Session[]          @relation("UserSessions")
 
   @@map("users")
 }
@@ -35,4 +36,18 @@ model EmailConfirmation {
   user             User     @relation(fields: [userId], references: [id])
 
   @@map("emailConfirmation")
+}
+
+model Session {
+  id         Int      @id @default(autoincrement())
+  deviceId   String
+  ip         String
+  deviceName String
+  issuedAt   DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id], name: "UserSessions")
+
+  @@map("session")
 }

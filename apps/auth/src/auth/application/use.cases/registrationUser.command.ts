@@ -23,16 +23,15 @@ export class RegistrationUserHandler
     private userRepository: UsersRepository,
   ) {}
   async execute(command: RegistrationUserCommand): Promise<void> {
-    //todo check that user already exist
-    const user = this.userRepository.findUserByEmail(
+    //todo we need remember that oath2 more logic about user
+    const user = await this.userRepository.findUserByEmail(
       command.registrationDTO.email,
     );
     if (user) {
-      //throw new NotFoundException();
       return exceptionHandler(
         ResultCode.Conflict,
         'this user by exist',
-        'registraton user comman find user by email',
+        'Registration user command found user by email',
       );
       // return {
       //   data: false,

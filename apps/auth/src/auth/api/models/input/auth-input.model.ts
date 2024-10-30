@@ -1,4 +1,4 @@
-import { IsString, Length, Matches } from 'class-validator';
+import { IsNotEmpty, IsString, Length, Matches } from 'class-validator';
 
 export class RegistrationUserModel {
   @IsString()
@@ -14,4 +14,12 @@ export class RegistrationUserModel {
   @IsString()
   @Matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
   email: string;
+}
+export class LoginInputModelType {
+  @IsNotEmpty()
+  @IsString()
+  loginOrEmail: string;
+  @IsNotEmpty()
+  @IsString()
+  password: string;
 }

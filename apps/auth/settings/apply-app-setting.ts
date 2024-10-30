@@ -4,17 +4,18 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-
 import { appSettings } from './app-settings';
-
 import { useContainer } from 'class-validator';
+import * as cookieParser from 'cookie-parser';
 import { AppModule } from '../src/app.module';
 import { LoggerMiddlewareFunc } from '../../../common/logger.middleware';
 import { HttpExceptionFilter } from '../../../common/http-exception-filter';
+
 interface CustomError {
   field: string;
   message: string;
 }
+
 // Префикс нашего приложения (http://site.com/api)
 const APP_PREFIX = 'api/v1';
 
@@ -24,7 +25,8 @@ export const applyAppSettings = (app: INestApplication) => {
   // {fallbackOnErrors: true} требуется, поскольку Nest генерирует исключение,
   // когда DI не имеет необходимого класса.
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
-
+  // app.enableCors();
+  // app.use(cookieParser());
   // Применение глобальных Interceptors
   // app.useGlobalInterceptors()
 
