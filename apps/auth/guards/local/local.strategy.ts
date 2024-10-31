@@ -3,6 +3,9 @@ import { AuthGuard, PassportStrategy } from '@nestjs/passport';
 import { User } from 'apps/auth/src/users/domain/createUser.model';
 import { Strategy } from 'passport-local';
 import { AuthService } from '../../src/auth/application/auth.service';
+import { plainToClass } from 'class-transformer';
+import { LoginInputModelType } from '../../src/auth/api/models/input/auth-input.model';
+import { validate } from 'class-validator';
 
 @Injectable()
 export class LoginGuard extends AuthGuard('local') {}
@@ -16,12 +19,20 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
   }
 
   async validate(loginOrEmail: string, password: string): Promise<User> {
+    // Convert input data to an instance of LoginInputModelType
+    const loginDTO = plainToClass(LoginInputModelType, {
+      loginOrEmail,
+      password,
+    });
+    // Validate the data
+    const errors = await validate(loginDTO);
+    if (errors.length > 0) {
+      throw new UnauthorizedException('loginOrEmail or password failed');
+    }
     const result = await this.authService.checkCredentials({
       loginOrEmail,
       password,
     });
-    console.log('result ', result);
-    console.log('result ', result.data);
     if (!result.data) {
       throw new UnauthorizedException();
     }

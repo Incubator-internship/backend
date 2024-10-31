@@ -19,7 +19,9 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
     private createEmailConfirmationHandler: CreateEmailConfirmationHandler,
   ) {}
 
-  async execute(command: CreateUserCommand) {
+  async execute(
+    command: CreateUserCommand,
+  ): Promise<{ userId: number; confirmationCode: string }> {
     const passwordHash = await hash(command.registrationDTO.password, 10);
     const newUser = User.createUser(
       command.registrationDTO.userName,

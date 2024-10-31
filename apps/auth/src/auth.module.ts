@@ -16,6 +16,7 @@ import { JWTService } from '../common/jwt/jwt.service';
 import { JwtService } from '@nestjs/jwt';
 import { LocalStrategy } from '../guards/local/local.strategy';
 import { CreateDeviceSessionHandler } from './devices/application/use.cases/createDeviceSession.command';
+import { MailModule } from '../mail/mail.module';
 
 const commands = [
   CreateUserHandler,
@@ -32,7 +33,7 @@ const repositories = [
 ];
 
 @Module({
-  imports: [CqrsModule, AuthModule, PassportModule],
+  imports: [CqrsModule, AuthModule, PassportModule, MailModule],
   controllers: [UsersController, AuthController],
   providers: [
     PrismaService,

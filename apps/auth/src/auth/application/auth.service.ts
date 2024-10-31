@@ -18,7 +18,6 @@ export class AuthService {
     const user = await this.usersRepository.findUserByLoginOrEmail(
       loginDTO.loginOrEmail,
     );
-    console.log('user- ', user);
     if (!user) {
       return {
         code: ResultCode.NotFound,
@@ -30,13 +29,10 @@ export class AuthService {
     //   loginDTO.password,
     //   user.passwordSalt,
     // );
-    console.log('loginDTO.password ', loginDTO.password);
-    console.log(' user.passwordHash ', user.passwordHash);
     const isPasswordValid = bcrypt.compareSync(
       loginDTO.password,
       user.passwordHash,
     );
-    console.log('isPasswordValid ', isPasswordValid);
     if (!isPasswordValid) {
       return {
         code: ResultCode.Unauthorized,

@@ -9,6 +9,7 @@ import {
   exceptionHandler,
   ResultCode,
 } from '../../../../common/exception-filters/exception.handler';
+import { EmailService } from '../../../../mail/email-server.service';
 
 export class RegistrationUserCommand {
   constructor(public readonly registrationDTO: RegistrationUserModel) {}
@@ -21,7 +22,9 @@ export class RegistrationUserHandler
   constructor(
     private createUserHandler: CreateUserHandler,
     private userRepository: UsersRepository,
+    private emailService: EmailService,
   ) {}
+
   async execute(command: RegistrationUserCommand): Promise<void> {
     //todo we need remember that oath2 more logic about user
     const user = await this.userRepository.findUserByEmail(
@@ -33,21 +36,15 @@ export class RegistrationUserHandler
         'this user by exist',
         'Registration user command found user by email',
       );
-      // return {
-      //   data: false,
-      //   code: ResultCode.NotFound,
-      //   field: 'registraton user comman find user by email',
-      //   message: 'this user by exist',
-      // };
     }
     const data = await this.createUserHandler.execute(
       new CreateUserCommand(command.registrationDTO),
     );
-    //todo
+    //todo DONE but need uncoment
     // await this.emailService.sendUserConfirmationCode(
     //   command.registrationDTO.email,
-    //   command.registrationDTO.login,
-    //   emailConfirmationDTO!.confirmationCode,
+    //   command.registrationDTO.userName,
+    //   data.confirmationCode,
     // );
   }
 }

@@ -57,7 +57,6 @@ export class AuthController {
       httpOnly: true,
       secure: true,
     });
-    console.log('tokensPair ', tokensPair);
     return { accessToken: tokensPair.accessToken };
   }
 }

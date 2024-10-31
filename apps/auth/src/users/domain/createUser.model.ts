@@ -1,5 +1,3 @@
-import { userCreateDTO } from '../api/models/input/users.types';
-
 // class User {
 //   username: string;
 //   email: string;
