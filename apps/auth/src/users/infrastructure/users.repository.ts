@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { userCreateDTO } from '../api/models/input/users.types';
-import { UserModel } from '../domain/createUser.model';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { EmailConfirmationModel } from '../domain/createEmailConfirmation.model';
 import { EmailConfirmation, User } from '@prisma/client';
 
 @Injectable()
@@ -42,14 +40,12 @@ export class UsersRepository {
     return user;
   }
   async findUserAndEmailConfirmationByEmail(email: string) {
-    const result = await this.prismaService.user.findUnique({
+    return this.prismaService.user.findUnique({
       where: { email: email },
       include: {
         emailConfirmation: true,
       },
     });
-    console.log('findUserAndEmailConfirmationByEmail', result);
-    return result;
   }
   async updateConfirmationCode(updateConfirmationCode: {
     confirmationCode: string;
@@ -61,6 +57,27 @@ export class UsersRepository {
       data: {
         expirationDate: updateConfirmationCode.expirationDate,
         confirmationCode: updateConfirmationCode.confirmationCode,
+      },
+    });
+  }
+  async findEmailConfirmationByCode(
+    code: string,
+  ): Promise<EmailConfirmation | null> {
+    return this.prismaService.emailConfirmation.findFirst({
+      where: { confirmationCode: code },
+    });
+  }
+  async changeEmailConfirmationStatus(data: {
+    userId: number;
+    code: string;
+    emailConfirmationCode: string;
+    isConfirmed: boolean;
+  }): Promise<void> {
+    await this.prismaService.emailConfirmation.updateMany({
+      where: { userId: data.userId, confirmationCode: data.code },
+      data: {
+        confirmationCode: data.emailConfirmationCode,
+        isConfirmed: data.isConfirmed,
       },
     });
   }

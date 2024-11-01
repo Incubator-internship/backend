@@ -8,16 +8,20 @@ import {
 import { UsersRepository } from '../src/users/infrastructure/users.repository';
 
 @ValidatorConstraint({ async: true })
-export class IsNotEmailExistConstraint implements ValidatorConstraintInterface {
+export class EmailConfirmationExistConstraint
+  implements ValidatorConstraintInterface
+{
   constructor(private usersRepository: UsersRepository) {}
 
   async validate(email: string, args: ValidationArguments) {
     const user = await this.usersRepository.findUserByEmail(email);
+    console.log('IsNotEmailExistConstraint ', user);
     //todo user!.id а было user?.id
-    console.log('resendin user', user);
     if (!user) return false;
     const emailConfirmationDTO =
       await this.usersRepository.findEmailConfirmationByUserId(user.id);
+    console.log('IsNotEmailExistConstraint ', emailConfirmationDTO);
+
     if (emailConfirmationDTO && !emailConfirmationDTO?.isConfirmed) {
       return true;
     }
@@ -25,14 +29,14 @@ export class IsNotEmailExistConstraint implements ValidatorConstraintInterface {
   }
 }
 
-export function IsNotEmailExist(validationOptions?: ValidationOptions) {
+export function EmailConfirmationExist(validationOptions?: ValidationOptions) {
   return function (object: Object, propertyName: string) {
     registerDecorator({
       target: object.constructor,
       propertyName: propertyName,
       options: validationOptions,
       constraints: [],
-      validator: IsNotEmailExistConstraint,
+      validator: EmailConfirmationExistConstraint,
     });
   };
 }

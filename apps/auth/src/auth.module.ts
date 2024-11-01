@@ -18,7 +18,12 @@ import { LocalStrategy } from '../guards/local/local.strategy';
 import { CreateDeviceSessionHandler } from './devices/application/use.cases/createDeviceSession.command';
 import { MailModule } from '../mail/mail.module';
 import { RegistrationEmailResendingHandler } from './auth/application/use.cases/registrationEmailResending.command';
-import { IsNotEmailExistConstraint } from '../guards/emailIsnotExist.guard';
+import { EmailConfirmationExistConstraint } from '../decorators/emailConfirmationExist.decorator';
+import { ConfirmationCodeIsValidConstraint } from '../decorators/confirmationCodeIsValid.decorator';
+import { RegistrationConfirmationHandler } from './auth/application/use.cases/registrationConfirmation.command';
+import { PasswordRecoveryHandler } from './auth/application/use.cases/passwordRecovery.command';
+import { PasswordRecoveryRepository } from './auth/infrastructure/passwordRecovery.repository';
+import { EmailIsNotExistConstraint } from '../decorators/emailIsNotExist.decorator';
 
 const commands = [
   CreateUserHandler,
@@ -26,6 +31,8 @@ const commands = [
   CreateEmailConfirmationHandler,
   CreateDeviceSessionHandler,
   RegistrationEmailResendingHandler,
+  RegistrationConfirmationHandler,
+  PasswordRecoveryHandler,
 ];
 const service = [];
 const repositories = [
@@ -33,13 +40,16 @@ const repositories = [
   UsersQueryRepository,
   SessionsRepository,
   EmailConfirmationRepository,
+  PasswordRecoveryRepository,
 ];
 
 @Module({
   imports: [CqrsModule, AuthModule, PassportModule, MailModule],
   controllers: [UsersController, AuthController],
   providers: [
-    IsNotEmailExistConstraint,
+    EmailConfirmationExistConstraint,
+    ConfirmationCodeIsValidConstraint,
+    EmailIsNotExistConstraint,
     PrismaService,
     AuthService,
     JWTService,

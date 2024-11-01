@@ -1,5 +1,7 @@
 import { IsNotEmpty, IsString, Length, Matches } from 'class-validator';
-import { IsNotEmailExist } from '../../../../../guards/emailIsnotExist.guard';
+import { EmailConfirmationExist } from '../../../../../decorators/emailConfirmationExist.decorator';
+import { ConfirmationCodeIsValid } from '../../../../../decorators/confirmationCodeIsValid.decorator';
+import { EmailIsNotExist } from '../../../../../decorators/emailIsNotExist.decorator';
 
 export class RegistrationUserModel {
   @IsString()
@@ -24,10 +26,20 @@ export class LoginInputModelType {
   @IsString()
   password: string;
 }
-
 export class InputEmailModel {
   @IsString()
   @Matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
-  @IsNotEmailExist()
+  @EmailConfirmationExist()
+  email: string;
+}
+export class InputCodeModel {
+  @IsString()
+  @ConfirmationCodeIsValid()
+  code: string;
+}
+export class InputPasswordRecoveryModel {
+  @IsString()
+  @Matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
+  @EmailIsNotExist()
   email: string;
 }

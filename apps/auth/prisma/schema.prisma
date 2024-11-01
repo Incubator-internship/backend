@@ -24,6 +24,7 @@ model User {
   isDelete          Boolean            @default(false)
   emailConfirmation EmailConfirmation?
   sessions          Session[]          @relation("UserSessions")
+  passwordRecovery  PasswordRecovery?
 
   @@map("users")
 }
@@ -50,4 +51,16 @@ model Session {
   user       User     @relation(fields: [userId], references: [id], name: "UserSessions")
 
   @@map("session")
+}
+
+model PasswordRecovery {
+  recoveryCode           String
+  recoveryCodeExpireDate DateTime
+  alreadyChangePassword  Boolean  @default(false)
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  userId                 Int      @unique
+  user                   User     @relation(fields: [userId], references: [id])
+
+  @@map("passwordRecovery")
 }

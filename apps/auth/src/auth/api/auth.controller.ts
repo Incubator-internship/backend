@@ -6,12 +6,11 @@ import {
   Post,
   Res,
   UseGuards,
-  UsePipes,
-  ValidationPipe,
 } from '@nestjs/common';
 import {
+  InputCodeModel,
   InputEmailModel,
-  LoginInputModelType,
+  InputPasswordRecoveryModel,
   RegistrationUserModel,
 } from './models/input/auth-input.model';
 import { CommandBus } from '@nestjs/cqrs';
@@ -24,6 +23,8 @@ import { JWTService } from '../../../common/jwt/jwt.service';
 import { CreateDeviceSessionCommand } from '../../devices/application/use.cases/createDeviceSession.command';
 import { Response } from 'express';
 import { RegistrationEmailResendingCommand } from '../application/use.cases/registrationEmailResending.command';
+import { RegistrationConfirmationCommand } from '../application/use.cases/registrationConfirmation.command';
+import { PasswordRecoveryCommand } from '../application/use.cases/passwordRecovery.command';
 
 @Controller('auth')
 export class AuthController {
@@ -68,5 +69,19 @@ export class AuthController {
     await this.commandBus.execute(
       new RegistrationEmailResendingCommand(email.email),
     );
+  }
+
+  @HttpCode(204)
+  @Post('registration-confirmation')
+  async registrationConfirmation(@Body() confirmationCode: InputCodeModel) {
+    await this.commandBus.execute(
+      new RegistrationConfirmationCommand(confirmationCode.code),
+    );
+  }
+
+  @HttpCode(204)
+  @Post('password-recovery')
+  async passwordRecovery(@Body() email: InputPasswordRecoveryModel) {
+    await this.commandBus.execute(new PasswordRecoveryCommand(email.email));
   }
 }
