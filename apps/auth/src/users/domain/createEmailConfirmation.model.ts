@@ -1,4 +1,4 @@
-export class EmailConfirmation {
+export class EmailConfirmationModel {
   confirmationCode: string;
   expirationDate: Date;
   isConfirmed: boolean;
@@ -9,7 +9,7 @@ export class EmailConfirmation {
     isConfirmed: boolean,
     userId: number,
   ) {
-    const emailConfirmation = new EmailConfirmation();
+    const emailConfirmation = new EmailConfirmationModel();
     emailConfirmation.confirmationCode = confirmationCode;
     emailConfirmation.expirationDate = expirationDate;
     emailConfirmation.isConfirmed = isConfirmed;

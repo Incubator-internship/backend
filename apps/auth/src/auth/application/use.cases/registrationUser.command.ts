@@ -41,10 +41,10 @@ export class RegistrationUserHandler
       new CreateUserCommand(command.registrationDTO),
     );
     //todo DONE but need uncoment
-    // await this.emailService.sendUserConfirmationCode(
-    //   command.registrationDTO.email,
-    //   command.registrationDTO.userName,
-    //   data.confirmationCode,
-    // );
+    await this.emailService.sendUserConfirmationCode(
+      command.registrationDTO.email,
+      command.registrationDTO.userName,
+      data.confirmationCode,
+    );
   }
 }

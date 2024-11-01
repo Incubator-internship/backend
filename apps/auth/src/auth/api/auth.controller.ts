@@ -10,6 +10,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import {
+  InputEmailModel,
   LoginInputModelType,
   RegistrationUserModel,
 } from './models/input/auth-input.model';
@@ -22,6 +23,7 @@ import { CurrentUserId } from '../../../decorators/currentUserId.decorator';
 import { JWTService } from '../../../common/jwt/jwt.service';
 import { CreateDeviceSessionCommand } from '../../devices/application/use.cases/createDeviceSession.command';
 import { Response } from 'express';
+import { RegistrationEmailResendingCommand } from '../application/use.cases/registrationEmailResending.command';
 
 @Controller('auth')
 export class AuthController {
@@ -38,10 +40,10 @@ export class AuthController {
 
   @HttpCode(200)
   @UseGuards(LoginGuard)
-  @UsePipes(new ValidationPipe())
+  //@UsePipes(new ValidationPipe())
   @Post('login')
   async signIn(
-    @Body() loginDTO: LoginInputModelType,
+    //@Body() loginDTO: LoginInputModelType,
     @UserAgent() deviceName: string,
     @CurrentUserId() userId: string,
     @Ip() ip: string,
@@ -58,5 +60,13 @@ export class AuthController {
       secure: true,
     });
     return { accessToken: tokensPair.accessToken };
+  }
+
+  @HttpCode(204)
+  @Post('registration-email-resending')
+  async registrationEmailResending(@Body() email: InputEmailModel) {
+    await this.commandBus.execute(
+      new RegistrationEmailResendingCommand(email.email),
+    );
   }
 }

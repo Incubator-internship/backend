@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthGuard, PassportStrategy } from '@nestjs/passport';
-import { User } from 'apps/auth/src/users/domain/createUser.model';
+import { UserModel } from 'apps/auth/src/users/domain/createUser.model';
 import { Strategy } from 'passport-local';
 import { AuthService } from '../../src/auth/application/auth.service';
 import { plainToClass } from 'class-transformer';
@@ -18,7 +18,7 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
     });
   }
 
-  async validate(loginOrEmail: string, password: string): Promise<User> {
+  async validate(loginOrEmail: string, password: string): Promise<UserModel> {
     // Convert input data to an instance of LoginInputModelType
     const loginDTO = plainToClass(LoginInputModelType, {
       loginOrEmail,

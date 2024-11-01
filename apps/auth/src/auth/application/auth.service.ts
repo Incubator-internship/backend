@@ -6,7 +6,7 @@ import {
   ExceptionResultType,
   ResultCode,
 } from '../../../common/exception-filters/exception.handler';
-import { User } from '../../users/domain/createUser.model';
+import { UserModel } from '../../users/domain/createUser.model';
 
 @Injectable()
 export class AuthService {
@@ -14,7 +14,7 @@ export class AuthService {
 
   async checkCredentials(
     loginDTO: LoginInputModelType,
-  ): Promise<ExceptionResultType<User | null>> {
+  ): Promise<ExceptionResultType<UserModel | null>> {
     const user = await this.usersRepository.findUserByLoginOrEmail(
       loginDTO.loginOrEmail,
     );

@@ -20,7 +20,7 @@ export class CreateDeviceSessionHandler
     private jwtService: JwtService,
   ) {}
 
-  async execute(command: CreateDeviceSessionCommand) {
+  async execute(command: CreateDeviceSessionCommand): Promise<void> {
     const { refreshToken, deviceName, ip } = command;
     const { userId, deviceId, iat } = this.jwtService.decode(refreshToken);
     const issuedAt = new Date(iat * 1000).toISOString();

@@ -17,12 +17,15 @@ import { JwtService } from '@nestjs/jwt';
 import { LocalStrategy } from '../guards/local/local.strategy';
 import { CreateDeviceSessionHandler } from './devices/application/use.cases/createDeviceSession.command';
 import { MailModule } from '../mail/mail.module';
+import { RegistrationEmailResendingHandler } from './auth/application/use.cases/registrationEmailResending.command';
+import { IsNotEmailExistConstraint } from '../guards/emailIsnotExist.guard';
 
 const commands = [
   CreateUserHandler,
   RegistrationUserHandler,
   CreateEmailConfirmationHandler,
   CreateDeviceSessionHandler,
+  RegistrationEmailResendingHandler,
 ];
 const service = [];
 const repositories = [
@@ -36,6 +39,7 @@ const repositories = [
   imports: [CqrsModule, AuthModule, PassportModule, MailModule],
   controllers: [UsersController, AuthController],
   providers: [
+    IsNotEmailExistConstraint,
     PrismaService,
     AuthService,
     JWTService,

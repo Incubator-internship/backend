@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsString, Length, Matches } from 'class-validator';
+import { IsNotEmailExist } from '../../../../../guards/emailIsnotExist.guard';
 
 export class RegistrationUserModel {
   @IsString()
@@ -22,4 +23,11 @@ export class LoginInputModelType {
   @IsNotEmpty()
   @IsString()
   password: string;
+}
+
+export class InputEmailModel {
+  @IsString()
+  @Matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
+  @IsNotEmailExist()
+  email: string;
 }

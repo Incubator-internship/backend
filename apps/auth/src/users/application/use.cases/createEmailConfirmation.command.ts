@@ -1,5 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { EmailConfirmation } from '../../domain/createEmailConfirmation.model';
+import { EmailConfirmationModel } from '../../domain/createEmailConfirmation.model';
 import { randomUUID } from 'crypto';
 import { add } from 'date-fns';
 import { EmailConfirmationRepository } from '../../infrastructure/emailConfirmation.repository';
@@ -24,7 +24,7 @@ export class CreateEmailConfirmationHandler
     });
     const isConfirmed = false;
 
-    const emailConfirmationDTO = EmailConfirmation.createEmailConfirmation(
+    const emailConfirmationDTO = EmailConfirmationModel.createEmailConfirmation(
       confirmationCode,
       expirationDate,
       isConfirmed,
