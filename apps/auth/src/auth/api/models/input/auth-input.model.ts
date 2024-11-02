@@ -43,3 +43,10 @@ export class InputPasswordRecoveryModel {
   @EmailIsNotExist()
   email: string;
 }
+export class InputNewPasswordModel {
+  @IsString()
+  @Length(6, 20)
+  newPassword: string;
+  @IsString()
+  recoveryCode: string;
+}

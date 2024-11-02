@@ -9,7 +9,6 @@ import {
 import { PasswordRecoveryModel } from '../../domain/createPasswwordRecovery.model';
 import { randomUUID } from 'crypto';
 import { add } from 'date-fns';
-import log from 'eslint-plugin-react/lib/util/log';
 
 export class PasswordRecoveryCommand {
   constructor(public readonly email: string) {}

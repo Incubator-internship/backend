@@ -10,6 +10,7 @@ import {
 import {
   InputCodeModel,
   InputEmailModel,
+  InputNewPasswordModel,
   InputPasswordRecoveryModel,
   RegistrationUserModel,
 } from './models/input/auth-input.model';
@@ -25,6 +26,7 @@ import { Response } from 'express';
 import { RegistrationEmailResendingCommand } from '../application/use.cases/registrationEmailResending.command';
 import { RegistrationConfirmationCommand } from '../application/use.cases/registrationConfirmation.command';
 import { PasswordRecoveryCommand } from '../application/use.cases/passwordRecovery.command';
+import { NewPasswordCommand } from '../application/use.cases/newPassword.command';
 
 @Controller('auth')
 export class AuthController {
@@ -83,5 +85,11 @@ export class AuthController {
   @Post('password-recovery')
   async passwordRecovery(@Body() email: InputPasswordRecoveryModel) {
     await this.commandBus.execute(new PasswordRecoveryCommand(email.email));
+  }
+
+  @HttpCode(204)
+  @Post('new-password')
+  async newPassword(@Body() newPasswordModel: InputNewPasswordModel) {
+    await this.commandBus.execute(new NewPasswordCommand(newPasswordModel));
   }
 }

@@ -73,12 +73,18 @@ export class UsersRepository {
     emailConfirmationCode: string;
     isConfirmed: boolean;
   }): Promise<void> {
-    await this.prismaService.emailConfirmation.updateMany({
+    await this.prismaService.emailConfirmation.update({
       where: { userId: data.userId, confirmationCode: data.code },
       data: {
         confirmationCode: data.emailConfirmationCode,
         isConfirmed: data.isConfirmed,
       },
+    });
+  }
+  async changePassword(userId: number, passwordHash: string) {
+    await this.prismaService.user.update({
+      where: { id: userId },
+      data: { passwordHash },
     });
   }
 }

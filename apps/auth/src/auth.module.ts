@@ -24,6 +24,7 @@ import { RegistrationConfirmationHandler } from './auth/application/use.cases/re
 import { PasswordRecoveryHandler } from './auth/application/use.cases/passwordRecovery.command';
 import { PasswordRecoveryRepository } from './auth/infrastructure/passwordRecovery.repository';
 import { EmailIsNotExistConstraint } from '../decorators/emailIsNotExist.decorator';
+import { NewPasswordHandler } from './auth/application/use.cases/newPassword.command';
 
 const commands = [
   CreateUserHandler,
@@ -33,6 +34,7 @@ const commands = [
   RegistrationEmailResendingHandler,
   RegistrationConfirmationHandler,
   PasswordRecoveryHandler,
+  NewPasswordHandler,
 ];
 const service = [];
 const repositories = [

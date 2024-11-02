@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { PasswordRecoveryModel } from '../domain/createPasswwordRecovery.model';
+import { PasswordRecovery } from '@prisma/client';
 
 @Injectable()
 export class PasswordRecoveryRepository {
@@ -14,9 +15,11 @@ export class PasswordRecoveryRepository {
     });
   }
 
-  // async findRecoveryCodeByCode(
-  //   recoveryCode: string,
-  // ): Promise<null | PasswordRecovery> {
-  //   return await this.passwordRecovery.findOne({ where: { recoveryCode } });
-  // }
+  async findRecoveryCodeByCode(
+    recoveryCode: string,
+  ): Promise<null | PasswordRecovery> {
+    return this.prismaService.passwordRecovery.findFirst({
+      where: { recoveryCode },
+    });
+  }
 }
