@@ -92,4 +92,20 @@ export class AuthController {
   async newPassword(@Body() newPasswordModel: InputNewPasswordModel) {
     await this.commandBus.execute(new NewPasswordCommand(newPasswordModel));
   }
+
+  @UseGuards(JwtRefreshAuthGuard)
+  @HttpCode(204)
+  @Post('logout')
+  async logout(
+    @RefreshPayload()
+    { userId, deviceId }: { userId: string; deviceId: string },
+  ) {
+    const session = await this.commandBus.execute(
+      new FindSessionByUserIdAndDeviceIdCommand(userId, deviceId),
+    );
+    if (!session) {
+      throw new UnauthorizedException();
+    }
+    await this.commandBus.execute(new DeleteSessionCommand(userId, deviceId));
+  }
 }
