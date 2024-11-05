@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { JwtService } from '@nestjs/jwt';
 import { SessionsRepository } from '../../infrastructure/sessions.repository';
-import { Session } from '../../domain/createDeviceSession.model';
+import { SessionModel } from '../../domain/createDeviceSession.model';
 
 export class CreateDeviceSessionCommand {
   constructor(
@@ -24,7 +24,7 @@ export class CreateDeviceSessionHandler
     const { refreshToken, deviceName, ip } = command;
     const { userId, deviceId, iat } = this.jwtService.decode(refreshToken);
     const issuedAt = new Date(iat * 1000).toISOString();
-    const newSession = Session.createDeviceSession(
+    const newSession = SessionModel.createDeviceSession(
       deviceId,
       ip,
       deviceName,

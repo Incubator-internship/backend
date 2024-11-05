@@ -40,7 +40,7 @@ export class InputCodeModel {
 export class InputPasswordRecoveryModel {
   @IsString()
   @Matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
-  @EmailIsNotExist()
+  @EmailIsNotExist({ message: 'Email doesnt exist' })
   email: string;
 }
 export class InputNewPasswordModel {

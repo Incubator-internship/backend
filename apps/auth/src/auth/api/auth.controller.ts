@@ -5,6 +5,7 @@ import {
   Ip,
   Post,
   Res,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -27,6 +28,10 @@ import { RegistrationEmailResendingCommand } from '../application/use.cases/regi
 import { RegistrationConfirmationCommand } from '../application/use.cases/registrationConfirmation.command';
 import { PasswordRecoveryCommand } from '../application/use.cases/passwordRecovery.command';
 import { NewPasswordCommand } from '../application/use.cases/newPassword.command';
+import { JwtRefreshAuthGuard } from '../../../guards/jwt/jwt-cookie.strategy';
+import { RefreshPayload } from '../../../decorators/accessPayload.decorator';
+import { FindSessionByUserIdAndDeviceIdCommand } from '../../devices/application/use.cases/findSessionByUserIdAndDeviceId.command';
+import { DeleteSessionCommand } from '../../devices/application/use.cases/deleteSession.command';
 
 @Controller('auth')
 export class AuthController {
@@ -48,7 +53,7 @@ export class AuthController {
   async signIn(
     //@Body() loginDTO: LoginInputModelType,
     @UserAgent() deviceName: string,
-    @CurrentUserId() userId: string,
+    @CurrentUserId() userId: number,
     @Ip() ip: string,
     @Res({ passthrough: true })
     res: Response,
@@ -98,7 +103,7 @@ export class AuthController {
   @Post('logout')
   async logout(
     @RefreshPayload()
-    { userId, deviceId }: { userId: string; deviceId: string },
+    { userId, deviceId }: { userId: number; deviceId: string },
   ) {
     const session = await this.commandBus.execute(
       new FindSessionByUserIdAndDeviceIdCommand(userId, deviceId),

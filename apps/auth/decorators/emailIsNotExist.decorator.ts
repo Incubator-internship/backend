@@ -13,9 +13,7 @@ export class EmailIsNotExistConstraint implements ValidatorConstraintInterface {
 
   async validate(email: string, args: ValidationArguments) {
     const user = await this.usersRepository.findUserByEmail(email);
-    console.log('IsNotEmailExistConstraint ', user);
     if (!user) return false;
-
     return true;
   }
 }

@@ -25,6 +25,9 @@ import { PasswordRecoveryHandler } from './auth/application/use.cases/passwordRe
 import { PasswordRecoveryRepository } from './auth/infrastructure/passwordRecovery.repository';
 import { EmailIsNotExistConstraint } from '../decorators/emailIsNotExist.decorator';
 import { NewPasswordHandler } from './auth/application/use.cases/newPassword.command';
+import { FindSessionByUserIdAndDeviceIdHandler } from './devices/application/use.cases/findSessionByUserIdAndDeviceId.command';
+import { DeleteSessionHandler } from './devices/application/use.cases/deleteSession.command';
+import { JwtStrategy } from '../guards/jwt/jwt-cookie.strategy';
 
 const commands = [
   CreateUserHandler,
@@ -35,6 +38,8 @@ const commands = [
   RegistrationConfirmationHandler,
   PasswordRecoveryHandler,
   NewPasswordHandler,
+  FindSessionByUserIdAndDeviceIdHandler,
+  DeleteSessionHandler,
 ];
 const service = [];
 const repositories = [
@@ -59,6 +64,7 @@ const repositories = [
     ...commands,
     ...repositories,
     LocalStrategy,
+    JwtStrategy,
   ],
   exports: [PrismaService],
 })

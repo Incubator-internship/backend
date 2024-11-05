@@ -7,7 +7,7 @@
 //     public issuedAt: string,
 //   ) {}
 // }
-export class Session {
+export class SessionModel {
   deviceId: string;
   ip: string;
   deviceName: string;

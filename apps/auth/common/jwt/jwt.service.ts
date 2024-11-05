@@ -14,7 +14,7 @@ export class JWTService {
     //private configService: ConfigService<ConfigurationType, true>,
   ) {}
 
-  async createJWT(userId: string, deviceId: string) {
+  async createJWT(userId: number, deviceId: string) {
     // const secretKey = this.configService.get('JwtSettings.JWT_SECRET', {
     //   infer: true,
     // });
