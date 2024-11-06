@@ -1,12 +1,9 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthGuard, PassportStrategy } from '@nestjs/passport';
-import { Strategy } from 'passport-local';
 import { SessionsRepository } from '../../src/devices/infrastructure/sessions.repository';
 import { ExtractJwt } from 'passport-jwt';
 import { Request } from 'express';
-import { config } from 'dotenv';
-
-config();
+import { Strategy } from 'passport-jwt';
 
 @Injectable()
 export class JwtRefreshAuthGuard extends AuthGuard('jwt-cookie') {}
@@ -21,7 +18,8 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt-cookie') {
         },
       ]),
       ignoreExpiration: false,
-      secretOrKey: process.env.JWT_SECRET || '123',
+      secretOrKey: '12345',
+      /*appSettings.api.JWT_SECRET*/ /*|| process.env.JWT_SECRET || '123'*/
     });
   }
 
@@ -34,6 +32,8 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt-cookie') {
     deviceId: string;
     iat: string;
   }) {
+    console.log('JwtRefreshAuthGuard');
+    console.log(' userId deviceId iat ', userId, deviceId, iat);
     const issuedAt = new Date(+iat * 1000).toISOString();
     const session = await this.sessionsRepository.findSessionForCheckCookie(
       userId,

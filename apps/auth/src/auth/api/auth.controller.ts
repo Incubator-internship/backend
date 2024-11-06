@@ -4,6 +4,7 @@ import {
   HttpCode,
   Ip,
   Post,
+  Req,
   Res,
   UnauthorizedException,
   UseGuards,
@@ -28,10 +29,10 @@ import { RegistrationEmailResendingCommand } from '../application/use.cases/regi
 import { RegistrationConfirmationCommand } from '../application/use.cases/registrationConfirmation.command';
 import { PasswordRecoveryCommand } from '../application/use.cases/passwordRecovery.command';
 import { NewPasswordCommand } from '../application/use.cases/newPassword.command';
-import { JwtRefreshAuthGuard } from '../../../guards/jwt/jwt-cookie.strategy';
 import { RefreshPayload } from '../../../decorators/accessPayload.decorator';
 import { FindSessionByUserIdAndDeviceIdCommand } from '../../devices/application/use.cases/findSessionByUserIdAndDeviceId.command';
 import { DeleteSessionCommand } from '../../devices/application/use.cases/deleteSession.command';
+import { JwtRefreshAuthGuard } from '../../../guards/jwt/jwt-cookie.strategy';
 
 @Controller('auth')
 export class AuthController {
@@ -102,9 +103,13 @@ export class AuthController {
   @HttpCode(204)
   @Post('logout')
   async logout(
+    @Req() req,
     @RefreshPayload()
     { userId, deviceId }: { userId: number; deviceId: string },
   ) {
+    console.log(req.headers);
+    console.log(req.cookies);
+    console.log(req.cookies?.['refreshToken']);
     const session = await this.commandBus.execute(
       new FindSessionByUserIdAndDeviceIdCommand(userId, deviceId),
     );

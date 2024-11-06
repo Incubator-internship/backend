@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { UsersQueryRepository } from '../infrastructure/users-query.repository';
 

@@ -19,7 +19,7 @@ export class JWTService {
     //   infer: true,
     // });
     const secretKey = appSettings.api.JWT_SECRET;
-    console.log('secretKey ', secretKey);
+    console.log('secretKey JWTService', secretKey);
 
     if (!secretKey) {
       throw new Error('Invalid JWT_SECRET');
@@ -35,7 +35,7 @@ export class JWTService {
       refreshToken: await this.jwtService.signAsync(
         { userId, deviceId },
         {
-          secret: process.env.JWT_SECRET || '123',
+          secret: /*appSettings.api.JWT_SECRET ||*/ '12345',
           expiresIn: '600m',
         },
       ),

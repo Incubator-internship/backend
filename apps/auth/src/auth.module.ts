@@ -66,6 +66,6 @@ const repositories = [
     LocalStrategy,
     JwtStrategy,
   ],
-  exports: [PrismaService],
+  exports: [],
 })
 export class AuthModule {}
