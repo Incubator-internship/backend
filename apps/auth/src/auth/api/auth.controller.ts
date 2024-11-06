@@ -118,4 +118,24 @@ export class AuthController {
     }
     await this.commandBus.execute(new DeleteSessionCommand(userId, deviceId));
   }
+
+  @HttpCode(200)
+  @UseGuards(JwtRefreshAuthGuard)
+  @Post('refresh-token')
+  async refreshTokens(
+    @RefreshPayload()
+    { userId, deviceId }: { userId: number; deviceId: string },
+    @Res({ passthrough: true })
+    res: Response,
+  ) {
+    const tokensPair = await this.jwtService.createJWT(userId, deviceId);
+    await this.commandBus.execute(
+      new UpdateSessionCommand(userId, deviceId, tokensPair.refreshToken),
+    );
+    res.cookie('refreshToken', tokensPair.refreshToken, {
+      httpOnly: true,
+      secure: true,
+    });
+    return { accessToken: tokensPair.accessToken };
+  }
 }
