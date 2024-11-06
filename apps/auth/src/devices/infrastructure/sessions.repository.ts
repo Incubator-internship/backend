@@ -25,6 +25,9 @@ export class SessionsRepository {
     userId: number,
     deviceId: string,
   ): Promise<Session | null> {
+    console.log('findSessionByUserIdAndDeviceId');
+    console.log(typeof userId);
+    console.log(userId);
     return this.prismaService.session.findFirst({
       where: { userId, deviceId },
     });
