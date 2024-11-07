@@ -30,6 +30,8 @@ import { DeleteSessionHandler } from './devices/application/use.cases/deleteSess
 import { JwtStrategy } from '../guards/jwt/jwt-cookie.strategy';
 import { UpdateSessionHandler } from './devices/application/use.cases/updateSession.command';
 import { JwtAccessStrategy } from '../guards/jwt/jwt-header.strategy';
+import { SecurityDevicesController } from './devices/api/devices.controller';
+import { SessionsQueryRepository } from './devices/infrastructure/sessions-query.repository';
 
 const commands = [
   CreateUserHandler,
@@ -51,11 +53,12 @@ const repositories = [
   SessionsRepository,
   EmailConfirmationRepository,
   PasswordRecoveryRepository,
+  SessionsQueryRepository,
 ];
 
 @Module({
   imports: [CqrsModule, AuthModule, PassportModule, MailModule],
-  controllers: [UsersController, AuthController],
+  controllers: [UsersController, AuthController, SecurityDevicesController],
   providers: [
     EmailConfirmationExistConstraint,
     ConfirmationCodeIsValidConstraint,
