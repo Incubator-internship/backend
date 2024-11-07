@@ -25,13 +25,13 @@ export class UsersQueryRepository {
     });
   }
 
-  async getUserByIdForAuthMe(userId: number): Promise<void | UserAuthMeDTO> {
+  async getUserByIdForAuthMe(userId: number): Promise<null | UserAuthMeDTO> {
     const user = await this.prismaService.user.findUnique({
       where: { id: userId },
     });
 
     if (!user) {
-      return exceptionHandler(ResultCode.NotFound, 'user has`t been found');
+      return null;
     }
 
     const userMapped: UserAuthMeDTO = {

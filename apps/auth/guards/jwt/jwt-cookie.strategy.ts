@@ -32,8 +32,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt-cookie') {
     deviceId: string;
     iat: string;
   }) {
-    console.log('JwtRefreshAuthGuard');
-    console.log(' userId deviceId iat ', userId, deviceId, iat);
     const issuedAt = new Date(+iat * 1000).toISOString();
     const session = await this.sessionsRepository.findSessionForCheckCookie(
       userId,

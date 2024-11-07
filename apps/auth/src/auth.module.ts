@@ -32,6 +32,8 @@ import { UpdateSessionHandler } from './devices/application/use.cases/updateSess
 import { JwtAccessStrategy } from '../guards/jwt/jwt-header.strategy';
 import { SecurityDevicesController } from './devices/api/devices.controller';
 import { SessionsQueryRepository } from './devices/infrastructure/sessions-query.repository';
+import { DeleteSessionExceptThisHandler } from './devices/application/use.cases/deleteSessiomsDevicesExceptThisOne.command';
+import { DeleteDeviceSessionHandler } from './devices/application/use.cases/deleteDeviceSession.command';
 
 const commands = [
   CreateUserHandler,
@@ -45,8 +47,10 @@ const commands = [
   FindSessionByUserIdAndDeviceIdHandler,
   DeleteSessionHandler,
   UpdateSessionHandler,
+  DeleteSessionExceptThisHandler,
+  DeleteDeviceSessionHandler,
 ];
-const service = [];
+const service = [PrismaService, AuthService, JWTService, JwtService];
 const repositories = [
   UsersRepository,
   UsersQueryRepository,
@@ -63,10 +67,7 @@ const repositories = [
     EmailConfirmationExistConstraint,
     ConfirmationCodeIsValidConstraint,
     EmailIsNotExistConstraint,
-    PrismaService,
-    AuthService,
-    JWTService,
-    JwtService,
+    ...service,
     ...commands,
     ...repositories,
     LocalStrategy,

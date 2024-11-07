@@ -12,6 +12,7 @@ export class SessionsRepository {
       data: newSessionDTO,
     });
   }
+
   async findSessionForCheckCookie(
     userId: number,
     deviceId: string,
@@ -21,6 +22,7 @@ export class SessionsRepository {
       where: { userId, deviceId, issuedAt },
     });
   }
+
   async findSessionByUserIdAndDeviceId(
     userId: number,
     deviceId: string,
@@ -32,11 +34,13 @@ export class SessionsRepository {
       where: { userId, deviceId },
     });
   }
+
   async deleteSession(userId: number, deviceId: string): Promise<void> {
     await this.prismaService.session.deleteMany({
       where: { userId, deviceId },
     });
   }
+
   async updateSession(
     userId: number,
     deviceId: string,
@@ -46,5 +50,18 @@ export class SessionsRepository {
       where: { userId, deviceId },
       data: { issuedAt },
     });
+  }
+
+  async deleteDevicesExceptThisOne(
+    userId: number,
+    deviceId: string,
+  ): Promise<void> {
+    await this.prismaService.session.deleteMany({
+      where: { userId, NOT: { deviceId } },
+    });
+  }
+
+  async findSessionByDeviceId(deviceId: string): Promise<Session | null> {
+    return this.prismaService.session.findFirst({ where: { deviceId } });
   }
 }
