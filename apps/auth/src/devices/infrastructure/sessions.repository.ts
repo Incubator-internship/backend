@@ -32,9 +32,19 @@ export class SessionsRepository {
       where: { userId, deviceId },
     });
   }
-  async deleteSession(userId: number, deviceId: string) {
+  async deleteSession(userId: number, deviceId: string): Promise<void> {
     await this.prismaService.session.deleteMany({
       where: { userId, deviceId },
+    });
+  }
+  async updateSession(
+    userId: number,
+    deviceId: string,
+    issuedAt: string,
+  ): Promise<void> {
+    await this.prismaService.session.updateMany({
+      where: { userId, deviceId },
+      data: { issuedAt },
     });
   }
 }

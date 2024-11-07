@@ -26,7 +26,6 @@ export class PasswordRecoveryHandler
 
   async execute(command: PasswordRecoveryCommand) {
     const user = await this.usersRepository.findUserByEmail(command.email);
-    console.log('PasswordRecoveryCommand user ', user);
     if (!user) {
       return exceptionHandler(ResultCode.NotFound, 'user has`t been found');
     }

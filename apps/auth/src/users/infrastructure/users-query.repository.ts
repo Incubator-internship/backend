@@ -1,19 +1,45 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
+import {
+  exceptionHandler,
+  ResultCode,
+} from '../../../common/exception-filters/exception.handler';
+import {
+  AllUsersType,
+  UserAuthMeDTO,
+} from '../api/models/output/userOutput.types';
 
 @Injectable()
 export class UsersQueryRepository {
   constructor(protected prismaService: PrismaService) {}
-  async getAllUsers() {
+
+  async getAllUsers(): Promise<AllUsersType[]> {
     const allUsers = await this.prismaService.user.findMany();
-    console.log('allUsers ', allUsers);
     return allUsers.map((u) => {
       return {
         id: u.id.toString(),
         name: u.userName,
         email: u.email,
-        createdAt: u.createdAt,
+        createdAt: u.createdAt.toISOString(),
       };
     });
+  }
+
+  async getUserByIdForAuthMe(userId: number): Promise<void | UserAuthMeDTO> {
+    const user = await this.prismaService.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      return exceptionHandler(ResultCode.NotFound, 'user has`t been found');
+    }
+
+    const userMapped: UserAuthMeDTO = {
+      userId: user.id.toString(),
+      login: user.userName,
+      email: user.email,
+    };
+
+    return userMapped;
   }
 }

@@ -1,8 +1,10 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   Ip,
+  NotFoundException,
   Post,
   Req,
   Res,
@@ -33,12 +35,17 @@ import { RefreshPayload } from '../../../decorators/accessPayload.decorator';
 import { FindSessionByUserIdAndDeviceIdCommand } from '../../devices/application/use.cases/findSessionByUserIdAndDeviceId.command';
 import { DeleteSessionCommand } from '../../devices/application/use.cases/deleteSession.command';
 import { JwtRefreshAuthGuard } from '../../../guards/jwt/jwt-cookie.strategy';
+import { UpdateSessionCommand } from '../../devices/application/use.cases/updateSession.command';
+import { JwtAccessAuthGuard } from '../../../guards/jwt/jwt-header.strategy';
+import { TakeUserId } from '../../../decorators/authMeTakeUserId.decorator';
+import { UsersQueryRepository } from '../../users/infrastructure/users-query.repository';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private commandBus: CommandBus,
     private jwtService: JWTService,
+    private usersQueryRepository: UsersQueryRepository,
   ) {}
 
   @HttpCode(204)
@@ -137,5 +144,15 @@ export class AuthController {
       secure: true,
     });
     return { accessToken: tokensPair.accessToken };
+  }
+
+  @UseGuards(JwtAccessAuthGuard)
+  @Get('me')
+  async authMe(@TakeUserId() { userId }: { userId: number }) {
+    const authMe = await this.usersQueryRepository.getUserByIdForAuthMe(userId);
+    if (!authMe) {
+      throw new NotFoundException();
+    }
+    return authMe;
   }
 }

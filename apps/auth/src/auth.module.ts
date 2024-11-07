@@ -28,6 +28,8 @@ import { NewPasswordHandler } from './auth/application/use.cases/newPassword.com
 import { FindSessionByUserIdAndDeviceIdHandler } from './devices/application/use.cases/findSessionByUserIdAndDeviceId.command';
 import { DeleteSessionHandler } from './devices/application/use.cases/deleteSession.command';
 import { JwtStrategy } from '../guards/jwt/jwt-cookie.strategy';
+import { UpdateSessionHandler } from './devices/application/use.cases/updateSession.command';
+import { JwtAccessStrategy } from '../guards/jwt/jwt-header.strategy';
 
 const commands = [
   CreateUserHandler,
@@ -40,6 +42,7 @@ const commands = [
   NewPasswordHandler,
   FindSessionByUserIdAndDeviceIdHandler,
   DeleteSessionHandler,
+  UpdateSessionHandler,
 ];
 const service = [];
 const repositories = [
@@ -65,6 +68,7 @@ const repositories = [
     ...repositories,
     LocalStrategy,
     JwtStrategy,
+    JwtAccessStrategy,
   ],
   exports: [],
 })
