@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
@@ -18,6 +19,7 @@ export enum ResultCode {
   NotFound,
   Forbidden,
   Unauthorized,
+  Conflict,
 }
 
 export const exceptionHandler = (
@@ -42,6 +44,9 @@ export const exceptionHandler = (
     }
     case ResultCode.Forbidden: {
       throw new ForbiddenException(exceptionObject);
+    }
+    case ResultCode.Conflict: {
+      throw new ConflictException(exceptionObject);
     }
   }
 };

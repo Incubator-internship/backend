@@ -13,6 +13,7 @@ export type EnvironmentsTypes =
   | 'STAGING'
   | 'PRODUCTION'
   | 'TESTING';
+
 export const Environments = ['DEVELOPMENT', 'STAGING', 'PRODUCTION', 'TESTING'];
 
 export class EnvironmentSettings {
@@ -39,7 +40,7 @@ export class EnvironmentSettings {
   }
 }
 
-class AppSettings {
+class Configuration {
   constructor(
     public env: EnvironmentSettings,
     public api: APISettings,
@@ -69,6 +70,10 @@ class APISettings {
   public readonly POSTGRES_DATABASE_TEST;
   public readonly TTL_THROTTLER: number;
   public readonly LIMIT_THROTTLER;
+  public readonly GOOGLE_CLIENT_ID;
+  public readonly GOOGLE_CLIENT_SECRET;
+  public readonly GOOGLE_CALLBACK_LOCAL_URL;
+  public readonly GOOGLE_CALLBACK_PROD_URL;
 
   constructor(private readonly envVariables: EnvironmentVariable) {
     // Application
@@ -78,7 +83,7 @@ class APISettings {
     );
     this.AUTH_PORT = this.getNumberOrDefault(
       envVariables.APP_PORT as string,
-      3000,
+      5000,
     );
     //JWT
     this.JWT_SECRET = envVariables.JWT_SECRET ?? '123';
@@ -100,6 +105,11 @@ class APISettings {
       envVariables.LIMIT_THROTTLER as string,
       5,
     );
+
+    this.GOOGLE_CLIENT_ID = envVariables.GOOGLE_CLIENT_ID;
+    this.GOOGLE_CLIENT_SECRET = envVariables.GOOGLE_CLIENT_SECRET;
+    this.GOOGLE_CALLBACK_LOCAL_URL = envVariables.GOOGLE_CALLBACK_LOCAL_URL;
+    this.GOOGLE_CALLBACK_PROD_URL = envVariables.GOOGLE_CALLBACK_PROD_URL;
   }
 
   private getNumberOrDefault(value: string, defaultValue: number): number {
@@ -120,5 +130,5 @@ const env = new EnvironmentSettings(
 );
 
 const api = new APISettings(process.env);
-export const appSettings = new AppSettings(env, api);
+export const appSettings = new Configuration(env, api);
 console.log(appSettings.env.isTesting());
