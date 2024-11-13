@@ -16,7 +16,6 @@ import {
   InputEmailModel,
   InputNewPasswordModel,
   InputPasswordRecoveryModel,
-  LoginInputModelType,
   RegistrationInputUserModel,
 } from './models/input/auth-input.model';
 import { CommandBus } from '@nestjs/cqrs';
@@ -144,6 +143,7 @@ export class AuthController {
     const session = await this.commandBus.execute(
       new FindSessionByUserIdAndDeviceIdCommand(userId, deviceId),
     );
+    //todo значит надо найти сессию по девайс айди и проверить есть ли она и моя ли она
     if (!session) {
       throw new UnauthorizedException();
     }

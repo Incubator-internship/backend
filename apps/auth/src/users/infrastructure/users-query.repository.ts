@@ -35,7 +35,7 @@ export class UsersQueryRepository {
     }
 
     const userMapped: UserAuthMeDTO = {
-      userId: user.id.toString(),
+      userId: user.id,
       login: user.userName,
       email: user.email,
     };
