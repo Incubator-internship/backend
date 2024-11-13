@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 //import { config } from 'dotenv';
 
 //import { ConfigurationType } from '../../config/configuration';
-import { appSettings } from '../../settings/app-settings';
+import { appSettings } from '../../settings/configuration';
 //config();
 
 @Injectable()

@@ -16,7 +16,8 @@ import {
   InputEmailModel,
   InputNewPasswordModel,
   InputPasswordRecoveryModel,
-  RegistrationUserModel,
+  LoginInputModelType,
+  RegistrationInputUserModel,
 } from './models/input/auth-input.model';
 import { CommandBus } from '@nestjs/cqrs';
 import { RegistrationUserCommand } from '../application/use.cases/registrationUser.command';
@@ -39,7 +40,23 @@ import { UpdateSessionCommand } from '../../devices/application/use.cases/update
 import { JwtAccessAuthGuard } from '../../../guards/jwt/jwt-header.strategy';
 import { TakeUserId } from '../../../decorators/authMeTakeUserId.decorator';
 import { UsersQueryRepository } from '../../users/infrastructure/users-query.repository';
+import { GoogleOAuthGuard } from '../../../guards/oath/google.strategy';
+import { ApiTags } from '@nestjs/swagger';
+import {
+  AuthMeEndpoint,
+  LoginUserEndpoint,
+  LogoutEndpoint,
+  NewPasswordEndpoint,
+  PasswordRecoveryEndpoint,
+  RefreshTokenEndpoint,
+  RegConfirmationEndpoint,
+  RegEmailResendingEndpoint,
+  RegistrationUserEndpoint,
+} from '../../../swagger/oauth.swagger';
+import { ThrottlerGuard } from '@nestjs/throttler';
 
+@ApiTags('auth')
+@UseGuards(ThrottlerGuard)
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -48,12 +65,14 @@ export class AuthController {
     private usersQueryRepository: UsersQueryRepository,
   ) {}
 
+  @RegistrationUserEndpoint()
   @HttpCode(204)
   @Post('registration')
-  async registration(@Body() registrationDTO: RegistrationUserModel) {
+  async registration(@Body() registrationDTO: RegistrationInputUserModel) {
     await this.commandBus.execute(new RegistrationUserCommand(registrationDTO));
   }
 
+  @LoginUserEndpoint()
   @HttpCode(200)
   @UseGuards(LoginGuard)
   //@UsePipes(new ValidationPipe())
@@ -78,6 +97,7 @@ export class AuthController {
     return { accessToken: tokensPair.accessToken };
   }
 
+  @RegEmailResendingEndpoint()
   @HttpCode(204)
   @Post('registration-email-resending')
   async registrationEmailResending(@Body() email: InputEmailModel) {
@@ -86,6 +106,7 @@ export class AuthController {
     );
   }
 
+  @RegConfirmationEndpoint()
   @HttpCode(204)
   @Post('registration-confirmation')
   async registrationConfirmation(@Body() confirmationCode: InputCodeModel) {
@@ -94,18 +115,21 @@ export class AuthController {
     );
   }
 
+  @PasswordRecoveryEndpoint()
   @HttpCode(204)
   @Post('password-recovery')
   async passwordRecovery(@Body() email: InputPasswordRecoveryModel) {
     await this.commandBus.execute(new PasswordRecoveryCommand(email.email));
   }
 
+  @NewPasswordEndpoint()
   @HttpCode(204)
   @Post('new-password')
   async newPassword(@Body() newPasswordModel: InputNewPasswordModel) {
     await this.commandBus.execute(new NewPasswordCommand(newPasswordModel));
   }
 
+  @LogoutEndpoint()
   @UseGuards(JwtRefreshAuthGuard)
   @HttpCode(204)
   @Post('logout')
@@ -126,6 +150,7 @@ export class AuthController {
     await this.commandBus.execute(new DeleteSessionCommand(userId, deviceId));
   }
 
+  @RefreshTokenEndpoint()
   @HttpCode(200)
   @UseGuards(JwtRefreshAuthGuard)
   @Post('refresh-token')
@@ -146,6 +171,7 @@ export class AuthController {
     return { accessToken: tokensPair.accessToken };
   }
 
+  @AuthMeEndpoint()
   @UseGuards(JwtAccessAuthGuard)
   @Get('me')
   async authMe(@TakeUserId() { userId }: { userId: number }) {
@@ -154,5 +180,17 @@ export class AuthController {
       throw new NotFoundException();
     }
     return authMe;
+  }
+
+  //----------------------------------
+  @Get('google')
+  @UseGuards(GoogleOAuthGuard)
+  async googleAuth(@Req() req) {}
+
+  @Get('google-redirect')
+  @UseGuards(GoogleOAuthGuard)
+  googleAuthRedirect(@Req() req) {
+    console.log(req);
+    //return this.appService.googleLogin(req);
   }
 }

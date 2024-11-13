@@ -4,12 +4,12 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { appSettings } from './app-settings';
 import { useContainer } from 'class-validator';
 import * as cookieParser from 'cookie-parser';
 import { AppModule } from '../src/app.module';
 import { LoggerMiddlewareFunc } from '../../../common/logger.middleware';
 import { HttpExceptionFilter } from '../../../common/http-exception-filter';
+import { appSettings } from './configuration';
 
 interface CustomError {
   field: string;
@@ -58,18 +58,33 @@ const setAppPrefix = (app: INestApplication) => {
 
 const setSwagger = (app: INestApplication) => {
   if (!appSettings.env.isProduction()) {
-    const swaggerPath = APP_PREFIX + 'swagger-doc';
+    //const swaggerPath = APP_PREFIX + 'swagger-doc';
 
     const config = new DocumentBuilder()
       .setTitle('INCTAGRAM API')
       .addBearerAuth()
       .setVersion('1.0')
+      .addApiKey(
+        {
+          type: 'apiKey',
+          name: 'refreshToken',
+          in: 'cookie',
+          description:
+            'JWT refreshToken inside cookie. Must be correct, and must not expire.',
+        },
+        'refreshToken',
+      )
+      .addBearerAuth({
+        description: 'Default JWT Authorization',
+        type: 'http',
+        in: 'header',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      })
       .build();
 
     const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup(swaggerPath, app, document, {
-      customSiteTitle: 'Blogger Swagger',
-    });
+    SwaggerModule.setup('api/v1/swagger', app, document);
   }
 };
 

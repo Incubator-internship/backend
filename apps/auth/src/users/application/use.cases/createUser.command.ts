@@ -1,4 +1,4 @@
-import { RegistrationUserModel } from '../../../auth/api/models/input/auth-input.model';
+import { RegistrationInputUserModel } from '../../../auth/api/models/input/auth-input.model';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { UsersRepository } from '../../infrastructure/users.repository';
 import { UserModel } from '../../domain/createUser.model';
@@ -9,7 +9,7 @@ import {
 import { hash } from 'bcryptjs';
 
 export class CreateUserCommand {
-  constructor(public readonly registrationDTO: RegistrationUserModel) {}
+  constructor(public readonly registrationDTO: RegistrationInputUserModel) {}
 }
 
 @CommandHandler(CreateUserCommand)

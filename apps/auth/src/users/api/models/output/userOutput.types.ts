@@ -1,6 +1,17 @@
+import { ApiProperty } from '@nestjs/swagger';
+
 export class UserAuthMeDTO {
-  userId: string;
+  @ApiProperty({
+    example: 'number',
+  })
+  userId: number;
+  @ApiProperty({
+    example: 'string',
+  })
   login: string;
+  @ApiProperty({
+    example: 'string',
+  })
   email: string;
 }
 export class AllUsersType {

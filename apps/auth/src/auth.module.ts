@@ -34,6 +34,7 @@ import { SecurityDevicesController } from './devices/api/devices.controller';
 import { SessionsQueryRepository } from './devices/infrastructure/sessions-query.repository';
 import { DeleteSessionExceptThisHandler } from './devices/application/use.cases/deleteSessiomsDevicesExceptThisOne.command';
 import { DeleteDeviceSessionHandler } from './devices/application/use.cases/deleteDeviceSession.command';
+import { GoogleStrategy } from '../guards/oath/google.strategy';
 
 const commands = [
   CreateUserHandler,
@@ -73,6 +74,7 @@ const repositories = [
     LocalStrategy,
     JwtStrategy,
     JwtAccessStrategy,
+    GoogleStrategy,
   ],
   exports: [],
 })
