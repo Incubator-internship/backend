@@ -1,11 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import * as dotenv from 'dotenv';
 import { appSettings } from '../settings/configuration';
 import { applyAppSettings } from '../settings/apply-app-setting';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-
-dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -17,7 +13,7 @@ async function bootstrap() {
   const port = process.env.PORT ?? 3000;
   //app.setGlobalPrefix('api/v1');
   //await app.listen(process.env.PORT ?? 3000);
-  console.log('post', port);
+  console.log('port', port);
   await app.listen(port);
 }
 bootstrap();

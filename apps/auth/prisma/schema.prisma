@@ -15,13 +15,14 @@ datasource db {
 }
 
 model User {
-  id                Int                @id @default(autoincrement())
-  email             String             @unique
-  userName          String             @unique
-  passwordHash      String
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
-  isDelete          Boolean            @default(false)
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  userName     String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  isDelete     Boolean  @default(false)
+
   emailConfirmation EmailConfirmation?
   sessions          Session[]          @relation("UserSessions")
   passwordRecovery  PasswordRecovery?
