@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { AuthGuard, PassportStrategy } from '@nestjs/passport';
 import { Strategy, VerifyCallback } from 'passport-google-oauth20';
-import { appSettings } from '../../settings/configuration';
 import { ConfigService } from '@nestjs/config';
 import * as dotenv from 'dotenv';
 import * as process from 'node:process';

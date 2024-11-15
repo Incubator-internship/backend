@@ -87,7 +87,6 @@ const setSwagger = (app: INestApplication) => {
     SwaggerModule.setup('api/v1/swagger', app, document);
   }
 };
-
 const setAppPipes = (app: INestApplication) => {
   app.useGlobalPipes(
     //для правильного отображения ошибок, настраиваем useGlobalPipes

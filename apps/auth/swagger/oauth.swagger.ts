@@ -5,7 +5,6 @@ import {
   ApiCookieAuth,
   ApiOperation,
   ApiResponse,
-  ApiSecurity,
 } from '@nestjs/swagger';
 import {
   LoginInputModelType,
