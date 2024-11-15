@@ -21,23 +21,13 @@ export class DeleteDeviceSessionHandler
   async execute(command: DeleteDeviceSessionCommand): Promise<void> {
     const deviceSessionByDeviceId =
       await this.sessionsRepository.findSessionByDeviceId(command.deviceId);
-    console.log('deviceSessionByDeviceId', deviceSessionByDeviceId);
-    console.log('!deviceSessionByDeviceId', !deviceSessionByDeviceId);
     if (!deviceSessionByDeviceId) {
       return exceptionHandler(
         ResultCode.NotFound,
         'DeviceSession has benn not found',
       );
     }
-    console.log(
-      'command.userId !== deviceSessionByDeviceId.userId',
-      Number(command.userId) !== deviceSessionByDeviceId.userId,
-    );
-    console.log('command.userId ', command.userId);
-    console.log(
-      'deviceSessionByDeviceId.userId',
-      deviceSessionByDeviceId.userId,
-    );
+
     if (command.userId != deviceSessionByDeviceId.userId) {
       return exceptionHandler(
         ResultCode.Forbidden,

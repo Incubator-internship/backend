@@ -1,10 +1,8 @@
 import {
   Controller,
   Delete,
-  ForbiddenException,
   Get,
   HttpCode,
-  NotFoundException,
   Param,
   UseGuards,
 } from '@nestjs/common';
@@ -14,7 +12,16 @@ import { RefreshPayload } from '../../../decorators/accessPayload.decorator';
 import { SessionsQueryRepository } from '../infrastructure/sessions-query.repository';
 import { DeleteSessionExceptThisCommand } from '../application/use.cases/deleteSessiomsDevicesExceptThisOne.command';
 import { DeleteDeviceSessionCommand } from '../application/use.cases/deleteDeviceSession.command';
+import { ApiTags } from '@nestjs/swagger';
+import { ThrottlerGuard } from '@nestjs/throttler';
+import {
+  DeleteAllDeviceSessions,
+  DeleteDeviceSessionsByDeviceId,
+  GetDevices,
+} from '../../../swagger/securityDevices.swagger';
 
+@ApiTags('SecurityDevices')
+@UseGuards(ThrottlerGuard)
 @Controller('security')
 export class SecurityDevicesController {
   constructor(
@@ -22,6 +29,7 @@ export class SecurityDevicesController {
     private sessionsQueryRepository: SessionsQueryRepository,
   ) {}
 
+  @GetDevices()
   @HttpCode(200)
   @UseGuards(JwtRefreshAuthGuard)
   @Get('devices')
@@ -32,6 +40,7 @@ export class SecurityDevicesController {
     return await this.sessionsQueryRepository.findAllSessionsByUserId(userId);
   }
 
+  @DeleteAllDeviceSessions()
   @HttpCode(204)
   @UseGuards(JwtRefreshAuthGuard)
   @Delete('devices')
@@ -44,6 +53,7 @@ export class SecurityDevicesController {
     );
   }
 
+  @DeleteDeviceSessionsByDeviceId()
   @HttpCode(204)
   @UseGuards(JwtRefreshAuthGuard)
   @Delete('devices/:deviceId')

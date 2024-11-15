@@ -54,7 +54,7 @@ import {
 } from '../../../swagger/oauth.swagger';
 import { ThrottlerGuard } from '@nestjs/throttler';
 
-@ApiTags('auth')
+@ApiTags('Auth')
 @UseGuards(ThrottlerGuard)
 @Controller('auth')
 export class AuthController {
