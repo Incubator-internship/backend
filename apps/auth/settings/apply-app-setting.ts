@@ -25,7 +25,10 @@ export const applyAppSettings = (app: INestApplication) => {
   // {fallbackOnErrors: true} требуется, поскольку Nest генерирует исключение,
   // когда DI не имеет необходимого класса.
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
-  app.enableCors();
+  app.enableCors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  });
   app.use(cookieParser());
   // Применение глобальных Interceptors
   // app.useGlobalInterceptors()
