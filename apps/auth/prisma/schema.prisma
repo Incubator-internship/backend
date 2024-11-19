@@ -26,8 +26,19 @@ model User {
   emailConfirmation EmailConfirmation?
   sessions          Session[]          @relation("UserSessions")
   passwordRecovery  PasswordRecovery?
+  provider          Provider[]         @relation("Providers")
 
   @@map("users")
+}
+
+model Provider {
+  id           Int    @id @default(autoincrement())
+  userId       Int
+  providerID   String
+  providerType String
+  user         User   @relation(fields: [userId], references: [id], name: "Providers")
+
+  @@map("provider")
 }
 
 model EmailConfirmation {

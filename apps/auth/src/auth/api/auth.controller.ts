@@ -190,7 +190,7 @@ export class AuthController {
   @Get('google-redirect')
   @UseGuards(GoogleOAuthGuard)
   googleAuthRedirect(@Req() req) {
-    console.log(req);
+    //console.log(req);
     //return this.appService.googleLogin(req);
   }
 }
