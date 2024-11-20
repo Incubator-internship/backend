@@ -35,7 +35,7 @@ export class EmailService {
     userName: string,
     passwordRecoveryCode: string,
   ): Promise<void> {
-    const url = `https://somesite.com/confirm-email?code=${passwordRecoveryCode}`;
+    const url = `http://localhost:3000/createnewpassword?code=${passwordRecoveryCode}`;
 
     await this.mailerService
       .sendMail({
