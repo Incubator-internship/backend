@@ -10,8 +10,10 @@ export class PasswordRecoveryRepository {
   async createPasswordRecovery(
     passwordRecoveryModel: PasswordRecoveryModel,
   ): Promise<void> {
-    await this.prismaService.passwordRecovery.create({
-      data: passwordRecoveryModel,
+    await this.prismaService.passwordRecovery.upsert({
+      where: { userId: passwordRecoveryModel.userId },
+      update: { ...passwordRecoveryModel },
+      create: { ...passwordRecoveryModel },
     });
   }
 
