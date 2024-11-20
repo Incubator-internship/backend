@@ -10,7 +10,7 @@ export class EmailService {
     userName: string,
     confirmationCode: string,
   ): Promise<void> {
-    const url = `https://somesite.com/confirm-email?code=${confirmationCode}`;
+    const url = `http://localhost:3000/confirm-email?code=${confirmationCode}`;
 
     await this.mailerService
       .sendMail({
