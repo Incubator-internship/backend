@@ -25,7 +25,7 @@ model User {
 
   emailConfirmation EmailConfirmation?
   sessions          Session[]          @relation("UserSessions")
-  passwordRecovery  PasswordRecovery?
+  passwordRecovery  PasswordRecovery[] @relation("PasswordRecovery")
   provider          Provider[]         @relation("Providers")
 
   @@map("users")
@@ -66,13 +66,14 @@ model Session {
 }
 
 model PasswordRecovery {
+  id                     Int      @id @default(autoincrement())
   recoveryCode           String
   recoveryCodeExpireDate DateTime
   alreadyChangePassword  Boolean  @default(false)
   createdAt              DateTime @default(now())
   updatedAt              DateTime @updatedAt
-  userId                 Int      @unique
-  user                   User     @relation(fields: [userId], references: [id])
+  userId                 Int
+  user                   User     @relation(fields: [userId], references: [id], name: "PasswordRecovery")
 
   @@map("passwordRecovery")
 }
