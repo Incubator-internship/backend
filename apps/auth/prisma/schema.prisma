@@ -66,13 +66,12 @@ model Session {
 }
 
 model PasswordRecovery {
-  id                     Int      @id @default(autoincrement())
   recoveryCode           String
   recoveryCodeExpireDate DateTime
   alreadyChangePassword  Boolean  @default(false)
   createdAt              DateTime @default(now())
   updatedAt              DateTime @updatedAt
-  userId                 Int
+  userId                 Int      @unique
   user                   User     @relation(fields: [userId], references: [id], name: "PasswordRecovery")
 
   @@map("passwordRecovery")
