@@ -31,9 +31,7 @@ export class PasswordRecoveryHandler
     }
     const recoveryCode = randomUUID();
     const recoveryCodeExpireDate = add(new Date(), {
-      hours: 3,
-      minutes: 3,
-      seconds: 3,
+      minutes: 5,
     });
     const passwordRecovery = PasswordRecoveryModel.createPasswordRecovery(
       user.id,

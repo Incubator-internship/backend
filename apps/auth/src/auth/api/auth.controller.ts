@@ -137,9 +137,6 @@ export class AuthController {
     @RefreshPayload()
     { userId, deviceId }: { userId: number; deviceId: string },
   ) {
-    console.log(req.headers);
-    console.log(req.cookies);
-    console.log(req.cookies?.['refreshToken']);
     const session = await this.commandBus.execute(
       new FindSessionByUserIdAndDeviceIdCommand(userId, deviceId),
     );

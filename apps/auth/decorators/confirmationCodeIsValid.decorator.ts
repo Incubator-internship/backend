@@ -45,6 +45,6 @@ export class ConfirmationCodeIsValidConstraint
     return true;
   }
   defaultMessage(validationArguments?: ValidationArguments): string {
-    return 'Code is not valid';
+    return 'Code is not valid or code has been expired';
   }
 }
