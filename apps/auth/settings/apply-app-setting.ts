@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
-import { appSettings } from './app-settings';
+// import { appSettings } from './app-settings';
 
 import { useContainer } from 'class-validator';
 import { AppModule } from '../src/app.module';
@@ -16,7 +16,7 @@ interface CustomError {
   message: string;
 }
 // Префикс нашего приложения (http://site.com/api)
-const APP_PREFIX = '/';
+const APP_PREFIX = 'api/v1/';
 
 // Используем данную функцию в main.ts и в e2e тестах
 export const applyAppSettings = (app: INestApplication) => {
@@ -38,7 +38,7 @@ export const applyAppSettings = (app: INestApplication) => {
   setAppPrefix(app);
 
   // Конфигурация swagger документации
-  setSwagger(app);
+  // setSwagger(app);
 
   // Применение глобальных pipes
   setAppPipes(app);
@@ -54,22 +54,23 @@ const setAppPrefix = (app: INestApplication) => {
   app.setGlobalPrefix(APP_PREFIX);
 };
 
-const setSwagger = (app: INestApplication) => {
-  if (!appSettings.env.isProduction()) {
-    const swaggerPath = APP_PREFIX + 'swagger-doc';
-
-    const config = new DocumentBuilder()
-      .setTitle('INCTAGRAM API')
-      .addBearerAuth()
-      .setVersion('1.0')
-      .build();
-
-    const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup(swaggerPath, app, document, {
-      customSiteTitle: 'Blogger Swagger',
-    });
-  }
-};
+// const setSwagger = (app: INestApplication) => {
+//   // if (!appSettings.env.isProduction()) {
+//   if (!appSettings.env.isProduction()) {
+//     const swaggerPath = APP_PREFIX + 'swagger-doc';
+//
+//     const config = new DocumentBuilder()
+//       .setTitle('INCTAGRAM API')
+//       .addBearerAuth()
+//       .setVersion('1.0')
+//       .build();
+//
+//     const document = SwaggerModule.createDocument(app, config);
+//     SwaggerModule.setup(swaggerPath, app, document, {
+//       customSiteTitle: 'Blogger Swagger',
+//     });
+//   }
+// };
 
 const setAppPipes = (app: INestApplication) => {
   app.useGlobalPipes(

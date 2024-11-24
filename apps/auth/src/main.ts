@@ -1,19 +1,22 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import * as dotenv from 'dotenv';
-import { appSettings } from '../settings/app-settings';
-import { applyAppSettings } from '../settings/apply-app-setting';
 
-dotenv.config();
+import { applyAppSettings } from '../settings/apply-app-setting';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   applyAppSettings(app);
-  console.log('process.env.PORT', appSettings.api.AUTH_PORT);
-  const port = appSettings.api.AUTH_PORT ?? 3000;
-  app.setGlobalPrefix('api/v1');
+
+  // Получение конфигурации через ConfigService
+  const configService = app.get<ConfigService>(ConfigService); // Укажите тип
+
+  // Получение порта из конфигурации
+  const port = configService.get<number>('apiSettings.AUTH_PORT');
+  console.log(port);
+  //const port = appSettings.api.AUTH_PORT ?? 3000;
+  // app.setGlobalPrefix('api/v1');
   //await app.listen(process.env.PORT ?? 3000);
-  console.log('post', port);
   await app.listen(port);
 }
 bootstrap();
