@@ -4,19 +4,20 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-
-// import { appSettings } from './app-settings';
-
 import { useContainer } from 'class-validator';
+import * as cookieParser from 'cookie-parser';
 import { AppModule } from '../src/app.module';
 import { LoggerMiddlewareFunc } from '../../../common/logger.middleware';
 import { HttpExceptionFilter } from '../../../common/http-exception-filter';
+import { appSettings } from './configuration';
+
 interface CustomError {
   field: string;
   message: string;
 }
+
 // Префикс нашего приложения (http://site.com/api)
-const APP_PREFIX = 'api/v1/';
+const APP_PREFIX = 'api/v1';
 
 // Используем данную функцию в main.ts и в e2e тестах
 export const applyAppSettings = (app: INestApplication) => {
@@ -24,7 +25,11 @@ export const applyAppSettings = (app: INestApplication) => {
   // {fallbackOnErrors: true} требуется, поскольку Nest генерирует исключение,
   // когда DI не имеет необходимого класса.
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
-
+  app.enableCors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  });
+  app.use(cookieParser());
   // Применение глобальных Interceptors
   // app.useGlobalInterceptors()
 
@@ -38,7 +43,7 @@ export const applyAppSettings = (app: INestApplication) => {
   setAppPrefix(app);
 
   // Конфигурация swagger документации
-  // setSwagger(app);
+  setSwagger(app);
 
   // Применение глобальных pipes
   setAppPipes(app);
@@ -54,24 +59,37 @@ const setAppPrefix = (app: INestApplication) => {
   app.setGlobalPrefix(APP_PREFIX);
 };
 
-// const setSwagger = (app: INestApplication) => {
-//   // if (!appSettings.env.isProduction()) {
-//   if (!appSettings.env.isProduction()) {
-//     const swaggerPath = APP_PREFIX + 'swagger-doc';
-//
-//     const config = new DocumentBuilder()
-//       .setTitle('INCTAGRAM API')
-//       .addBearerAuth()
-//       .setVersion('1.0')
-//       .build();
-//
-//     const document = SwaggerModule.createDocument(app, config);
-//     SwaggerModule.setup(swaggerPath, app, document, {
-//       customSiteTitle: 'Blogger Swagger',
-//     });
-//   }
-// };
+const setSwagger = (app: INestApplication) => {
+  if (!appSettings.env.isProduction()) {
+    //const swaggerPath = APP_PREFIX + 'swagger-doc';
 
+    const config = new DocumentBuilder()
+      .setTitle('INCTAGRAM API')
+      .addBearerAuth()
+      .setVersion('1.0')
+      .addApiKey(
+        {
+          type: 'apiKey',
+          name: 'refreshToken',
+          in: 'cookie',
+          description:
+            'JWT refreshToken inside cookie. Must be correct, and must not expire.',
+        },
+        'refreshToken',
+      )
+      .addBearerAuth({
+        description: 'Default JWT Authorization',
+        type: 'http',
+        in: 'header',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      })
+      .build();
+
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api/v1/swagger', app, document);
+  }
+};
 const setAppPipes = (app: INestApplication) => {
   app.useGlobalPipes(
     //для правильного отображения ошибок, настраиваем useGlobalPipes

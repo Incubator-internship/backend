@@ -1,5 +1,3 @@
-import { userCreateDTO } from '../api/models/input/users.types';
-
 // class User {
 //   username: string;
 //   email: string;
@@ -12,13 +10,13 @@ import { userCreateDTO } from '../api/models/input/users.types';
 //     this.isDelete = false;
 //   }
 // }
-export class User {
+export class UserModel {
   userName: string;
   email: string;
   passwordHash: string;
   isDelete: boolean;
   static createUser(username: string, email: string, passwordHash: string) {
-    const user = new User();
+    const user = new UserModel();
     user.userName = username;
     user.email = email;
     user.passwordHash = passwordHash;

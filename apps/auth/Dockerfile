@@ -27,7 +27,7 @@ RUN yarn install
 COPY --chown=node . .
 
 RUN yarn run build:${SERVICE}
-
+RUN yarn 'generate:auth'
 # Bind to all network interfaces so that it can be mapped to the host OS
 
 EXPOSE ${PORT}

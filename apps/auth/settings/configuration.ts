@@ -1,4 +1,3 @@
-/*
 import { config } from 'dotenv';
 import * as process from 'process';
 
@@ -14,6 +13,7 @@ export type EnvironmentsTypes =
   | 'STAGING'
   | 'PRODUCTION'
   | 'TESTING';
+
 export const Environments = ['DEVELOPMENT', 'STAGING', 'PRODUCTION', 'TESTING'];
 
 export class EnvironmentSettings {
@@ -40,7 +40,7 @@ export class EnvironmentSettings {
   }
 }
 
-class AppSettings {
+class Configuration {
   constructor(
     public env: EnvironmentSettings,
     public api: APISettings,
@@ -62,15 +62,18 @@ class APISettings {
   //Email
   public readonly GMAIL_COM_PASS: string;
   // Database
-  public readonly DATABASE_URL;
-  // public readonly POSTGRES_HOST;
-  // public readonly POSTGRES_PORT;
-  // public readonly POSTGRES_USER;
-  // public readonly POSTGRES_PASSWORD;
-  // public readonly POSTGRES_DATABASE;
-  // public readonly POSTGRES_DATABASE_TEST;
+  public readonly POSTGRES_HOST;
+  public readonly POSTGRES_PORT;
+  public readonly POSTGRES_USER;
+  public readonly POSTGRES_PASSWORD;
+  public readonly POSTGRES_DATABASE;
+  public readonly POSTGRES_DATABASE_TEST;
   public readonly TTL_THROTTLER: number;
   public readonly LIMIT_THROTTLER;
+  public readonly GOOGLE_CLIENT_ID;
+  public readonly GOOGLE_CLIENT_SECRET;
+  public readonly GOOGLE_CALLBACK_LOCAL_URL;
+  public readonly GOOGLE_CALLBACK_PROD_URL;
 
   constructor(private readonly envVariables: EnvironmentVariable) {
     // Application
@@ -87,13 +90,12 @@ class APISettings {
     //Email
     this.GMAIL_COM_PASS = envVariables.GMAIL_COM_PASS!;
     // Database
-    this.DATABASE_URL = envVariables.DATABASE_URL;
-    // this.POSTGRES_HOST = envVariables.POSTGRES_HOST!;
-    // this.POSTGRES_PORT = envVariables.POSTGRES_PORT!;
-    // this.POSTGRES_USER = envVariables.POSTGRES_USER!;
-    // this.POSTGRES_PASSWORD = envVariables.POSTGRES_PASSWORD!;
-    // this.POSTGRES_DATABASE = envVariables.POSTGRES_DATABASE!;
-    // this.POSTGRES_DATABASE_TEST = envVariables.POSTGRES_DATABASE_TEST!;
+    this.POSTGRES_HOST = envVariables.POSTGRES_HOST!;
+    this.POSTGRES_PORT = envVariables.POSTGRES_PORT!;
+    this.POSTGRES_USER = envVariables.POSTGRES_USER!;
+    this.POSTGRES_PASSWORD = envVariables.POSTGRES_PASSWORD!;
+    this.POSTGRES_DATABASE = envVariables.POSTGRES_DATABASE!;
+    this.POSTGRES_DATABASE_TEST = envVariables.POSTGRES_DATABASE_TEST!;
     this.TTL_THROTTLER = this.getNumberOrDefault(
       envVariables.TTL_THROTTLER as string,
       5,
@@ -103,6 +105,11 @@ class APISettings {
       envVariables.LIMIT_THROTTLER as string,
       5,
     );
+
+    this.GOOGLE_CLIENT_ID = envVariables.GOOGLE_CLIENT_ID;
+    this.GOOGLE_CLIENT_SECRET = envVariables.GOOGLE_CLIENT_SECRET;
+    this.GOOGLE_CALLBACK_LOCAL_URL = envVariables.GOOGLE_CALLBACK_LOCAL_URL;
+    this.GOOGLE_CALLBACK_PROD_URL = envVariables.GOOGLE_CALLBACK_PROD_URL;
   }
 
   private getNumberOrDefault(value: string, defaultValue: number): number {
@@ -123,5 +130,5 @@ const env = new EnvironmentSettings(
 );
 
 const api = new APISettings(process.env);
-export const appSettings = new AppSettings(env, api);
-*/
+export const appSettings = new Configuration(env, api);
+console.log(appSettings.env.isTesting());

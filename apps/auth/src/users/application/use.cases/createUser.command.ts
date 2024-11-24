@@ -1,7 +1,7 @@
-import { RegistrationUserModel } from '../../../auth/api/models/input/auth-input.model';
+import { RegistrationInputUserModel } from '../../../auth/api/models/input/auth-input.model';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { UsersRepository } from '../../infrastructure/users.repository';
-import { User } from '../../domain/createUser.model';
+import { UserModel } from '../../domain/createUser.model';
 import {
   CreateEmailConfirmationCommand,
   CreateEmailConfirmationHandler,
@@ -9,7 +9,7 @@ import {
 import { hash } from 'bcryptjs';
 
 export class CreateUserCommand {
-  constructor(public readonly registrationDTO: RegistrationUserModel) {}
+  constructor(public readonly registrationDTO: RegistrationInputUserModel) {}
 }
 
 @CommandHandler(CreateUserCommand)
@@ -19,9 +19,11 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
     private createEmailConfirmationHandler: CreateEmailConfirmationHandler,
   ) {}
 
-  async execute(command: CreateUserCommand) {
+  async execute(
+    command: CreateUserCommand,
+  ): Promise<{ userId: number; confirmationCode: string }> {
     const passwordHash = await hash(command.registrationDTO.password, 10);
-    const newUser = User.createUser(
+    const newUser = UserModel.createUser(
       command.registrationDTO.userName,
       command.registrationDTO.email,
       passwordHash,

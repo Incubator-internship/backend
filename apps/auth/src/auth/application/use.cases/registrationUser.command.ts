@@ -1,4 +1,4 @@
-import { RegistrationUserModel } from '../../api/models/input/auth-input.model';
+import { RegistrationInputUserModel } from '../../api/models/input/auth-input.model';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import {
   CreateUserCommand,
@@ -7,12 +7,12 @@ import {
 import { UsersRepository } from '../../../users/infrastructure/users.repository';
 import {
   exceptionHandler,
-  ExceptionResultType,
   ResultCode,
 } from '../../../../common/exception-filters/exception.handler';
+import { EmailService } from '../../../../mail/email-server.service';
 
 export class RegistrationUserCommand {
-  constructor(public readonly registrationDTO: RegistrationUserModel) {}
+  constructor(public readonly registrationDTO: RegistrationInputUserModel) {}
 }
 
 @CommandHandler(RegistrationUserCommand)
@@ -22,34 +22,39 @@ export class RegistrationUserHandler
   constructor(
     private createUserHandler: CreateUserHandler,
     private userRepository: UsersRepository,
+    private emailService: EmailService,
   ) {}
+
   async execute(command: RegistrationUserCommand): Promise<void> {
-    //todo check that user already exist
-    const user = this.userRepository.findUserByEmail(
+    //todo we need remember that oath2 more logic about user
+    const userByEmail = await this.userRepository.findUserByLoginOrEmail(
       command.registrationDTO.email,
     );
-    if (user) {
-      //throw new NotFoundException();
+    if (userByEmail) {
       return exceptionHandler(
         ResultCode.Conflict,
-        'this user by exist',
-        'registraton user comman find user by email',
+        'This user already exist',
+        'Registration user command found user by email',
       );
-      // return {
-      //   data: false,
-      //   code: ResultCode.NotFound,
-      //   field: 'registraton user comman find user by email',
-      //   message: 'this user by exist',
-      // };
+    }
+    const userByUser = await this.userRepository.findUserByLoginOrEmail(
+      command.registrationDTO.userName,
+    );
+    if (userByUser) {
+      return exceptionHandler(
+        ResultCode.Conflict,
+        'This user already exist',
+        'Registration user command found user by userName',
+      );
     }
     const data = await this.createUserHandler.execute(
       new CreateUserCommand(command.registrationDTO),
     );
-    //todo
-    // await this.emailService.sendUserConfirmationCode(
-    //   command.registrationDTO.email,
-    //   command.registrationDTO.login,
-    //   emailConfirmationDTO!.confirmationCode,
-    // );
+    //todo DONE but need uncoment
+    await this.emailService.sendUserConfirmationCode(
+      command.registrationDTO.email,
+      command.registrationDTO.userName,
+      data.confirmationCode,
+    );
   }
 }
