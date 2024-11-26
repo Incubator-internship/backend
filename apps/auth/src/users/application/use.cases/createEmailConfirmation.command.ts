@@ -17,10 +17,7 @@ export class CreateEmailConfirmationHandler
   async execute(command: CreateEmailConfirmationCommand) {
     const confirmationCode = randomUUID();
     const expirationDate = add(new Date(), {
-      days: 1,
-      hours: 1,
-      minutes: 1,
-      seconds: 1,
+      minutes: 5,
     });
     const isConfirmed = false;
 

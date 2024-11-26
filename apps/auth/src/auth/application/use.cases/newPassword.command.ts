@@ -20,10 +20,12 @@ export class NewPasswordHandler implements ICommandHandler<NewPasswordCommand> {
   ) {}
 
   async execute(command: NewPasswordCommand) {
+    console.log(command.newPasswordModel.recoveryCode);
     const recoveryDTO =
       await this.passwordRecoveryRepository.findRecoveryCodeByCode(
         command.newPasswordModel.recoveryCode,
       );
+    console.log(recoveryDTO);
     if (!recoveryDTO) {
       return exceptionHandler(
         ResultCode.NotFound,
@@ -45,6 +47,7 @@ export class NewPasswordHandler implements ICommandHandler<NewPasswordCommand> {
     await this.changePassword(
       recoveryDTO.userId,
       command.newPasswordModel.newPassword,
+      command.newPasswordModel.recoveryCode,
     );
     // return {
     //   status: statusType.OK,
@@ -52,8 +55,16 @@ export class NewPasswordHandler implements ICommandHandler<NewPasswordCommand> {
     //   data: null,
     // };
   }
-  private async changePassword(userId: number, newPassword: string) {
+  private async changePassword(
+    userId: number,
+    newPassword: string,
+    recoveryCode: string,
+  ) {
     const passwordHash = await bcrypt.hash(newPassword, 10);
     await this.usersRepository.changePassword(userId, passwordHash);
+    await this.passwordRecoveryRepository.changePasswordRecoveryStatus(
+      userId,
+      recoveryCode,
+    );
   }
 }

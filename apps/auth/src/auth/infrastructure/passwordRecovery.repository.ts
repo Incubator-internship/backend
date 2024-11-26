@@ -24,4 +24,14 @@ export class PasswordRecoveryRepository {
       where: { recoveryCode },
     });
   }
+
+  async changePasswordRecoveryStatus(
+    userId: number,
+    recoveryCode: string,
+  ): Promise<void> {
+    await this.prismaService.passwordRecovery.update({
+      where: { recoveryCode, userId },
+      data: { alreadyChangePassword: true },
+    });
+  }
 }

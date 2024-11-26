@@ -53,6 +53,7 @@ import {
   RegistrationUserEndpoint,
 } from '../../../swagger/oauth.swagger';
 import { ThrottlerGuard } from '@nestjs/throttler';
+import { GoogleAuthInformation } from '../../../decorators/googleAuthInformation.decorator';
 
 @ApiTags('Auth')
 @UseGuards(ThrottlerGuard)
@@ -137,9 +138,6 @@ export class AuthController {
     @RefreshPayload()
     { userId, deviceId }: { userId: number; deviceId: string },
   ) {
-    console.log(req.headers);
-    console.log(req.cookies);
-    console.log(req.cookies?.['refreshToken']);
     const session = await this.commandBus.execute(
       new FindSessionByUserIdAndDeviceIdCommand(userId, deviceId),
     );
@@ -189,8 +187,17 @@ export class AuthController {
 
   @Get('google-redirect')
   @UseGuards(GoogleOAuthGuard)
-  googleAuthRedirect(@Req() req) {
-    //console.log(req);
+  googleAuthRedirect(
+    @Ip() ip: string,
+    @GoogleAuthInformation()
+    googleInfo: { email: string; providerId: string; providerType: string },
+    @Req() req,
+    @UserAgent() deviceName: string,
+    @Res({ passthrough: true })
+    res: Response,
+  ) {
+    console.log('google-redirect, googleIngo ', googleInfo);
+    console.log('deviceName ', deviceName);
     //return this.appService.googleLogin(req);
   }
 }

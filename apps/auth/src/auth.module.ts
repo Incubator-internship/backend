@@ -35,6 +35,8 @@ import { SessionsQueryRepository } from './devices/infrastructure/sessions-query
 import { DeleteSessionExceptThisHandler } from './devices/application/use.cases/deleteSessiomsDevicesExceptThisOne.command';
 import { DeleteDeviceSessionHandler } from './devices/application/use.cases/deleteDeviceSession.command';
 import { GoogleStrategy } from '../guards/oath/google.strategy';
+import { UsersProvidersRepository } from './users/infrastructure/users-providers.repository';
+import { GoogleAuthHandler } from './auth/application/use.cases/google-auth.command';
 
 const commands = [
   CreateUserHandler,
@@ -50,6 +52,7 @@ const commands = [
   UpdateSessionHandler,
   DeleteSessionExceptThisHandler,
   DeleteDeviceSessionHandler,
+  GoogleAuthHandler,
 ];
 const service = [PrismaService, AuthService, JWTService, JwtService];
 const repositories = [
@@ -59,6 +62,7 @@ const repositories = [
   EmailConfirmationRepository,
   PasswordRecoveryRepository,
   SessionsQueryRepository,
+  UsersProvidersRepository,
 ];
 
 @Module({

@@ -32,11 +32,13 @@ model User {
 }
 
 model Provider {
-  id           Int    @id @default(autoincrement())
+  id           Int      @id @default(autoincrement())
   userId       Int
-  providerID   String
+  providerId   String
   providerType String
-  user         User   @relation(fields: [userId], references: [id], name: "Providers")
+  createdAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], name: "Providers")
 
   @@map("provider")
 }

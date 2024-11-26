@@ -21,13 +21,13 @@ export class RegistrationUserHandler
 {
   constructor(
     private createUserHandler: CreateUserHandler,
-    private userRepository: UsersRepository,
+    private usersRepository: UsersRepository,
     private emailService: EmailService,
   ) {}
 
   async execute(command: RegistrationUserCommand): Promise<void> {
     //todo we need remember that oath2 more logic about user
-    const userByEmail = await this.userRepository.findUserByLoginOrEmail(
+    const userByEmail = await this.usersRepository.findUserByLoginOrEmail(
       command.registrationDTO.email,
     );
     if (userByEmail) {
@@ -37,7 +37,7 @@ export class RegistrationUserHandler
         'Registration user command found user by email',
       );
     }
-    const userByUser = await this.userRepository.findUserByLoginOrEmail(
+    const userByUser = await this.usersRepository.findUserByLoginOrEmail(
       command.registrationDTO.userName,
     );
     if (userByUser) {

@@ -21,6 +21,12 @@ export class RegistrationConfirmationHandler
     if (!emailConfirmationDTO) {
       return exceptionHandler(ResultCode.NotFound, 'user has`n found');
     }
+    if (emailConfirmationDTO.expirationDate < new Date()) {
+      return exceptionHandler(
+        ResultCode.BadRequest,
+        'Confirmation code has been expired',
+      );
+    }
     const changeEmailConfirmationStatus = {
       userId: emailConfirmationDTO.userId,
       code: command.code,
