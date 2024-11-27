@@ -10,7 +10,7 @@ export class EmailService {
     userName: string,
     confirmationCode: string,
   ): Promise<void> {
-    const url = `http://localhost:3000/confirm-email?code=${confirmationCode}`;
+    const url = `https:/excubator.xyz/confirm-email?code=${confirmationCode}`;
 
     await this.mailerService
       .sendMail({
@@ -35,7 +35,7 @@ export class EmailService {
     userName: string,
     passwordRecoveryCode: string,
   ): Promise<void> {
-    const url = `http://localhost:3000/createnewpassword?code=${passwordRecoveryCode}`;
+    const url = `http://excubator.xyz/createnewpassword?code=${passwordRecoveryCode}`;
 
     await this.mailerService
       .sendMail({
