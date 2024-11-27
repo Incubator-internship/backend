@@ -37,6 +37,7 @@ import { DeleteDeviceSessionHandler } from './devices/application/use.cases/dele
 import { GoogleStrategy } from '../guards/oath/google.strategy';
 import { UsersProvidersRepository } from './users/infrastructure/users-providers.repository';
 import { GoogleAuthHandler } from './auth/application/use.cases/google-auth.command';
+import { CreateUserProviderHandler } from './auth/application/use.cases/create-userProvider.command';
 
 const commands = [
   CreateUserHandler,
@@ -53,6 +54,7 @@ const commands = [
   DeleteSessionExceptThisHandler,
   DeleteDeviceSessionHandler,
   GoogleAuthHandler,
+  CreateUserProviderHandler,
 ];
 const service = [PrismaService, AuthService, JWTService, JwtService];
 const repositories = [

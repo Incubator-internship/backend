@@ -8,6 +8,14 @@ import {
   CreateDeviceSessionHandler,
 } from '../../../devices/application/use.cases/createDeviceSession.command';
 import { GoogleAuthCommandDTO } from '../../api/models/input/googleAuth-input.model';
+import {
+  CreateUserCommand,
+  CreateUserHandler,
+} from '../../../users/application/use.cases/createUser.command';
+import {
+  CreateUserProviderCommand,
+  CreateUserProviderHandler,
+} from './create-userProvider.command';
 
 export class GoogleAuthCommand {
   constructor(public readonly googleDTO: GoogleAuthCommandDTO) {}
@@ -20,6 +28,8 @@ export class GoogleAuthHandler implements ICommandHandler<GoogleAuthCommand> {
     private usersProvidersRepository: UsersProvidersRepository,
     private jwtService: JWTService,
     private createDeviceSessionHandler: CreateDeviceSessionHandler,
+    private createUserHandler: CreateUserHandler,
+    private createUserProviderHandler: CreateUserProviderHandler,
   ) {}
 
   async execute(command: GoogleAuthCommand) {
@@ -40,6 +50,48 @@ export class GoogleAuthHandler implements ICommandHandler<GoogleAuthCommand> {
           command.googleDTO.deviceName,
           command.googleDTO.ip,
         ),
+      );
+      return tokensPair;
+    }
+
+    const user = await this.usersRepository.findUserByEmail(
+      command.googleDTO.email,
+    );
+    if (user) {
+      await this.createUserProviderHandler.execute(
+        new CreateUserProviderCommand({
+          userId: user.id,
+          providerId: command.googleDTO.providerId,
+          providerType: command.googleDTO.providerType,
+        }),
+      );
+      // await this.usersProvidersRepository.createUserProvider({
+      //   userId: user.id,
+      //   providerId: command.googleDTO.providerId,
+      //   providerType: command.googleDTO.providerType,
+      // });
+      const deviceId = randomUUID();
+      const tokensPair = await this.jwtService.createJWT(user.id, deviceId);
+      await this.createDeviceSessionHandler.execute(
+        new CreateDeviceSessionCommand(
+          tokensPair.refreshToken,
+          command.googleDTO.deviceName,
+          command.googleDTO.ip,
+        ),
+      );
+      return tokensPair;
+    }
+    if (!user) {
+      const password = randomUUID();
+      const emailPrefix = command.googleDTO.email.split('@')[0];
+      const timeStampSuffix = Date.now().toString().slice(-6);
+      const userName = emailPrefix + timeStampSuffix;
+      await this.createUserHandler.execute(
+        new CreateUserCommand({
+          userName,
+          password,
+          email: command.googleDTO.email,
+        }),
       );
     }
   }

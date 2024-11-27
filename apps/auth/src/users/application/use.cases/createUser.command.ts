@@ -33,9 +33,5 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
       new CreateEmailConfirmationCommand(userId),
     );
     return { userId, confirmationCode };
-    //next steps
-    // const emailConfirmation = EmailConfirmation.createEmailConfirmation(userId);
-    // await this.usersRepository.saveEmailConfirmation(emailConfirmation);
-    // return userId;
   }
 }
