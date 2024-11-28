@@ -1,9 +1,9 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { UsersRepository } from '../../../users/infrastructure/users.repository';
 import {
   exceptionHandler,
   ResultCode,
 } from '../../../../common/exception-filters/exception.handler';
+import { EmailConfirmationRepository } from '../../../users/infrastructure/emailConfirmation.repository';
 
 export class RegistrationConfirmationCommand {
   constructor(public readonly code: string) {}
@@ -13,11 +13,15 @@ export class RegistrationConfirmationCommand {
 export class RegistrationConfirmationHandler
   implements ICommandHandler<RegistrationConfirmationCommand>
 {
-  constructor(private usersRepository: UsersRepository) {}
+  constructor(
+    private emailConfirmationRepository: EmailConfirmationRepository,
+  ) {}
 
   async execute(command: RegistrationConfirmationCommand) {
     const emailConfirmationDTO =
-      await this.usersRepository.findEmailConfirmationByCode(command.code);
+      await this.emailConfirmationRepository.findEmailConfirmationByCode(
+        command.code,
+      );
     if (!emailConfirmationDTO) {
       return exceptionHandler(ResultCode.NotFound, 'user has`n found');
     }
@@ -33,7 +37,7 @@ export class RegistrationConfirmationHandler
       emailConfirmationCode: 'null',
       isConfirmed: true,
     };
-    await this.usersRepository.changeEmailConfirmationStatus(
+    await this.emailConfirmationRepository.changeEmailConfirmationStatus(
       changeEmailConfirmationStatus,
     );
     // return {

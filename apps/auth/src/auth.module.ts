@@ -38,6 +38,8 @@ import { GoogleStrategy } from '../guards/oath/google.strategy';
 import { UsersProvidersRepository } from './users/infrastructure/users-providers.repository';
 import { GoogleAuthHandler } from './auth/application/use.cases/google-auth.command';
 import { CreateUserProviderHandler } from './auth/application/use.cases/create-userProvider.command';
+import { CreateUserAndProviderHandler } from './users/application/use.cases/createUser-google.command';
+import { TestingController } from './testing/api/testing.controller';
 
 const commands = [
   CreateUserHandler,
@@ -55,6 +57,7 @@ const commands = [
   DeleteDeviceSessionHandler,
   GoogleAuthHandler,
   CreateUserProviderHandler,
+  CreateUserAndProviderHandler,
 ];
 const service = [PrismaService, AuthService, JWTService, JwtService];
 const repositories = [
@@ -69,7 +72,12 @@ const repositories = [
 
 @Module({
   imports: [CqrsModule, AuthModule, PassportModule, MailModule],
-  controllers: [UsersController, AuthController, SecurityDevicesController],
+  controllers: [
+    UsersController,
+    AuthController,
+    SecurityDevicesController,
+    TestingController,
+  ],
   providers: [
     EmailConfirmationExistConstraint,
     ConfirmationCodeIsValidConstraint,

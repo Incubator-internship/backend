@@ -51,43 +51,6 @@ export class UsersRepository {
     });
   }
 
-  async updateConfirmationCode(updateConfirmationCode: {
-    confirmationCode: string;
-    expirationDate: Date;
-    userId: number;
-  }): Promise<void> {
-    await this.prismaService.emailConfirmation.update({
-      where: { userId: updateConfirmationCode.userId },
-      data: {
-        expirationDate: updateConfirmationCode.expirationDate,
-        confirmationCode: updateConfirmationCode.confirmationCode,
-      },
-    });
-  }
-
-  async findEmailConfirmationByCode(
-    code: string,
-  ): Promise<EmailConfirmation | null> {
-    return this.prismaService.emailConfirmation.findFirst({
-      where: { confirmationCode: code },
-    });
-  }
-
-  async changeEmailConfirmationStatus(data: {
-    userId: number;
-    code: string;
-    emailConfirmationCode: string;
-    isConfirmed: boolean;
-  }): Promise<void> {
-    await this.prismaService.emailConfirmation.update({
-      where: { userId: data.userId, confirmationCode: data.code },
-      data: {
-        confirmationCode: data.emailConfirmationCode,
-        isConfirmed: data.isConfirmed,
-      },
-    });
-  }
-
   async changePassword(userId: number, passwordHash: string) {
     await this.prismaService.user.update({
       where: { id: userId },

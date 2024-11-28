@@ -9,9 +9,9 @@ import {
 } from '../../../devices/application/use.cases/createDeviceSession.command';
 import { GoogleAuthCommandDTO } from '../../api/models/input/googleAuth-input.model';
 import {
-  CreateUserCommand,
-  CreateUserHandler,
-} from '../../../users/application/use.cases/createUser.command';
+  CreateUserAndProviderCommand,
+  CreateUserAndProviderHandler,
+} from '../../../users/application/use.cases/createUser-google.command';
 import {
   CreateUserProviderCommand,
   CreateUserProviderHandler,
@@ -28,8 +28,8 @@ export class GoogleAuthHandler implements ICommandHandler<GoogleAuthCommand> {
     private usersProvidersRepository: UsersProvidersRepository,
     private jwtService: JWTService,
     private createDeviceSessionHandler: CreateDeviceSessionHandler,
-    private createUserHandler: CreateUserHandler,
     private createUserProviderHandler: CreateUserProviderHandler,
+    private createUserAndProviderHandler: CreateUserAndProviderHandler,
   ) {}
 
   async execute(command: GoogleAuthCommand) {
@@ -65,11 +65,6 @@ export class GoogleAuthHandler implements ICommandHandler<GoogleAuthCommand> {
           providerType: command.googleDTO.providerType,
         }),
       );
-      // await this.usersProvidersRepository.createUserProvider({
-      //   userId: user.id,
-      //   providerId: command.googleDTO.providerId,
-      //   providerType: command.googleDTO.providerType,
-      // });
       const deviceId = randomUUID();
       const tokensPair = await this.jwtService.createJWT(user.id, deviceId);
       await this.createDeviceSessionHandler.execute(
@@ -86,13 +81,25 @@ export class GoogleAuthHandler implements ICommandHandler<GoogleAuthCommand> {
       const emailPrefix = command.googleDTO.email.split('@')[0];
       const timeStampSuffix = Date.now().toString().slice(-6);
       const userName = emailPrefix + timeStampSuffix;
-      await this.createUserHandler.execute(
-        new CreateUserCommand({
+      const userId = await this.createUserAndProviderHandler.execute(
+        new CreateUserAndProviderCommand({
           userName,
           password,
           email: command.googleDTO.email,
+          providerId: command.googleDTO.providerId,
+          providerType: command.googleDTO.providerType,
         }),
       );
+      const deviceId = randomUUID();
+      const tokensPair = await this.jwtService.createJWT(userId, deviceId);
+      await this.createDeviceSessionHandler.execute(
+        new CreateDeviceSessionCommand(
+          tokensPair.refreshToken,
+          command.googleDTO.deviceName,
+          command.googleDTO.ip,
+        ),
+      );
+      return tokensPair;
     }
   }
 }

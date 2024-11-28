@@ -197,13 +197,10 @@ export class AuthController {
     @Res({ passthrough: true })
     res: Response,
   ) {
-    console.log('google-redirect, googleIngo ', googleInfo);
-    console.log('deviceName ', deviceName);
     //return this.appService.googleLogin(req);
     const tokensPair = await this.commandBus.execute(
       new GoogleAuthCommand({ ...googleInfo, deviceName, ip }),
     );
-    console.log('conroller token pair ', tokensPair);
     res.cookie('refreshToken', tokensPair.refreshToken, {
       httpOnly: true,
       secure: true,
