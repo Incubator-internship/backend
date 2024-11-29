@@ -35,10 +35,7 @@ export class UsersRepository {
     });
   }
 
-  async findUserByLoginOrEmail(
-    email: string,
-    userName: string,
-  ) /*: Promise<User | null>*/ {
+  async findUserByLoginOrEmail(email: string, userName: string) {
     const user = await this.prismaService.user.findFirst({
       where: { OR: [{ email }, { userName }] },
       include: { provider: true },

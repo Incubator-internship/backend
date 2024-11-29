@@ -5,16 +5,16 @@ import {
   CreateUserHandler,
 } from '../../../users/application/use.cases/createUser.command';
 import { UsersRepository } from '../../../users/infrastructure/users.repository';
-import {
-  exceptionHandler,
-  ResultCode,
-} from '../../../../common/exception-filters/exception.handler';
 import { EmailService } from '../../../../mail/email-server.service';
 import {
   UpdateUserCommand,
   UpdateUserHandler,
 } from '../../../users/application/use.cases/updateUser.command';
-import { BadRequestException, ConflictException } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
+import {
+  exceptionHandler,
+  ResultCode,
+} from '../../../../common/exception-filters/exception.handler';
 
 export class RegistrationUserCommand {
   constructor(public readonly registrationDTO: RegistrationInputUserModel) {}
@@ -46,14 +46,14 @@ export class RegistrationUserHandler
         emailProvider &&
         command.registrationDTO.email === existingUser.email
       ) {
-        throw new BadRequestException(
-          'Registration user command found user by the same email',
-        );
-        // return exceptionHandler(
-        //   ResultCode.Conflict,
-        //   'This user already exist',
+        // throw new BadRequestException(
         //   'Registration user command found user by the same email',
         // );
+        return exceptionHandler(
+          ResultCode.Conflict,
+          'This user already exist',
+          'Registration user command found user by the same email',
+        );
       }
       if (
         emailProvider &&
