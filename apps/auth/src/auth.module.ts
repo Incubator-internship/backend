@@ -35,6 +35,7 @@ import { SessionsQueryRepository } from './devices/infrastructure/sessions-query
 import { DeleteSessionExceptThisHandler } from './devices/application/use.cases/deleteSessiomsDevicesExceptThisOne.command';
 import { DeleteDeviceSessionHandler } from './devices/application/use.cases/deleteDeviceSession.command';
 import { GoogleStrategy } from '../guards/oath/google.strategy';
+import { GithubStrategy } from '../guards/oath/github.strategy';
 import { UsersProvidersRepository } from './users/infrastructure/users-providers.repository';
 import { GoogleAuthHandler } from './auth/application/use.cases/google-auth.command';
 import { CreateUserProviderHandler } from './auth/application/use.cases/create-userProvider.command';
@@ -91,6 +92,7 @@ const repositories = [
     JwtStrategy,
     JwtAccessStrategy,
     GoogleStrategy,
+    GithubStrategy,
   ],
   exports: [],
 })
