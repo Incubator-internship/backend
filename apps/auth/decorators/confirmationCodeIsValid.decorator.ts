@@ -7,6 +7,7 @@ import {
   ValidatorConstraintInterface,
 } from 'class-validator';
 import { UsersRepository } from '../src/users/infrastructure/users.repository';
+import { EmailConfirmationRepository } from '../src/users/infrastructure/emailConfirmation.repository';
 
 export function ConfirmationCodeIsValid(
   property?: string,
@@ -28,11 +29,13 @@ export function ConfirmationCodeIsValid(
 export class ConfirmationCodeIsValidConstraint
   implements ValidatorConstraintInterface
 {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(
+    private readonly emailConfirmationRepository: EmailConfirmationRepository,
+  ) {}
 
   async validate(value: any, validationArguments?: ValidationArguments) {
     const emailConfirmationDTO =
-      await this.usersRepository.findEmailConfirmationByCode(value);
+      await this.emailConfirmationRepository.findEmailConfirmationByCode(value);
     if (!emailConfirmationDTO) {
       return false;
     }

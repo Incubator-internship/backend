@@ -10,6 +10,11 @@ import {
   ResultCode,
 } from '../../../../common/exception-filters/exception.handler';
 import { EmailService } from '../../../../mail/email-server.service';
+import {
+  UpdateUserCommand,
+  UpdateUserHandler,
+} from '../../../users/application/use.cases/updateUser.command';
+import { BadRequestException, ConflictException } from '@nestjs/common';
 
 export class RegistrationUserCommand {
   constructor(public readonly registrationDTO: RegistrationInputUserModel) {}
@@ -21,36 +26,62 @@ export class RegistrationUserHandler
 {
   constructor(
     private createUserHandler: CreateUserHandler,
-    private userRepository: UsersRepository,
+    private usersRepository: UsersRepository,
     private emailService: EmailService,
+    private updateUserHandler: UpdateUserHandler,
   ) {}
 
   async execute(command: RegistrationUserCommand): Promise<void> {
-    //todo we need remember that oath2 more logic about user
-    const userByEmail = await this.userRepository.findUserByLoginOrEmail(
+    //in findUserByLoginOrEmail include provider
+    const existingUser = await this.usersRepository.findUserByLoginOrEmail(
       command.registrationDTO.email,
-    );
-    if (userByEmail) {
-      return exceptionHandler(
-        ResultCode.Conflict,
-        'This user already exist',
-        'Registration user command found user by email',
-      );
-    }
-    const userByUser = await this.userRepository.findUserByLoginOrEmail(
       command.registrationDTO.userName,
     );
-    if (userByUser) {
-      return exceptionHandler(
-        ResultCode.Conflict,
-        'This user already exist',
-        'Registration user command found user by userName',
+    if (existingUser) {
+      //Check does user have provider with type 'email'
+      const emailProvider = existingUser.provider.find(
+        (provider) => provider.providerType === 'email',
       );
+      if (
+        emailProvider &&
+        command.registrationDTO.email === existingUser.email
+      ) {
+        throw new BadRequestException(
+          'Registration user command found user by the same email',
+        );
+        // return exceptionHandler(
+        //   ResultCode.Conflict,
+        //   'This user already exist',
+        //   'Registration user command found user by the same email',
+        // );
+      }
+      if (
+        emailProvider &&
+        command.registrationDTO.userName === existingUser.userName
+      ) {
+        throw new BadRequestException(
+          'Registration user command found user by the same userName',
+        );
+        // return exceptionHandler(
+        //   ResultCode.Conflict,
+        //   'This user already exist',
+        //   'Registration user command found user by the same userName',
+        // );
+      }
+
+      await this.updateUserHandler.execute(
+        new UpdateUserCommand({
+          email: command.registrationDTO.email,
+          userName: command.registrationDTO.userName,
+          password: command.registrationDTO.password,
+        }),
+      );
+      return;
     }
     const data = await this.createUserHandler.execute(
       new CreateUserCommand(command.registrationDTO),
     );
-    //todo DONE but need uncoment
+
     await this.emailService.sendUserConfirmationCode(
       command.registrationDTO.email,
       command.registrationDTO.userName,

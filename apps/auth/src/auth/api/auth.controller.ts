@@ -53,6 +53,8 @@ import {
   RegistrationUserEndpoint,
 } from '../../../swagger/oauth.swagger';
 import { ThrottlerGuard } from '@nestjs/throttler';
+import { GoogleAuthInformation } from '../../../decorators/googleAuthInformation.decorator';
+import { GoogleAuthCommand } from '../application/use.cases/google-auth.command';
 
 @ApiTags('Auth')
 @UseGuards(ThrottlerGuard)
@@ -186,8 +188,23 @@ export class AuthController {
 
   @Get('google-redirect')
   @UseGuards(GoogleOAuthGuard)
-  googleAuthRedirect(@Req() req) {
-    console.log(req);
+  async googleAuthRedirect(
+    @Ip() ip: string,
+    @GoogleAuthInformation()
+    googleInfo: { email: string; providerId: string; providerType: string },
+    @Req() req,
+    @UserAgent() deviceName: string,
+    @Res({ passthrough: true })
+    res: Response,
+  ) {
     //return this.appService.googleLogin(req);
+    const tokensPair = await this.commandBus.execute(
+      new GoogleAuthCommand({ ...googleInfo, deviceName, ip }),
+    );
+    res.cookie('refreshToken', tokensPair.refreshToken, {
+      httpOnly: true,
+      secure: true,
+    });
+    return { accessToken: tokensPair.accessToken };
   }
 }

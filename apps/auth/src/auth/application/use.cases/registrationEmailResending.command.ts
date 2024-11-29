@@ -7,6 +7,7 @@ import {
   exceptionHandler,
   ResultCode,
 } from '../../../../common/exception-filters/exception.handler';
+import { EmailConfirmationRepository } from '../../../users/infrastructure/emailConfirmation.repository';
 
 export class RegistrationEmailResendingCommand {
   constructor(public readonly email: string) {}
@@ -19,6 +20,7 @@ export class RegistrationEmailResendingHandler
   constructor(
     private usersRepository: UsersRepository,
     private emailService: EmailService,
+    private emailConfirmationRepository: EmailConfirmationRepository,
   ) {}
 
   async execute(command: RegistrationEmailResendingCommand) {
@@ -45,7 +47,9 @@ export class RegistrationEmailResendingHandler
       }),
       userId: user.id,
     };
-    await this.usersRepository.updateConfirmationCode(updateConfirmationCode);
+    await this.emailConfirmationRepository.updateConfirmationCode(
+      updateConfirmationCode,
+    );
     await this.emailService.sendUserConfirmationCode(
       user.email,
       user.userName,
