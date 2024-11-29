@@ -35,9 +35,13 @@ export class UsersRepository {
     });
   }
 
-  async findUserByLoginOrEmail(loginOrEmail: string): Promise<User | null> {
+  async findUserByLoginOrEmail(
+    email: string,
+    userName: string,
+  ) /*: Promise<User | null>*/ {
     const user = await this.prismaService.user.findFirst({
-      where: { OR: [{ email: loginOrEmail }, { userName: loginOrEmail }] },
+      where: { OR: [{ email }, { userName }] },
+      include: { provider: true },
     });
     return user;
   }
@@ -60,5 +64,20 @@ export class UsersRepository {
 
   async getUserById(userId: number): Promise<User | null> {
     return this.prismaService.user.findUnique({ where: { id: userId } });
+  }
+
+  async updateUser(updateUserDTO: {
+    email: string;
+    userName: string;
+    passwordHash: string;
+  }): Promise<number> {
+    const user = await this.prismaService.user.update({
+      where: { email: updateUserDTO.email },
+      data: {
+        userName: updateUserDTO.userName,
+        passwordHash: updateUserDTO.passwordHash,
+      },
+    });
+    return user.id;
   }
 }

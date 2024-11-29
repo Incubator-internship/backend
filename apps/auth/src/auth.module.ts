@@ -40,6 +40,7 @@ import { GoogleAuthHandler } from './auth/application/use.cases/google-auth.comm
 import { CreateUserProviderHandler } from './auth/application/use.cases/create-userProvider.command';
 import { CreateUserAndProviderHandler } from './users/application/use.cases/createUser-google.command';
 import { TestingController } from './testing/api/testing.controller';
+import { UpdateUserHandler } from './users/application/use.cases/updateUser.command';
 
 const commands = [
   CreateUserHandler,
@@ -58,6 +59,7 @@ const commands = [
   GoogleAuthHandler,
   CreateUserProviderHandler,
   CreateUserAndProviderHandler,
+  UpdateUserHandler,
 ];
 const service = [PrismaService, AuthService, JWTService, JwtService];
 const repositories = [

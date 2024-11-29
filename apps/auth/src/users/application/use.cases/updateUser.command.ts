@@ -1,50 +1,38 @@
 import { RegistrationInputUserModel } from '../../../auth/api/models/input/auth-input.model';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { UsersRepository } from '../../infrastructure/users.repository';
-import { UserModel } from '../../domain/createUser.model';
-import {
-  CreateEmailConfirmationCommand,
-  CreateEmailConfirmationHandler,
-} from './createEmailConfirmation.command';
 import { hash } from 'bcryptjs';
 import {
   CreateUserProviderCommand,
   CreateUserProviderHandler,
 } from '../../../auth/application/use.cases/create-userProvider.command';
 
-export class CreateUserCommand {
+export class UpdateUserCommand {
   constructor(public readonly registrationDTO: RegistrationInputUserModel) {}
 }
 
-@CommandHandler(CreateUserCommand)
-export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
+@CommandHandler(UpdateUserCommand)
+export class UpdateUserHandler implements ICommandHandler<UpdateUserCommand> {
   constructor(
     private userRepository: UsersRepository,
-    private createEmailConfirmationHandler: CreateEmailConfirmationHandler,
     private createUserProviderHandler: CreateUserProviderHandler,
   ) {}
 
-  async execute(
-    command: CreateUserCommand,
-  ): Promise<{ userId: number; confirmationCode: string }> {
+  async execute(command: UpdateUserCommand): Promise<void> {
     const passwordHash = await hash(command.registrationDTO.password, 10);
-    const newUser = UserModel.createUser(
-      command.registrationDTO.userName,
-      command.registrationDTO.email,
+    const updateUserDTO = {
+      email: command.registrationDTO.email,
+      userName: command.registrationDTO.userName,
       passwordHash,
-    );
-    const userId = await this.userRepository.createUser(newUser);
+    };
+    const updatedUserId = await this.userRepository.updateUser(updateUserDTO);
     const providerDTO = {
-      userId,
+      userId: updatedUserId,
       providerId: 'registration by email',
       providerType: 'email',
     };
     await this.createUserProviderHandler.execute(
       new CreateUserProviderCommand(providerDTO),
     );
-    const confirmationCode = await this.createEmailConfirmationHandler.execute(
-      new CreateEmailConfirmationCommand(userId),
-    );
-    return { userId, confirmationCode };
   }
 }
