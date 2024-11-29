@@ -35,6 +35,12 @@ import { SessionsQueryRepository } from './devices/infrastructure/sessions-query
 import { DeleteSessionExceptThisHandler } from './devices/application/use.cases/deleteSessiomsDevicesExceptThisOne.command';
 import { DeleteDeviceSessionHandler } from './devices/application/use.cases/deleteDeviceSession.command';
 import { GoogleStrategy } from '../guards/oath/google.strategy';
+import { UsersProvidersRepository } from './users/infrastructure/users-providers.repository';
+import { GoogleAuthHandler } from './auth/application/use.cases/google-auth.command';
+import { CreateUserProviderHandler } from './auth/application/use.cases/create-userProvider.command';
+import { CreateUserAndProviderHandler } from './users/application/use.cases/createUser-google.command';
+import { TestingController } from './testing/api/testing.controller';
+import { UpdateUserHandler } from './users/application/use.cases/updateUser.command';
 
 const commands = [
   CreateUserHandler,
@@ -50,6 +56,10 @@ const commands = [
   UpdateSessionHandler,
   DeleteSessionExceptThisHandler,
   DeleteDeviceSessionHandler,
+  GoogleAuthHandler,
+  CreateUserProviderHandler,
+  CreateUserAndProviderHandler,
+  UpdateUserHandler,
 ];
 const service = [PrismaService, AuthService, JWTService, JwtService];
 const repositories = [
@@ -59,11 +69,17 @@ const repositories = [
   EmailConfirmationRepository,
   PasswordRecoveryRepository,
   SessionsQueryRepository,
+  UsersProvidersRepository,
 ];
 
 @Module({
   imports: [CqrsModule, AuthModule, PassportModule, MailModule],
-  controllers: [UsersController, AuthController, SecurityDevicesController],
+  controllers: [
+    UsersController,
+    AuthController,
+    SecurityDevicesController,
+    TestingController,
+  ],
   providers: [
     EmailConfirmationExistConstraint,
     ConfirmationCodeIsValidConstraint,

@@ -25,9 +25,22 @@ model User {
 
   emailConfirmation EmailConfirmation?
   sessions          Session[]          @relation("UserSessions")
-  passwordRecovery  PasswordRecovery?
+  passwordRecovery  PasswordRecovery[] @relation("PasswordRecovery")
+  provider          Provider[]         @relation("Providers")
 
   @@map("users")
+}
+
+model Provider {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  providerId   String
+  providerType String
+  createdAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], name: "Providers")
+
+  @@map("provider")
 }
 
 model EmailConfirmation {
@@ -61,7 +74,7 @@ model PasswordRecovery {
   createdAt              DateTime @default(now())
   updatedAt              DateTime @updatedAt
   userId                 Int      @unique
-  user                   User     @relation(fields: [userId], references: [id])
+  user                   User     @relation(fields: [userId], references: [id], name: "PasswordRecovery")
 
   @@map("passwordRecovery")
 }

@@ -17,6 +17,7 @@ export class AuthService {
   ): Promise<ExceptionResultType<UserModel | null>> {
     const user = await this.usersRepository.findUserByLoginOrEmail(
       loginDTO.loginOrEmail,
+      loginDTO.loginOrEmail,
     );
     if (!user) {
       return {
