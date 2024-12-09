@@ -204,7 +204,9 @@ export class AuthController {
     res.cookie('refreshToken', tokensPair.refreshToken, {
       httpOnly: true,
       secure: true,
+      sameSite: 'none',
     });
-    return { accessToken: tokensPair.accessToken };
+    const redirectUrl = `http://localhost:3000/authentication?accessToken=${tokensPair.accessToken}`;
+    return res.redirect(redirectUrl);
   }
 }
