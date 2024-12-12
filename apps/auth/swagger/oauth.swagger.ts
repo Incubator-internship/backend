@@ -39,7 +39,9 @@ export function RegistrationUserEndpoint() {
     ApiResponse({
       status: 400,
       description:
-        'If the inputModel has incorrect values (in particular if the user with the given email or login already exists). and temporary solution, if email already exist: "Registration user command found user by the same email", if userName already exist: "Registration user command found user by the same userName"',
+        'If the inputModel has incorrect values (in particular if the user with the given email or login already exists). ' +
+        'And temporary solution, if email already exist: "Registration user command found user by the same email",' +
+        ' if userName already exist: "Registration user command found user by the same userName"',
       type: () => ErrorsMessagesSwaggerType,
     }),
     ApiResponse({

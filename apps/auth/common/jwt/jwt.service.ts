@@ -1,9 +1,6 @@
 import { Injectable } from '@nestjs/common';
-//import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-//import { config } from 'dotenv';
 
-//import { ConfigurationType } from '../../config/configuration';
 import { appSettings } from '../../settings/configuration';
 //config();
 
