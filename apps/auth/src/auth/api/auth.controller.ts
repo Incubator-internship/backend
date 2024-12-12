@@ -55,6 +55,7 @@ import {
 import { ThrottlerGuard } from '@nestjs/throttler';
 import { GoogleAuthInformation } from '../../../decorators/googleAuthInformation.decorator';
 import { GoogleAuthCommand } from '../application/use.cases/google-auth.command';
+import { RecaptchaAuthGuard } from '../../../guards/oath/recaptcha.auth.guard';
 
 @ApiTags('Auth')
 @UseGuards(ThrottlerGuard)
@@ -117,6 +118,7 @@ export class AuthController {
   }
 
   @PasswordRecoveryEndpoint()
+  //@UseGuards(RecaptchaAuthGuard)
   @HttpCode(204)
   @Post('password-recovery')
   async passwordRecovery(@Body() email: InputPasswordRecoveryModel) {
