@@ -16,7 +16,7 @@ export class CreateDeviceSessionHandler
   implements ICommandHandler<CreateDeviceSessionCommand>
 {
   constructor(
-    private sessionRepository: SessionsRepository,
+    private sessionsRepository: SessionsRepository,
     private jwtService: JwtService,
   ) {}
 
@@ -32,6 +32,6 @@ export class CreateDeviceSessionHandler
       issuedAt,
     );
 
-    await this.sessionRepository.createDeviceSession(newSession);
+    await this.sessionsRepository.createDeviceSession(newSession);
   }
 }
