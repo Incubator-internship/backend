@@ -12,5 +12,6 @@ async function bootstrap() {
 
   console.log('file port', port);
   await app.listen(port ?? 3000);
+  console.log(`Files microservice is running on ${port}`);
 }
 bootstrap();

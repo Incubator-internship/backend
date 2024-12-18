@@ -12,6 +12,7 @@ export class RegistrationInputUserModel {
     maxLength: 15,
     pattern: '^[a-zA-Z0-9_-]*$',
   })
+  @IsNotEmpty()
   @IsString()
   @Length(6, 30)
   @Matches(/^[a-zA-Z0-9_-]*$/)
@@ -25,6 +26,7 @@ export class RegistrationInputUserModel {
     pattern:
       '^(?=.*[0-9])(?=.*[A-Z])(?=.*[! "#$%&\'()*+,-./:;<=>?@[\\\\\\]^_`{|}~]).*$',
   })
+  @IsNotEmpty()
   @IsString()
   @Length(6, 20)
   @Matches(
@@ -37,6 +39,7 @@ export class RegistrationInputUserModel {
     example: 'example@example.com',
     pattern: '^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$',
   })
+  @IsNotEmpty()
   @IsString()
   @Matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
   email: string;

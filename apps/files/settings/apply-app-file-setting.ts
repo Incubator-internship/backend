@@ -25,7 +25,7 @@ export const applyAppFileSettings = (app: INestApplication) => {
   // когда DI не имеет необходимого класса.
   useContainer(app.select(FilesModule), { fallbackOnErrors: true });
   app.enableCors({
-    origin: 'http://localhost:3000',
+    origin: 'http://localhost:5001',
     credentials: true,
   });
   app.use(cookieParser());
