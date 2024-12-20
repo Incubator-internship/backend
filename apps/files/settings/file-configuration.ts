@@ -75,6 +75,10 @@ class APISettings {
   public readonly GOOGLE_CLIENT_SECRET;
   public readonly GOOGLE_CALLBACK_LOCAL_URL;
   public readonly GOOGLE_CALLBACK_PROD_URL;
+  public readonly S3_ACCESS_KEY_ID;
+  public readonly S3_SECRET_ACCESS_KEY;
+  public readonly S3_REGION;
+  public readonly S3_BUCKET_NAME;
 
   constructor(private readonly envVariables: EnvironmentVariable) {
     // Application
@@ -86,6 +90,10 @@ class APISettings {
       envVariables.FILE_PORT as string,
       5001,
     );
+    this.S3_ACCESS_KEY_ID = envVariables.S3_ACCESS_KEY_ID;
+    this.S3_SECRET_ACCESS_KEY = envVariables.S3_SECRET_ACCESS_KEY;
+    this.S3_REGION = envVariables.S3_REGION;
+    this.S3_BUCKET_NAME = envVariables.S3_BUCKET_NAME;
     //JWT
     this.JWT_SECRET = envVariables.JWT_SECRET ?? '123';
     //Email

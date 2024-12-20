@@ -6,9 +6,9 @@ import {
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
-import { FilesService } from './files.service';
+import { FilesService } from '../application/files.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { diskStorage, memoryStorage } from 'multer';
+import { memoryStorage } from 'multer';
 import { randomUUID } from 'crypto';
 import { extname } from 'path';
 import * as sharp from 'sharp';
@@ -40,13 +40,17 @@ export class FilesController {
 
     const fileUrls: string[] = [];
     for (const file of files) {
-      const compressedFilename = `compressed-${randomUUID()}${extname(file.originalname)}`;
-      const compressedPath = `E:/BackEnd/backendIntership/photoForMyProject/${compressedFilename}`;
+      // const compressedFilename = `compressed-${randomUUID()}${extname(file.originalname)}`;
+      // const compressedPath = `E:/BackEnd/backendIntership/photoForMyProject/${compressedFilename}`;
+      //
+      // await sharp(file.buffer)
+      //   .resize(800) // Сжимаем изображение до 800 пикселей по ширине
+      //   .toFile(compressedPath);
+      //fileUrls.push(`/uploads/${compressedFilename}`);
 
-      await sharp(file.buffer)
-        .resize(800) // Сжимаем изображение до 800 пикселей по ширине
-        .toFile(compressedPath);
-      fileUrls.push(`/uploads/${compressedFilename}`);
+      // Используем сервис для загрузки файла в S3
+      const fileUrl = await this.filesService.uploadFile(file);
+      fileUrls.push(fileUrl);
     }
     return { urls: fileUrls };
   }
