@@ -21,3 +21,54 @@ spec:
            ports:
              - containerPort: PORT_CONTAINER
 
+           env:
+             - name: JWT_SECRET
+               valueFrom:
+                 secretKeyRef:
+                   name: auth-backend-production-config-secret
+                   key: JWT_SECRET
+             - name: EMAIL_PASS
+               valueFrom:
+                 secretKeyRef:
+                   name: auth-backend-production-config-secret
+                   key: EMAIL_PASS
+             - name: GOOGLE_CLIENT_ID
+               valueFrom:
+                 secretKeyRef:
+                   name: auth-backend-production-config-secret
+                   key: GOOGLE_CLIENT_ID
+             - name: GOOGLE_CLIENT_SECRET
+               valueFrom:
+                 secretKeyRef:
+                   name: auth-backend-production-config-secret
+                   key: GOOGLE_CLIENT_SECRET
+             - name: GOOGLE_CALLBACK_LOCAL_URL
+               valueFrom:
+                 secretKeyRef:
+                   name: auth-backend-production-config-secret
+                   key: GOOGLE_CALLBACK_LOCAL_URL
+             - name: GOOGLE_CALLBACK_PROD_URL
+               valueFrom:
+                 secretKeyRef:
+                   name: auth-backend-production-config-secret
+                   key: GOOGLE_CALLBACK_PROD_URL
+             - name: DATABASE_URL
+               valueFrom:
+                 secretKeyRef:
+                   name: auth-backend-production-config-secret
+                   key: DATABASE_URL
+             - name: RECAPTCHA_SECRET_KEY
+               valueFrom:
+                 secretKeyRef:
+                   name: auth-backend-production-config-secret
+                   key: RECAPTCHA_SECRET_KEY
+             - name: RECAPTCHA_URL
+               valueFrom:
+                 secretKeyRef:
+                   name: auth-backend-production-config-secret
+                   key: RECAPTCHA_URL
+             - name: AUTH_PORT
+               valueFrom:
+                 secretKeyRef:
+                   name: auth-backend-production-config-secret
+                   key: AUTH_PORT

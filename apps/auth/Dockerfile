@@ -3,7 +3,7 @@ FROM node:20.11-alpine
 ARG port
 ARG service
 ENV SERVICE=$service
-ENV PORT=$port
+ENV AUTH_PORT=$port
 # Set to a non-root built-in user `node`
 
 USER node
@@ -26,10 +26,11 @@ RUN yarn install
 # Bundle app source code
 COPY --chown=node . .
 
-RUN yarn run build:${SERVICE}
+RUN npm yarn build:${SERVICE}
 RUN yarn 'generate:auth'
+
 # Bind to all network interfaces so that it can be mapped to the host OS
 
-EXPOSE ${PORT}
+EXPOSE ${AUTH_PORT}
 
-CMD yarn run 'start:auth'
+CMD npm run 'start:auth'

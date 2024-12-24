@@ -3,7 +3,6 @@ import {
   Body,
   Controller,
   Post,
-  Req,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
@@ -12,14 +11,11 @@ import { ApiTags } from '@nestjs/swagger';
 import { ThrottlerGuard } from '@nestjs/throttler';
 import { CommandBus } from '@nestjs/cqrs';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { randomUUID } from 'crypto';
-import { diskStorage, memoryStorage } from 'multer';
-import { extname } from 'path';
+import { memoryStorage } from 'multer';
 import {
   CreatePostInputModel,
   PostModelDTO,
 } from './models/input/posts-input.model';
-import * as sharp from 'sharp';
 import { JwtAccessAuthGuard } from '../../../guards/jwt/jwt-header.strategy';
 import { TakeUserId } from '../../../decorators/authMeTakeUserId.decorator';
 import { CreatePostCommand } from '../application/use.cases/createPost.command';

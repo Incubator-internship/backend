@@ -21,3 +21,29 @@ spec:
            ports:
              - containerPort: PORT_CONTAINER
 
+           env:
+             - name: S3_SECRET_ACCESS_KEY
+               valueFrom:
+                 secretKeyRef:
+                   name: files-backend-production-config-secret
+                   key: S3_SECRET_ACCESS_KEY
+             - name: S3_REGION
+               valueFrom:
+                 secretKeyRef:
+                   name: files-backend-production-config-secret
+                   key: S3_REGION
+             - name: S3_BUCKET_NAME
+               valueFrom:
+                 secretKeyRef:
+                   name: files-backend-production-config-secret
+                   key: S3_BUCKET_NAME
+             - name: FILE_PORT
+               valueFrom:
+                 secretKeyRef:
+                   name: files-backend-production-config-secret
+                   key: FILE_PORT
+             - name: S3_ACCESS_KEY_ID
+               valueFrom:
+                 secretKeyRef:
+                   name: files-backend-production-config-secret
+                   key: S3_ACCESS_KEY_ID
