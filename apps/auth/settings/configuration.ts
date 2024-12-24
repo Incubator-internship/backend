@@ -70,7 +70,7 @@ class APISettings {
   public readonly POSTGRES_DATABASE_TEST;
   public readonly TTL_THROTTLER: number;
   public readonly LIMIT_THROTTLER;
-  public readonly hgiGOOGLE_CLIENT_ID;
+  public readonly GOOGLE_CLIENT_ID;
   public readonly GOOGLE_CLIENT_SECRET;
   public readonly GOOGLE_CALLBACK_LOCAL_URL;
   public readonly GOOGLE_CALLBACK_PROD_URL;
