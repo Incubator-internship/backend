@@ -86,6 +86,7 @@ class APISettings {
       envVariables.APP_PORT as string,
       envVariables.PORT as unknown as number,
     );
+    this.PORT = this.getNumberOrDefault(envVariables.PORT as string, this.PORT);
     //JWT
     this.JWT_SECRET = envVariables.JWT_SECRET ?? '123';
     //Email

@@ -91,6 +91,8 @@ class APISettings {
       envVariables.FILE_PORT as string,
       envVariables.PORT as unknown as number,
     );
+    this.PORT = this.getNumberOrDefault(envVariables.PORT as string, this.PORT);
+
     this.S3_ACCESS_KEY_ID = envVariables.S3_ACCESS_KEY_ID;
     this.S3_SECRET_ACCESS_KEY = envVariables.S3_SECRET_ACCESS_KEY;
     this.S3_REGION = envVariables.S3_REGION;
