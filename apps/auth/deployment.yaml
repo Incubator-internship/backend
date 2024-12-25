@@ -67,8 +67,4 @@ spec:
                  secretKeyRef:
                    name: auth-backend-production-config-secret
                    key: RECAPTCHA_URL
-             - name: AUTH_PORT
-               valueFrom:
-                 secretKeyRef:
-                   name: auth-backend-production-config-secret
-                   key: AUTH_PORT
+

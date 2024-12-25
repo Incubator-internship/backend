@@ -37,11 +37,6 @@ spec:
                  secretKeyRef:
                    name: files-backend-production-config-secret
                    key: S3_BUCKET_NAME
-             - name: FILE_PORT
-               valueFrom:
-                 secretKeyRef:
-                   name: files-backend-production-config-secret
-                   key: FILE_PORT
              - name: S3_ACCESS_KEY_ID
                valueFrom:
                  secretKeyRef:
