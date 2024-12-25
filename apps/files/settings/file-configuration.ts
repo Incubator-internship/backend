@@ -58,6 +58,7 @@ class APISettings {
   RECOVERY_TOKEN_EXPIRATION_TIME = '30d';
   // Application
   public readonly APP_PORT: number;
+  public readonly PORT: number;
   public readonly FILE_PORT: number;
   public readonly AUTH_PORT: number;
   //Email
@@ -84,11 +85,11 @@ class APISettings {
     // Application
     this.APP_PORT = this.getNumberOrDefault(
       envVariables.APP_PORT as string,
-      5000,
+      envVariables.PORT as unknown as number,
     );
     this.FILE_PORT = this.getNumberOrDefault(
       envVariables.FILE_PORT as string,
-      5001,
+      envVariables.PORT as unknown as number,
     );
     this.S3_ACCESS_KEY_ID = envVariables.S3_ACCESS_KEY_ID;
     this.S3_SECRET_ACCESS_KEY = envVariables.S3_SECRET_ACCESS_KEY;
