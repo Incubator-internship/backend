@@ -43,7 +43,6 @@ apps/auth/shared-env/.env
 .env.production.local
 .env.local
 .env
-*.env
 
 # temp directory
 .temp
