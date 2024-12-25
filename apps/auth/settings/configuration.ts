@@ -70,10 +70,10 @@ class APISettings {
   public readonly POSTGRES_DATABASE_TEST;
   public readonly TTL_THROTTLER: number;
   public readonly LIMIT_THROTTLER;
-  public readonly GOOGLE_CLIENT_ID;
-  public readonly GOOGLE_CLIENT_SECRET;
-  public readonly GOOGLE_CALLBACK_LOCAL_URL;
-  public readonly GOOGLE_CALLBACK_PROD_URL;
+  public readonly GOOGLE_CLIENT_ID: string;
+  public readonly GOOGLE_CLIENT_SECRET: string;
+  public readonly GOOGLE_CALLBACK_LOCAL_URL: string;
+  public readonly GOOGLE_CALLBACK_PROD_URL: string;
 
   constructor(private readonly envVariables: EnvironmentVariable) {
     // Application

@@ -20,6 +20,7 @@ export class GoogleOAuthGuard extends AuthGuard('google') {
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   constructor() {
+    console.log(appSettings.api.GOOGLE_CLIENT_ID);
     super({
       clientID: appSettings.api.GOOGLE_CLIENT_ID,
       clientSecret: appSettings.api.GOOGLE_CLIENT_SECRET,
