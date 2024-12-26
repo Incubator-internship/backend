@@ -4,6 +4,7 @@ import { appSettings } from '../settings/configuration';
 import { applyAppSettings } from '../settings/apply-app-setting';
 import { filesSettings } from '../../files/settings/file-configuration';
 import * as dotenv from 'dotenv';
+import * as process from 'node:process';
 
 dotenv.config();
 
