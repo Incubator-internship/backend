@@ -8,6 +8,7 @@ async function bootstrap() {
   applyAppSettings(app);
 
   console.log('appSettings.api.AUTH_PORT', appSettings.api.AUTH_PORT);
+  console.log('process.env.PORT', process.env.PORT);
   //app.setGlobalPrefix('api/v1');
   //const port = appSettings.api.AUTH_PORT ?? 3000;
   const port = appSettings.api.AUTH_PORT ?? process.env.PORT;
