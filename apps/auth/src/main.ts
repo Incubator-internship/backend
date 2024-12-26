@@ -2,11 +2,6 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { appSettings } from '../settings/configuration';
 import { applyAppSettings } from '../settings/apply-app-setting';
-import { filesSettings } from '../../files/settings/file-configuration';
-import * as dotenv from 'dotenv';
-import * as process from 'node:process';
-
-dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -14,13 +9,11 @@ async function bootstrap() {
   //--------------------
   console.log('appSettings.api.AUTH_PORT', appSettings.api.AUTH_PORT);
   console.log('appSettings.api.PORT', appSettings.api.PORT);
-  console.log('process.env.PORT', process.env.PORT);
   // Проверяем сначала переменные окружения, предоставленные Kubernetes
-  const port = process.env.PORT ?? appSettings.api.AUTH_PORT ?? 3000;
+  const port = appSettings.api.PORT ?? appSettings.api.AUTH_PORT ?? 5000;
   //--------------------------------------------------
   console.log('appSettings.api.AUTH_PORT', appSettings.api.AUTH_PORT);
   console.log('appSettings.api.PORT', appSettings.api.PORT);
-  console.log('process.env.PORT', process.env.PORT);
   //app.setGlobalPrefix('api/v1');
   //const port = appSettings.api.AUTH_PORT ?? 3000;
   //const port = appSettings.api.AUTH_PORT ?? process.env.PORT;

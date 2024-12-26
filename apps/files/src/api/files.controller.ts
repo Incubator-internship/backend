@@ -9,9 +9,6 @@ import {
 import { FilesService } from '../application/files.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
-import { randomUUID } from 'crypto';
-import { extname } from 'path';
-import * as sharp from 'sharp';
 
 @Controller('file')
 export class FilesController {

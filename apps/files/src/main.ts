@@ -8,7 +8,7 @@ async function bootstrap() {
   applyAppFileSettings(app);
 
   console.log('appSettings.api.FILE_PORT', filesSettings.api.FILE_PORT);
-  const port = filesSettings.api.FILE_PORT ?? process.env.PORT;
+  const port = filesSettings.api.FILE_PORT ?? filesSettings.api.PORT ?? 5001;
 
   console.log('file port', port);
   await app.listen(port ?? 3000);

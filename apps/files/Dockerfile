@@ -3,7 +3,7 @@ FROM node:20.11-alpine
 ARG port
 ARG service
 ENV SERVICE=$service
-ENV FILE_PORT=$port
+ENV PORT=$port
 # Set to a non-root built-in user `node`
 
 USER node
@@ -30,6 +30,6 @@ RUN yarn run build:${SERVICE}
 
 # Bind to all network interfaces so that it can be mapped to the host OS
 
-EXPOSE ${FILE_PORT}
+EXPOSE ${PORT}
 
 CMD npm run 'start:files'
