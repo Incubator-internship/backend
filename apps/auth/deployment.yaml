@@ -22,11 +22,6 @@ spec:
              - containerPort: PORT_CONTAINER
 
            env:
-             - name: JWT_SECRET
-               valueFrom:
-                 secretKeyRef:
-                   name: auth-backend-production-config-secret
-                   key: JWT_SECRET
              - name: EMAIL_PASS
                valueFrom:
                  secretKeyRef:
@@ -67,4 +62,8 @@ spec:
                  secretKeyRef:
                    name: auth-backend-production-config-secret
                    key: RECAPTCHA_URL
-
+             - name: JWT_SECRET
+               valueFrom:
+                 secretKeyRef:
+                   name: auth-backend-production-config-secret
+                   key: JWT_SECRET
