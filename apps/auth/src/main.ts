@@ -11,9 +11,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   applyAppSettings(app);
 
-  console.log(' filesSettings.api.PORT', filesSettings.api.PORT);
-  console.log(' filesSettings.api.AUTH_PORT', filesSettings.api.AUTH_PORT);
   console.log('appSettings.api.AUTH_PORT', appSettings.api.AUTH_PORT);
+  console.log('appSettings.api.PORT', appSettings.api.PORT);
   console.log('process.env.PORT', process.env.PORT);
   //app.setGlobalPrefix('api/v1');
   //const port = appSettings.api.AUTH_PORT ?? 3000;
