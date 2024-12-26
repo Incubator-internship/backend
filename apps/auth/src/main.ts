@@ -11,13 +11,20 @@ dotenv.config();
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   applyAppSettings(app);
-
+  //--------------------
+  console.log('appSettings.api.AUTH_PORT', appSettings.api.AUTH_PORT);
+  console.log('appSettings.api.PORT', appSettings.api.PORT);
+  console.log('process.env.PORT', process.env.PORT);
+  // Проверяем сначала переменные окружения, предоставленные Kubernetes
+  const port = process.env.PORT ?? appSettings.api.AUTH_PORT ?? 3000;
+  //--------------------------------------------------
   console.log('appSettings.api.AUTH_PORT', appSettings.api.AUTH_PORT);
   console.log('appSettings.api.PORT', appSettings.api.PORT);
   console.log('process.env.PORT', process.env.PORT);
   //app.setGlobalPrefix('api/v1');
   //const port = appSettings.api.AUTH_PORT ?? 3000;
-  const port = appSettings.api.AUTH_PORT ?? process.env.PORT;
+  //const port = appSettings.api.AUTH_PORT ?? process.env.PORT;
+
   //app.setGlobalPrefix('api/v1');
   //await app.listen(process.env.PORT ?? 3000);
   console.log('auth port', port);
