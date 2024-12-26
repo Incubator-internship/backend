@@ -59,7 +59,7 @@ class APISettings {
   // Application
   public readonly APP_PORT: number;
   public readonly AUTH_PORT: number;
-  public readonly PORT: number;
+  public readonly PORT;
   //Email
   public readonly GMAIL_COM_PASS: string;
   // Database
@@ -86,7 +86,8 @@ class APISettings {
       envVariables.APP_PORT as string,
       envVariables.PORT as unknown as number,
     );
-    this.PORT = this.getNumberOrDefault(envVariables.PORT as string, this.PORT);
+    // this.PORT = this.getNumberOrDefault(envVariables.PORT as string, 5123);
+    this.PORT = envVariables.PORT ?? '5123';
     //JWT
     this.JWT_SECRET = envVariables.JWT_SECRET ?? '123';
     //Email
