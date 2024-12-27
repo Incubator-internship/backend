@@ -6,7 +6,7 @@ import { PostOutputModel } from '../api/models/output/posts.output.model';
 export class PostsQueryRepository {
   constructor(protected prismaService: PrismaService) {}
 
-  async getAllPosts() {
+  async getAllPosts(): Promise<PostOutputModel[]> {
     const allPosts = await this.prismaService.post.findMany({
       where: { deletedAt: null },
       include: { photos: true },
