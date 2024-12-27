@@ -28,6 +28,7 @@ import * as FormData from 'form-data';
 import { PostsQueryRepository } from '../infrastructure/posts-query.repository';
 import { UpdatePostCommand } from '../application/use.cases/updatePost.command';
 import { DeletePostCommand } from '../application/use.cases/deletePost.command';
+import { GetAllPostsEndpoint } from '../../../swagger/posts.swagger';
 
 @ApiTags('Posts')
 @UseGuards(ThrottlerGuard)
@@ -39,6 +40,7 @@ export class PostsController {
     private postsQueryRepository: PostsQueryRepository,
   ) {}
 
+  @GetAllPostsEndpoint()
   @Get('all-posts')
   async getAllPosts() {
     return await this.postsQueryRepository.getAllPosts();

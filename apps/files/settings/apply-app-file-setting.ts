@@ -6,8 +6,6 @@ import {
 import { useContainer } from 'class-validator';
 import { FilesModule } from '../src/files.module';
 import * as cookieParser from 'cookie-parser';
-import { filesSettings } from './file-configuration';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { HttpExceptionFilter } from '../../../common/http-exception-filter';
 
 interface CustomError {
@@ -36,7 +34,7 @@ export const applyAppFileSettings = (app: INestApplication) => {
   setAppPrefix(app);
 
   // Конфигурация swagger документации
-  setSwagger(app);
+  // setSwagger(app);
 
   // Применение глобальных pipes
   setAppPipes(app);
@@ -52,37 +50,37 @@ const setAppPrefix = (app: INestApplication) => {
   app.setGlobalPrefix(APP_PREFIX);
 };
 
-const setSwagger = (app: INestApplication) => {
-  if (!filesSettings.env.isProduction()) {
-    //const swaggerPath = APP_PREFIX + 'swagger-doc';
-
-    const config = new DocumentBuilder()
-      .setTitle('INCTAGRAM API')
-      .addBearerAuth()
-      .setVersion('1.0')
-      .addApiKey(
-        {
-          type: 'apiKey',
-          name: 'refreshToken',
-          in: 'cookie',
-          description:
-            'JWT refreshToken inside cookie. Must be correct, and must not expire.',
-        },
-        'refreshToken',
-      )
-      .addBearerAuth({
-        description: 'Default JWT Authorization',
-        type: 'http',
-        in: 'header',
-        scheme: 'bearer',
-        bearerFormat: 'JWT',
-      })
-      .build();
-
-    const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('api/v1/swagger', app, document);
-  }
-};
+// const setSwagger = (app: INestApplication) => {
+//   if (!filesSettings.env.isProduction()) {
+//     //const swaggerPath = APP_PREFIX + 'swagger-doc';
+//
+//     const config = new DocumentBuilder()
+//       .setTitle('INCTAGRAM Files API')
+//       .addBearerAuth()
+//       .setVersion('1.0')
+//       .addApiKey(
+//         {
+//           type: 'apiKey',
+//           name: 'refreshToken',
+//           in: 'cookie',
+//           description:
+//             'JWT refreshToken inside cookie. Must be correct, and must not expire.',
+//         },
+//         'refreshToken',
+//       )
+//       .addBearerAuth({
+//         description: 'Default JWT Authorization',
+//         type: 'http',
+//         in: 'header',
+//         scheme: 'bearer',
+//         bearerFormat: 'JWT',
+//       })
+//       .build();
+//
+//     const document = SwaggerModule.createDocument(app, config);
+//     SwaggerModule.setup('api/v1/swagger', app, document);
+//   }
+// };
 const setAppPipes = (app: INestApplication) => {
   app.useGlobalPipes(
     //для правильного отображения ошибок, настраиваем useGlobalPipes
