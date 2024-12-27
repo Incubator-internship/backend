@@ -6,9 +6,11 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { PrismaService } from '../prisma/prisma.service';
 import { MulterModule } from '@nestjs/platform-express';
 import { HttpModule } from '@nestjs/axios';
+import { PostsQueryRepository } from './posts/infrastructure/posts-query.repository';
+import { UpdatePostHandler } from './posts/application/use.cases/updatePost.command';
 
-const commands = [CreatePostHandler];
-const repositories = [PostsRepository];
+const commands = [CreatePostHandler, UpdatePostHandler];
+const repositories = [PostsRepository, PostsQueryRepository];
 const service = [PrismaService];
 
 @Module({
