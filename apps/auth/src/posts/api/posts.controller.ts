@@ -82,7 +82,8 @@ export class PostsController {
       console.log('formData with append file ', formData);
       const response = await firstValueFrom(
         this.httpService.post(
-          'http://localhost:5001/api/v1/file/post-files',
+          //'http://localhost:5001/api/v1/file/post-files',
+          'https://files.excubator.xyz:443/api/v1/file/post-files',
           formData,
           { headers: { ...formData.getHeaders() } },
         ),
