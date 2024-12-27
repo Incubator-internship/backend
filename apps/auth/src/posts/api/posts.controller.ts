@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   Param,
@@ -26,6 +27,7 @@ import { HttpService } from '@nestjs/axios';
 import * as FormData from 'form-data';
 import { PostsQueryRepository } from '../infrastructure/posts-query.repository';
 import { UpdatePostCommand } from '../application/use.cases/updatePost.command';
+import { DeletePostCommand } from '../application/use.cases/deletePost.command';
 
 @ApiTags('Posts')
 @UseGuards(ThrottlerGuard)
@@ -106,5 +108,15 @@ export class PostsController {
     await this.commandBus.execute(
       new UpdatePostCommand({ postId, content: inputModel.content, userId }),
     );
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAccessAuthGuard)
+  @HttpCode(204)
+  async deletePostByPostId(
+    @TakeUserId() { userId }: { userId: number },
+    @Param('id', ParseIntPipe) postId: number,
+  ) {
+    await this.commandBus.execute(new DeletePostCommand({ userId, postId }));
   }
 }

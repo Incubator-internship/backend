@@ -11,8 +11,12 @@ export class PostModelDTO {
   photoUrls: string[];
   userId: number;
 }
-export class updatePostModelDTO {
+export class UpdatePostModelDTO {
   postId: number;
   content: string;
+  userId: number;
+}
+export class DeleteePostModelDTO {
+  postId: number;
   userId: number;
 }

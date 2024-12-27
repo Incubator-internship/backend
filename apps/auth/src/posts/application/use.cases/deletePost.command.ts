@@ -1,4 +1,7 @@
-import { UpdatePostModelDTO } from '../../api/models/input/posts-input.model';
+import {
+  DeleteePostModelDTO,
+  UpdatePostModelDTO,
+} from '../../api/models/input/posts-input.model';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { PostsRepository } from '../../infrastructure/posts.repository';
 import {
@@ -6,30 +9,27 @@ import {
   ResultCode,
 } from '../../../../common/exception-filters/exception.handler';
 
-export class UpdatePostCommand {
-  constructor(public readonly updatePostDTO: UpdatePostModelDTO) {}
+export class DeletePostCommand {
+  constructor(public readonly deletePostDTO: DeleteePostModelDTO) {}
 }
 
-@CommandHandler(UpdatePostCommand)
-export class UpdatePostHandler implements ICommandHandler<UpdatePostCommand> {
+@CommandHandler(DeletePostCommand)
+export class DeletePostHandler implements ICommandHandler<DeletePostCommand> {
   constructor(private postsRepository: PostsRepository) {}
 
-  async execute(command: UpdatePostCommand): Promise<void> {
+  async execute(command: DeletePostCommand): Promise<void> {
     const post = await this.postsRepository.findPostById(
-      command.updatePostDTO.postId,
+      command.deletePostDTO.postId,
     );
     if (!post || post.deletedAt) {
       return exceptionHandler(ResultCode.NotFound, 'Post has been not found');
     }
-    if (post.userId !== command.updatePostDTO.userId) {
+    if (post.userId !== command.deletePostDTO.userId) {
       return exceptionHandler(
         ResultCode.Forbidden,
         'You do`t have permission to edit this post.',
       );
     }
-    await this.postsRepository.updatePost(
-      command.updatePostDTO.postId,
-      command.updatePostDTO.content,
-    );
+    await this.postsRepository.deletePost(command.deletePostDTO.postId);
   }
 }

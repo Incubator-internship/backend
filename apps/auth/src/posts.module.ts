@@ -8,8 +8,9 @@ import { MulterModule } from '@nestjs/platform-express';
 import { HttpModule } from '@nestjs/axios';
 import { PostsQueryRepository } from './posts/infrastructure/posts-query.repository';
 import { UpdatePostHandler } from './posts/application/use.cases/updatePost.command';
+import { DeletePostHandler } from './posts/application/use.cases/deletePost.command';
 
-const commands = [CreatePostHandler, UpdatePostHandler];
+const commands = [CreatePostHandler, UpdatePostHandler, DeletePostHandler];
 const repositories = [PostsRepository, PostsQueryRepository];
 const service = [PrismaService];
 

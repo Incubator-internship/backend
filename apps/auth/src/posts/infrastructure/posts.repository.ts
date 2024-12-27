@@ -28,4 +28,10 @@ export class PostsRepository {
       data: { content },
     });
   }
+  async deletePost(postId: number): Promise<void> {
+    await this.prismaService.post.update({
+      where: { id: postId },
+      data: { deletedAt: new Date() },
+    });
+  }
 }

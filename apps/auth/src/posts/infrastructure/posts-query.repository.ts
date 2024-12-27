@@ -7,6 +7,7 @@ export class PostsQueryRepository {
 
   async getAllPosts() {
     const allPosts = await this.prismaService.post.findMany({
+      where: { deletedAt: null },
       include: { photos: true },
     });
     return allPosts.map((p) => {
