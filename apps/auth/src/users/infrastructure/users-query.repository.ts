@@ -1,10 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import {
-  exceptionHandler,
-  ResultCode,
-} from '../../../common/exception-filters/exception.handler';
-import {
   AllUsersType,
   UserAuthMeDTO,
 } from '../api/models/output/userOutput.types';

@@ -4,7 +4,7 @@ export const TakeUserId = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
     const userId = request.user?.userId;
-    //todo ThrownewError 500
+    //todo Throw newError 500
     if (!userId) {
       return { userId: null };
     }
