@@ -10,7 +10,7 @@ export class CreatePostCommand {
 export class CreatePostHandler implements ICommandHandler<CreatePostCommand> {
   constructor(private postsRepository: PostsRepository) {}
 
-  async execute(command: CreatePostCommand): Promise<void> {
-    await this.postsRepository.createPost(command.postDTO);
+  async execute(command: CreatePostCommand): Promise<number> {
+    return await this.postsRepository.createPost(command.postDTO);
   }
 }

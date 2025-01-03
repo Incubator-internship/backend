@@ -22,12 +22,17 @@ export class DeletePostHandler implements ICommandHandler<DeletePostCommand> {
       command.deletePostDTO.postId,
     );
     if (!post || post.deletedAt) {
-      return exceptionHandler(ResultCode.NotFound, 'Post has been not found');
+      return exceptionHandler(
+        ResultCode.NotFound,
+        'Post has been not found',
+        'PostId',
+      );
     }
     if (post.userId !== command.deletePostDTO.userId) {
       return exceptionHandler(
         ResultCode.Forbidden,
         'You do`t have permission to edit this post.',
+        'Forbidden',
       );
     }
     await this.postsRepository.deletePost(command.deletePostDTO.postId);

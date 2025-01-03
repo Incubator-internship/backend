@@ -18,7 +18,11 @@ import { ThrottlerGuard } from '@nestjs/throttler';
 import { CommandBus } from '@nestjs/cqrs';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
-import { PostInputModel, PostModelDTO } from './models/input/posts-input.model';
+import {
+  PostInputModel,
+  PostModelDTO,
+  PostUpdateInputModel,
+} from './models/input/posts-input.model';
 import { JwtAccessAuthGuard } from '../../../guards/jwt/jwt-header.strategy';
 import { TakeUserId } from '../../../decorators/authMeTakeUserId.decorator';
 import { CreatePostCommand } from '../application/use.cases/createPost.command';
@@ -28,7 +32,12 @@ import * as FormData from 'form-data';
 import { PostsQueryRepository } from '../infrastructure/posts-query.repository';
 import { UpdatePostCommand } from '../application/use.cases/updatePost.command';
 import { DeletePostCommand } from '../application/use.cases/deletePost.command';
-import { GetAllPostsEndpoint } from '../../../swagger/posts.swagger';
+import {
+  CreatePostEndpoint,
+  DeletePostEndpoint,
+  GetAllPostsEndpoint,
+  UpdatePostEndpoint,
+} from '../../../swagger/posts.swagger';
 
 @ApiTags('Posts')
 @UseGuards(ThrottlerGuard)
@@ -46,9 +55,10 @@ export class PostsController {
     return await this.postsQueryRepository.getAllPosts();
   }
 
+  @CreatePostEndpoint()
   @Post('post')
   @UseGuards(JwtAccessAuthGuard)
-  @HttpCode(204)
+  @HttpCode(201)
   @UseInterceptors(
     FilesInterceptor('photos', 10, {
       storage: memoryStorage(),
@@ -97,22 +107,27 @@ export class PostsController {
     }
 
     const postDTO: PostModelDTO = { ...content, photoUrls, userId };
-    return await this.commandBus.execute(new CreatePostCommand(postDTO)); // Сохранение поста и фотографий в базе данных
+    const postId = await this.commandBus.execute(
+      new CreatePostCommand(postDTO),
+    ); // Сохранение поста и фотографий в базе данных
+    return { postId };
   }
 
+  @UpdatePostEndpoint()
   @Put(':id')
   @UseGuards(JwtAccessAuthGuard)
   @HttpCode(204)
   async updatePostByPostId(
     @TakeUserId() { userId }: { userId: number },
     @Param('id', ParseIntPipe) postId: number,
-    @Body() inputModel: PostInputModel,
+    @Body() inputModel: PostUpdateInputModel,
   ) {
     await this.commandBus.execute(
       new UpdatePostCommand({ postId, content: inputModel.content, userId }),
     );
   }
 
+  @DeletePostEndpoint()
   @Delete(':id')
   @UseGuards(JwtAccessAuthGuard)
   @HttpCode(204)

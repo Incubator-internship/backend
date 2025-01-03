@@ -2,8 +2,12 @@ import { applyDecorators } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiBody,
+  ApiConsumes,
   ApiCookieAuth,
+  ApiFailedDependencyResponse,
   ApiOperation,
+  ApiParam,
+  ApiProperty,
   ApiResponse,
 } from '@nestjs/swagger';
 import {
@@ -16,6 +20,7 @@ import {
 } from '../src/auth/api/models/output/auth-output.model';
 import { UserAuthMeDTO } from '../src/users/api/models/output/userOutput.types';
 import { PostOutputModel } from '../src/posts/api/models/output/posts.output.model';
+import { PostUpdateInputModel } from '../src/posts/api/models/input/posts-input.model';
 
 export function RegistrationUserEndpoint() {
   return applyDecorators(
@@ -220,9 +225,12 @@ export function RefreshTokenEndpoint() {
     }),
   );
 }
-
+//******************************************************************************
 export function GetAllPostsEndpoint() {
   return applyDecorators(
+    ApiOperation({
+      summary: 'Get all posts',
+    }),
     ApiResponse({
       status: 200,
       description: 'Success',
@@ -234,21 +242,133 @@ export function GetAllPostsEndpoint() {
     }),
   );
 }
+
 export function CreatePostEndpoint() {
   return applyDecorators(
+    ApiOperation({
+      summary: 'Create new post',
+    }),
     ApiBearerAuth(),
+    ApiBody({
+      description: 'Create Post',
+      required: true,
+      schema: {
+        type: 'object',
+        properties: {
+          content: {
+            type: 'string',
+            maxLength: 500,
+            description: 'Some content which describe photos, NO Mandatory!',
+          },
+          photos: {
+            type: 'array',
+            items: {
+              type: 'string',
+              format: 'binary',
+              description: 'Download photo min 1 max 10',
+            },
+            minItems: 1,
+            maxItems: 10,
+          },
+        },
+        required: ['photos'],
+      },
+    }),
     ApiResponse({
-      status: 200,
-      description: 'Success',
-      type: () => UserAuthMeDTO,
+      status: 201,
+      description: 'Return postId',
+      type: () => ReturnPostIdSwagger,
     }),
     ApiResponse({
       status: 401,
       description: 'Unauthorized',
     }),
     ApiResponse({
+      status: 400,
+      description: 'If the inputModel has incorrect values',
+      type: () => ErrorsMessagesSwaggerType,
+    }),
+    ApiResponse({
+      status: 413,
+      description: 'Payload to Large',
+    }),
+    ApiResponse({
       status: 429,
       description: 'More than 5 attempts from one IP-address during 10 seconds',
     }),
   );
+}
+
+export function UpdatePostEndpoint() {
+  return applyDecorators(
+    ApiOperation({
+      summary: 'Update post',
+    }),
+    ApiBearerAuth(),
+    ApiParam({
+      name: 'id',
+      description: 'postId',
+      required: true,
+      type: String,
+    }),
+    ApiBody({
+      description: 'Data for updating post',
+      type: () => PostUpdateInputModel,
+    }),
+    ApiResponse({
+      status: 204,
+      description: 'Post has been updated',
+    }),
+    ApiResponse({
+      status: 401,
+      description: 'Unauthorized',
+    }),
+    ApiResponse({
+      status: 400,
+      description: 'If the inputModel has incorrect values',
+      type: () => ErrorsMessagesSwaggerType,
+    }),
+    ApiResponse({
+      status: 403,
+      description: 'Forbidden',
+    }),
+    ApiResponse({
+      status: 429,
+      description: 'More than 5 attempts from one IP-address during 10 seconds',
+    }),
+  );
+}
+export function DeletePostEndpoint() {
+  return applyDecorators(
+    ApiOperation({
+      summary: 'Delete post',
+    }),
+    ApiBearerAuth(),
+    ApiParam({
+      name: 'id',
+      description: 'postId',
+      required: true,
+      type: String,
+    }),
+    ApiResponse({
+      status: 204,
+      description: 'Post has been deleted',
+    }),
+    ApiResponse({
+      status: 401,
+      description: 'Unauthorized',
+    }),
+    ApiResponse({
+      status: 403,
+      description: 'Forbidden',
+    }),
+    ApiResponse({
+      status: 429,
+      description: 'More than 5 attempts from one IP-address during 10 seconds',
+    }),
+  );
+}
+class ReturnPostIdSwagger {
+  @ApiProperty({ example: 3 })
+  postId: number;
 }
