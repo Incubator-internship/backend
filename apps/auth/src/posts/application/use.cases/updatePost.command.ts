@@ -19,12 +19,17 @@ export class UpdatePostHandler implements ICommandHandler<UpdatePostCommand> {
       command.updatePostDTO.postId,
     );
     if (!post || post.deletedAt) {
-      return exceptionHandler(ResultCode.NotFound, 'Post has been not found');
+      return exceptionHandler(
+        ResultCode.NotFound,
+        'Post has been not found',
+        'postId',
+      );
     }
     if (post.userId !== command.updatePostDTO.userId) {
       return exceptionHandler(
         ResultCode.Forbidden,
         'You do`t have permission to edit this post.',
+        'Forbidden',
       );
     }
     await this.postsRepository.updatePost(

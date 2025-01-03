@@ -7,8 +7,8 @@ import { Post } from '@prisma/client';
 export class PostsRepository {
   constructor(protected prismaService: PrismaService) {}
 
-  async createPost(postDTO: PostModelDTO) {
-    return this.prismaService.post.create({
+  async createPost(postDTO: PostModelDTO): Promise<number> {
+    const post = await this.prismaService.post.create({
       data: {
         content: postDTO.content,
         userId: postDTO.userId,
@@ -16,6 +16,7 @@ export class PostsRepository {
       },
       include: { photos: true },
     });
+    return post.id;
   }
 
   async findPostById(postId: number): Promise<Post | null> {
