@@ -36,8 +36,14 @@ import {
   CreatePostEndpoint,
   DeletePostEndpoint,
   GetAllPostsEndpoint,
+  GetPostByPostIdEndpoint,
+  GetPostsByUserIdEndpoint,
   UpdatePostEndpoint,
 } from '../../../swagger/posts.swagger';
+import {
+  exceptionHandler,
+  ResultCode,
+} from '../../../common/exception-filters/exception.handler';
 
 @ApiTags('Posts')
 @UseGuards(ThrottlerGuard)
@@ -136,5 +142,27 @@ export class PostsController {
     @Param('id', ParseIntPipe) postId: number,
   ) {
     await this.commandBus.execute(new DeletePostCommand({ userId, postId }));
+  }
+
+  @GetPostByPostIdEndpoint()
+  @Get(':id')
+  @HttpCode(200)
+  async getPostByPostId(@Param('id', ParseIntPipe) postId: number) {
+    const post = await this.postsQueryRepository.getPostByPostId(postId);
+    if (!post) {
+      return exceptionHandler(
+        ResultCode.NotFound,
+        'Post has been not found',
+        'PostId',
+      );
+    }
+    return post;
+  }
+
+  @GetPostsByUserIdEndpoint()
+  @Get('/user-posts/:userId')
+  @HttpCode(200)
+  async getPostsByUserId(@Param('userId', ParseIntPipe) userId: number) {
+    return await this.postsQueryRepository.getPostsByUserId(userId);
   }
 }
