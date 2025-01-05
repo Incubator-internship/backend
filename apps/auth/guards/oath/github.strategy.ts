@@ -5,6 +5,7 @@ import { Strategy } from 'passport-github2';
 import * as process from 'node:process';
 import * as dotenv from 'dotenv';
 import { ConfigService } from '@nestjs/config';
+import { VerifyCallback } from 'passport-google-oauth20';
 
 dotenv.config();
 @Injectable()
@@ -21,29 +22,26 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
       clientID: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
       callbackURL: process.env.GITHUB_CALLBACK_LOCAL_URL,
-      scope: ['user:email'],
+      scope: ['email', 'profile'],
     });
   }
 
-  async validate(accessToken: string, refreshToken: string, profile: any) {
+  async validate(
+    accessToken: string,
+    refreshToken: string,
+    profile: any,
+    done: VerifyCallback,
+  ) {
     try {
-      // Ваш код для обработки профиля
-      const emails = profile.emails || [];
-      const email = emails.length > 0 ? emails[0].value : null;
-
-      // Проверка наличия email
-      if (!email) {
-        throw new Error('No email associated with this account.');
-      }
-
       // Возвращаем информацию о пользователе
-      return {
-        email,
-        providerId: profile.id,
-        providerType: 'github',
+      const user = {
+        email: profile._json.email.toString(),
+        providerId: profile._json.id.toString(),
+        providerType: profile.provider.toString(),
       };
+      done(null, user);
     } catch (error) {
-      throw new Error(error.message); // Или обработайте ошибку по-другому
+      throw new Error(error.message);
     }
   }
 }

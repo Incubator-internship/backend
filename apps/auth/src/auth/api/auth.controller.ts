@@ -58,6 +58,7 @@ import { GoogleAuthCommand } from '../application/use.cases/google-auth.command'
 import { AuthGuard } from '@nestjs/passport';
 import { GitHubOAuthGuard } from '../../../guards/oath/github.strategy';
 import { GitHubAuthInfo } from '../../../decorators/githubInfo.decorator';
+import { GitHubAuthCommand } from '../application/use.cases/github-auth.command';
 
 @ApiTags('Auth')
 @UseGuards(ThrottlerGuard)
@@ -212,13 +213,9 @@ export class AuthController {
   }
 
   //---------------GITHUB------------------------------
-
   @Get('github')
   @UseGuards(GitHubOAuthGuard)
-  async githubLogin(@Req() req) {
-    // Этот метод будет перенаправлен на GitHub для аутентификации
-    return 'Login with Github';
-  }
+  async githubLogin(@Req() req) {}
 
   @Get('github-redirect')
   @UseGuards(GitHubOAuthGuard)
@@ -226,25 +223,18 @@ export class AuthController {
     @Ip() ip: string,
     @GitHubAuthInfo()
     userInfo: { email: string; providerId: string; providerType: string },
-    @UserAgent() deviceName: string,
     @Req() req,
+    @UserAgent() deviceName: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    console.log(
-      userInfo.email,
-      userInfo.providerId,
-      userInfo.providerType,
-      deviceName,
-      ip,
+    const tokensPair = await this.commandBus.execute(
+      new GitHubAuthCommand({ ...userInfo, deviceName, ip }),
     );
-    console.log('OK');
-    //   const tokensPair = await this.commandBus.execute(
-    //     new GitHubAuthCommand({ ...userInfo, deviceName, ip }),
-    //   );
-    //   res.cookie('refreshToken', tokensPair.refreshToken, {
-    //     httpOnly: true,
-    //     secure: true,
-    //   });
-    //   return { accessToken: tokensPair.accessToken };
+    res.cookie('refreshToken', tokensPair.refreshToken, {
+      httpOnly: true,
+      secure: true,
+    });
+    console.log(tokensPair.refreshToken);
+    return { accessToken: tokensPair.accessToken };
   }
 }

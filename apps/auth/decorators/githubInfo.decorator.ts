@@ -4,9 +4,9 @@ export const GitHubAuthInfo = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
     return {
-      email: request.user.emails[0].value, // Предполагается, что вы получаете email из массива
-      providerId: request.user.id, // ID пользователя GitHub
-      providerType: 'github', // Указываем тип провайдера
+      email: request.user.email, // Предполагается, что вы получаете email из массива
+      providerId: request.user.providerId, // ID пользователя GitHub
+      providerType: request.user.providerType, // Указываем тип провайдера
     };
   },
 );
