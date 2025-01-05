@@ -59,6 +59,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { GitHubOAuthGuard } from '../../../guards/oath/github.strategy';
 import { GitHubAuthInfo } from '../../../decorators/githubInfo.decorator';
 import { GitHubAuthCommand } from '../application/use.cases/github-auth.command';
+import { RecaptchaAuthGuard } from '../../../guards/oath/recaptcha.auth.guard';
 
 @ApiTags('Auth')
 @UseGuards(ThrottlerGuard)
@@ -208,8 +209,10 @@ export class AuthController {
     res.cookie('refreshToken', tokensPair.refreshToken, {
       httpOnly: true,
       secure: true,
+      sameSite: 'none',
     });
-    return { accessToken: tokensPair.accessToken };
+    const redirectUrl = `http://localhost:3000/authentication?accessToken=${tokensPair.accessToken}`;
+    return res.redirect(redirectUrl);
   }
 
   //---------------GITHUB------------------------------

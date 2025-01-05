@@ -27,6 +27,7 @@ model User {
   sessions          Session[]          @relation("UserSessions")
   passwordRecovery  PasswordRecovery[] @relation("PasswordRecovery")
   provider          Provider[]         @relation("Providers")
+  posts             Post[]             @relation("Posts")
 
   @@map("users")
 }
@@ -77,4 +78,26 @@ model PasswordRecovery {
   user                   User     @relation(fields: [userId], references: [id], name: "PasswordRecovery")
 
   @@map("passwordRecovery")
+}
+
+model Post {
+  id        Int       @id @default(autoincrement())
+  content   String
+  userId    Int
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  user      User      @relation(fields: [userId], references: [id], name: "Posts")
+  photos    Photo[]
+
+  @@map("posts")
+}
+
+model Photo {
+  id     Int    @id @default(autoincrement())
+  url    String
+  postId Int
+  post   Post   @relation(fields: [postId], references: [id])
+
+  @@map("photos")
 }

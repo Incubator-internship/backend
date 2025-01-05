@@ -24,7 +24,7 @@ export class DeleteDeviceSessionHandler
     if (!deviceSessionByDeviceId) {
       return exceptionHandler(
         ResultCode.NotFound,
-        'DeviceSession has benn not found',
+        'DeviceSession has been not found',
       );
     }
 

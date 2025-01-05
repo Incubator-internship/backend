@@ -26,11 +26,10 @@ RUN yarn install
 # Bundle app source code
 COPY --chown=node . .
 
-RUN yarn build:${SERVICE}
-RUN yarn 'generate:auth'
+RUN yarn run build:${SERVICE}
 
 # Bind to all network interfaces so that it can be mapped to the host OS
 
 EXPOSE ${PORT}
 
-CMD npm run 'start:auth'
+CMD npm run 'start:files'

@@ -4,6 +4,7 @@ import { Strategy, VerifyCallback } from 'passport-google-oauth20';
 import { ConfigService } from '@nestjs/config';
 import * as dotenv from 'dotenv';
 import * as process from 'node:process';
+import { appSettings } from '../../settings/configuration';
 
 dotenv.config();
 
@@ -19,13 +20,14 @@ export class GoogleOAuthGuard extends AuthGuard('google') {
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   constructor() {
+    console.log(appSettings.api.GOOGLE_CLIENT_ID);
     super({
-      // clientID: appSettings.api.GOOGLE_CLIENT_ID,
-      // clientSecret: appSettings.api.GOOGLE_CLIENT_SECRET,
-      // callbackURL: appSettings.api.GOOGLE_CALLBACK_LOCAL_URL,
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: process.env.GOOGLE_CALLBACK_LOCAL_URL,
+      clientID: appSettings.api.GOOGLE_CLIENT_ID,
+      clientSecret: appSettings.api.GOOGLE_CLIENT_SECRET,
+      callbackURL: appSettings.api.GOOGLE_CALLBACK_LOCAL_URL,
+      // clientID: process.env.GOOGLE_CLIENT_ID,
+      // clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      // callbackURL: process.env.GOOGLE_CALLBACK_PROD_URL,
       scope: ['email', 'profile'],
     });
   }

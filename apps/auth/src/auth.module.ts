@@ -42,6 +42,8 @@ import { CreateUserProviderHandler } from './auth/application/use.cases/create-u
 import { CreateUserAndProviderHandler } from './users/application/use.cases/createUser-google.command';
 import { TestingController } from './testing/api/testing.controller';
 import { UpdateUserHandler } from './users/application/use.cases/updateUser.command';
+import { RecaptchaAuthGuard } from '../guards/oath/recaptcha.auth.guard';
+import { HttpModule } from '@nestjs/axios';
 import {
   GitHubAuthCommand,
   GitHubAuthHandler,
@@ -65,7 +67,6 @@ const commands = [
   CreateUserProviderHandler,
   CreateUserAndProviderHandler,
   UpdateUserHandler,
-  GitHubAuthHandler,
 ];
 const service = [PrismaService, AuthService, JWTService, JwtService];
 const repositories = [
@@ -79,7 +80,7 @@ const repositories = [
 ];
 
 @Module({
-  imports: [CqrsModule, AuthModule, PassportModule, MailModule],
+  imports: [CqrsModule, AuthModule, PassportModule, MailModule, HttpModule],
   controllers: [
     UsersController,
     AuthController,
@@ -98,6 +99,7 @@ const repositories = [
     JwtAccessStrategy,
     GoogleStrategy,
     GithubStrategy,
+    RecaptchaAuthGuard,
   ],
   exports: [],
 })

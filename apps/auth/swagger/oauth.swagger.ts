@@ -26,15 +26,22 @@ export function RegistrationUserEndpoint() {
       description: 'Data for constructing a new User entity',
       type: () => RegistrationInputUserModel,
     }),
-    ApiResponse({
-      status: 409,
-      description:
-        'This user already exist (user name or email have to unique)',
-    }),
+    // ApiResponse({
+    //   status: 409,
+    //   description:
+    //     'This user already exist (user name or email have to unique)',
+    // }),
+    // ApiResponse({
+    //   status: 400,
+    //   description:
+    //     'temporary solution, if email already exist: "Registration user command found user by the same email", if userName already exist: "Registration user command found user by the same userName"',
+    // }),
     ApiResponse({
       status: 400,
       description:
-        'If the inputModel has incorrect values (in particular if the user with the given email or login already exists)',
+        'If the inputModel has incorrect values (in particular if the user with the given email or login already exists). ' +
+        'And temporary solution, if email already exist: "Registration user command found user by the same email",' +
+        ' if userName already exist: "Registration user command found user by the same userName"',
       type: () => ErrorsMessagesSwaggerType,
     }),
     ApiResponse({

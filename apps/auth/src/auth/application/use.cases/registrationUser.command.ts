@@ -5,16 +5,12 @@ import {
   CreateUserHandler,
 } from '../../../users/application/use.cases/createUser.command';
 import { UsersRepository } from '../../../users/infrastructure/users.repository';
-import {
-  exceptionHandler,
-  ResultCode,
-} from '../../../../common/exception-filters/exception.handler';
 import { EmailService } from '../../../../mail/email-server.service';
 import {
   UpdateUserCommand,
   UpdateUserHandler,
 } from '../../../users/application/use.cases/updateUser.command';
-import { BadRequestException, ConflictException } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 
 export class RegistrationUserCommand {
   constructor(public readonly registrationDTO: RegistrationInputUserModel) {}
