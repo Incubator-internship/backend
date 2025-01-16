@@ -43,6 +43,7 @@ import { TestingController } from './testing/api/testing.controller';
 import { UpdateUserHandler } from './users/application/use.cases/updateUser.command';
 import { RecaptchaAuthGuard } from '../guards/oath/recaptcha.auth.guard';
 import { HttpModule } from '@nestjs/axios';
+import { AuthConfig } from '../settings/auth.config';
 
 const commands = [
   CreateUserHandler,
@@ -94,6 +95,7 @@ const repositories = [
     JwtAccessStrategy,
     GoogleStrategy,
     RecaptchaAuthGuard,
+    AuthConfig,
   ],
   exports: [],
 })
