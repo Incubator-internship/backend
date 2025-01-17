@@ -7,8 +7,6 @@ async function bootstrap() {
 
   const authConfig = app.get<AuthConfig>(AuthConfig);
 
-  console.log('authConfig====>>>> ', authConfig);
-
   await app.listen(authConfig.port);
 
   console.log(`Auth microservice is running on ${authConfig.port}`);
