@@ -6,7 +6,6 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { PostsModule } from './posts.module';
-import { AuthConfig } from '../settings/auth.config';
 
 @Module({
   imports: [
