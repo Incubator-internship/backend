@@ -24,23 +24,51 @@ export class AuthConfig {
   @IsNumber({}, { message: 'Env variable PORT has to type of number' })
   port: number = Number(this.configService.get('PORT'));
 
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmpty({ message: 'Set env variable DATABASE_URL' })
+  @IsString({ message: 'Env variable DATABASE_URL has to type of string' })
   dbURL: string = this.configService.get('DATABASE_URL');
 
   @IsNotEmpty({ message: 'Set env variable JWT_SECRET' })
-  @IsNumber({}, { message: 'Env variable JWT_SECRET has to type of number' })
-  jwtSecret:number=this.configService.get('JWT_SECRET')
+  @IsString({ message: 'Env variable JWT_SECRET has to type of number' })
+  jwtSecret: string = this.configService.get('JWT_SECRET');
 
-  @
-  EMAIL_PASS=regh zmcs mofm qkml
-  GOOGLE_CLIENT_ID=1031427518143-4f2kr0fkrd4bpas00t8233u0dsr2kvhh.apps.googleusercontent.com
-  GOOGLE_CLIENT_SECRET=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
-  GOOGLE_CALLBACK_LOCAL_URL=http://localhost:5000/api/v1/auth/google-redirect
-  GOOGLE_CALLBACK_PROD_URL=https://excubator.xyz/api/v1/auth/google-redirect
-  RECAPTCHA_SECRET_KEY=6LcghJMqAAAAAGUeTXwJ-m166AP7BoxmXAS4A6ax
-  RECAPTCHA_URL=https://www.google.com/recaptcha/api/siteverify
+  @IsNotEmpty({ message: 'Set env variable EMAIL_PASS' })
+  @IsString({ message: 'Env variable EMAIL_PASS has to type of string' })
+  emailPass = this.configService.get('EMAIL_PASS');
 
+  @IsNotEmpty({ message: 'Set env variable GOOGLE_CLIENT_ID' })
+  @IsString({ message: 'Env variable GOOGLE_CLIENT_ID has to type of string' })
+  googleClientId = this.configService.get('GOOGLE_CLIENT_ID');
+
+  @IsNotEmpty({ message: 'Set env variable GOOGLE_CLIENT_SECRET' })
+  @IsString({
+    message: 'Env variable GOOGLE_CLIENT_SECRET has to type of string',
+  })
+  googleClientSecret = this.configService.get('GOOGLE_CLIENT_SECRET');
+
+  @IsNotEmpty({ message: 'Set env variable GOOGLE_CLIENT_ID' })
+  @IsString({ message: 'Env variable GOOGLE_CLIENT_ID has to type of string' })
+  googleCallBackLocalUrl = this.configService.get('GOOGLE_CALLBACK_LOCAL_URL');
+
+  @IsNotEmpty({ message: 'Set env variable GOOGLE_CLIENT_ID' })
+  @IsString({ message: 'Env variable GOOGLE_CLIENT_ID has to type of string' })
+  googleCallBackProdUrl = this.configService.get('GOOGLE_CALLBACK_PROD_URL');
+
+  @IsNotEmpty({ message: 'Set env variable GOOGLE_CLIENT_ID' })
+  @IsString({ message: 'Env variable GOOGLE_CLIENT_ID has to type of string' })
+  recaptchaSecretKey = this.configService.get('RECAPTCHA_SECRET_KEY');
+
+  @IsNotEmpty({ message: 'Set env variable GOOGLE_CLIENT_ID' })
+  @IsString({ message: 'Env variable GOOGLE_CLIENT_ID has to type of string' })
+  recaptchaUrl = this.configService.get('RECAPTCHA_URL');
+
+  @IsNotEmpty({ message: 'Set env variable EMAIL_CONFIRM_URL' })
+  @IsString({ message: 'Env variable EMAIL_CONFIRM_URL has to type of string' })
+  emailConfirmUrl = this.configService.get('EMAIL_CONFIRM_URL');
+
+  @IsNotEmpty({ message: 'Set env variable EMAIL_CONFIRM_URL' })
+  @IsString({ message: 'Env variable EMAIL_CONFIRM_URL has to type of string' })
+  passwordRecoveryUrl = this.configService.get('PASSWORD_RECOVERY_URL');
 
   constructor(private configService: ConfigService) {
     console.log('port ', this.port);

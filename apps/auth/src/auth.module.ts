@@ -84,6 +84,7 @@ const repositories = [
     TestingController,
   ],
   providers: [
+    AuthConfig,
     EmailConfirmationExistConstraint,
     ConfirmationCodeIsValidConstraint,
     EmailIsNotExistConstraint,
@@ -95,7 +96,6 @@ const repositories = [
     JwtAccessStrategy,
     GoogleStrategy,
     RecaptchaAuthGuard,
-    AuthConfig,
   ],
   exports: [],
 })

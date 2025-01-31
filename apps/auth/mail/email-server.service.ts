@@ -1,16 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
+import { AuthConfig } from '../settings/auth.config';
 
 @Injectable()
 export class EmailService {
-  constructor(private readonly mailerService: MailerService) {}
+  constructor(
+    private readonly mailerService: MailerService,
+    private configService: AuthConfig,
+  ) {}
 
   async sendUserConfirmationCode(
     email: string,
     userName: string,
     confirmationCode: string,
   ): Promise<void> {
-    const url = `https://excubator.xyz/confirm-email?code=${confirmationCode}`;
+    //todo check the email service and delete console.log we take url from env
+    // const url = `https://excubator.xyz/confirm-email?code=${confirmationCode}`;
+    const url = `${this.configService.emailConfirmUrl}${confirmationCode}`;
 
     await this.mailerService
       .sendMail({
@@ -35,7 +41,9 @@ export class EmailService {
     userName: string,
     passwordRecoveryCode: string,
   ): Promise<void> {
-    const url = `https://excubator.xyz/createnewpassword?code=${passwordRecoveryCode}`;
+    //todo check the email service and delete console.log we take url from env
+    // const url = `https://excubator.xyz/createnewpassword?code=${passwordRecoveryCode}`;
+    const url = `${this.configService.passwordRecoveryUrl}${passwordRecoveryCode}`;
 
     await this.mailerService
       .sendMail({
