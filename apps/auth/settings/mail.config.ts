@@ -16,7 +16,17 @@ export class MailConfig {
 
   @IsNotEmpty({ message: 'Set env variable EMAIL_PASS' })
   @IsString({ message: 'Env variable EMAIL_PASS has to type of string' })
-  emailPass = this.configService.get('EMAIL_PASS');
+  emailPass: string = this.configService.get('EMAIL_PASS');
+
+  @IsNotEmpty({ message: 'Set env variable EMAIL_CONFIRM_URL' })
+  @IsString({ message: 'Env variable EMAIL_CONFIRM_URL has to type of string' })
+  emailConfirmUrl: string = this.configService.get('EMAIL_CONFIRM_URL');
+
+  @IsNotEmpty({ message: 'Set env variable PASSWORD_RECOVERY_URL' })
+  @IsString({
+    message: 'Env variable PASSWORD_RECOVERY_URL has to type of string',
+  })
+  passwordRecoveryUrl: string = this.configService.get('PASSWORD_RECOVERY_URL');
 
   constructor(private configService: ConfigService) {
     console.log('mail.config');

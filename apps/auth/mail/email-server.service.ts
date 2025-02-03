@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
-import { AuthConfig } from '../settings/auth.config';
+import { MailConfig } from '../settings/mail.config';
 
 @Injectable()
 export class EmailService {
   constructor(
     private readonly mailerService: MailerService,
-    private configService: AuthConfig,
+    private configService: MailConfig,
   ) {}
 
   async sendUserConfirmationCode(

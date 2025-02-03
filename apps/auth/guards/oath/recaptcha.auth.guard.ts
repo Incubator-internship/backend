@@ -22,16 +22,12 @@ type RecaptchaResponse = {
 export class RecaptchaAuthGuard implements CanActivate {
   constructor(
     private readonly httpService: HttpService,
-    //private readonly configService: ConfigService<ConfigurationType, true>,
     private readonly usersRepository: UsersRepository,
   ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request: Request = context.switchToHttp().getRequest();
-    console.log(RecaptchaAuthGuard);
     const recaptchaToken = request.body.recaptchaToken;
     const userEmail = request.body.email;
-    console.log('recaptchaToken ', recaptchaToken);
-    console.log('userEmail ', userEmail);
 
     if (!recaptchaToken) {
       throw new ForbiddenException('reCAPTCHA token missing');
@@ -41,20 +37,17 @@ export class RecaptchaAuthGuard implements CanActivate {
 
     const score = await this.getScore({ recaptchaToken });
     this.checkScore({ score });
-    console.log('score ', score);
     return true;
   }
 
   private async checkEmail({ email }: { email: string }) {
     if (!email) {
-      console.log('it`s not email');
       throw new ForbiddenException('user email missing');
     }
 
     const user = await this.usersRepository.findUserByEmail(email);
 
     if (!user) {
-      console.log('it`s not user');
       throw new BadRequestException(`User with this email doesn't exist`);
     }
   }
@@ -77,9 +70,7 @@ export class RecaptchaAuthGuard implements CanActivate {
         },
       }),
     );
-    console.log('getScore response ', response);
     const { score } = response.data;
-    console.log('getScore response ', score);
     return score;
   }
 

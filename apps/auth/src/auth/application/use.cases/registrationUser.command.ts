@@ -33,6 +33,7 @@ export class RegistrationUserHandler
       command.registrationDTO.email,
       command.registrationDTO.userName,
     );
+
     if (existingUser) {
       //Check does user have provider with type 'email'
       const emailProvider = existingUser.provider.find(
@@ -74,6 +75,7 @@ export class RegistrationUserHandler
       );
       return;
     }
+
     const data = await this.createUserHandler.execute(
       new CreateUserCommand(command.registrationDTO),
     );

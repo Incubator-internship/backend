@@ -76,7 +76,7 @@ const repositories = [
 ];
 
 @Module({
-  imports: [CqrsModule, AuthModule, PassportModule, MailModule, HttpModule],
+  imports: [CqrsModule, PassportModule, MailModule, HttpModule],
   controllers: [
     UsersController,
     AuthController,

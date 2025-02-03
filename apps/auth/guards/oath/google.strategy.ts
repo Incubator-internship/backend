@@ -2,10 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { AuthGuard, PassportStrategy } from '@nestjs/passport';
 import { Strategy, VerifyCallback } from 'passport-google-oauth20';
 import { ConfigService } from '@nestjs/config';
-import * as dotenv from 'dotenv';
 import { AuthConfig } from '../../settings/auth.config';
-
-dotenv.config();
 
 @Injectable()
 export class GoogleOAuthGuard extends AuthGuard('google') {
