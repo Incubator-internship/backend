@@ -9,6 +9,7 @@ import { HttpService } from '@nestjs/axios';
 import { UsersRepository } from '../../src/users/infrastructure/users.repository';
 import { Request } from 'express';
 import { lastValueFrom } from 'rxjs';
+import { AuthConfig } from '../../settings/auth.config';
 
 type RecaptchaResponse = {
   success: true | false;
@@ -23,6 +24,7 @@ export class RecaptchaAuthGuard implements CanActivate {
   constructor(
     private readonly httpService: HttpService,
     private readonly usersRepository: UsersRepository,
+    private authConfig: AuthConfig,
   ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request: Request = context.switchToHttp().getRequest();
@@ -57,10 +59,18 @@ export class RecaptchaAuthGuard implements CanActivate {
   }: {
     recaptchaToken: string;
   }): Promise<number> {
-    // секретный ключ reCAPTCHA
-    //todo Need put this in env
-    const secretKey = '6LcghJMqAAAAAGUeTXwJ-m166AP7BoxmXAS4A6ax';
-    const recaptchaURL = 'https://www.google.com/recaptcha/api/siteverify';
+    //todo secretKey reCAPTCHA
+    //todo delete this
+    console.log(
+      'recaptcha auth guard secretKey recaptcha',
+      this.authConfig.recaptchaSecretKey,
+    );
+    console.log(
+      'recaptcha auth guard secretKey recaptchaURL',
+      this.authConfig.recaptchaUrl,
+    );
+    const secretKey = this.authConfig.recaptchaSecretKey;
+    const recaptchaURL = this.authConfig.recaptchaUrl;
 
     const response = await lastValueFrom(
       this.httpService.post<RecaptchaResponse>(recaptchaURL, null, {

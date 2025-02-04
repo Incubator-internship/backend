@@ -56,6 +56,7 @@ import { ThrottlerGuard } from '@nestjs/throttler';
 import { GoogleAuthInformation } from '../../../decorators/googleAuthInformation.decorator';
 import { GoogleAuthCommand } from '../application/use.cases/google-auth.command';
 import { RecaptchaAuthGuard } from '../../../guards/oath/recaptcha.auth.guard';
+import { AuthConfig } from '../../../settings/auth.config';
 
 @ApiTags('Auth')
 @UseGuards(ThrottlerGuard)
@@ -65,6 +66,7 @@ export class AuthController {
     private commandBus: CommandBus,
     private jwtService: JWTService,
     private usersQueryRepository: UsersQueryRepository,
+    private authConfig: AuthConfig,
   ) {}
 
   @RegistrationUserEndpoint()
@@ -208,7 +210,9 @@ export class AuthController {
       secure: true,
       sameSite: 'none',
     });
-    const redirectUrl = `http://localhost:3000/authentication?accessToken=${tokensPair.accessToken}`;
+    //todo delete after testing auth controller google-redirect check link from env
+    //const redirectUrl = `http://localhost:3000/authentication?accessToken=${tokensPair.accessToken}`;
+    const redirectUrl = `${this.authConfig.redirectUrlGoogleOauth}${tokensPair.accessToken}`;
     return res.redirect(redirectUrl);
   }
 }

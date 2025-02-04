@@ -70,9 +70,15 @@ export class AuthConfig {
   @IsString({ message: 'Env variable EMAIL_CONFIRM_URL has to type of string' })
   passwordRecoveryUrl = this.configService.get('PASSWORD_RECOVERY_URL');
 
+  @IsNotEmpty({ message: 'Set env variable REDIRECT_URL_GOOGLE_OAUTH' })
+  @IsString({
+    message: 'Env variable REDIRECT_URL_GOOGLE_OAUTH has to type of string',
+  })
+  redirectUrlGoogleOauth = this.configService.get('REDIRECT_URL_GOOGLE_OAUTH');
+
   constructor(private configService: ConfigService) {
-    console.log('port ', this.port);
-    console.log('typeof port ', typeof this.port);
+    console.log('auth.config port ', this.port);
+    console.log('auth.config typeof port ', typeof this.port);
 
     const errors = validateSync(this);
     if (errors.length > 0) {
