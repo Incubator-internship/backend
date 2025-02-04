@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
+  IsBoolean,
   IsEnum,
   IsNotEmpty,
   IsNumber,
   IsString,
-  validateSync,
+  Min,
 } from 'class-validator';
+import { configValidationUtility } from '../../../common/config-validation.utility';
 
 export enum Environment {
   DEVELOPMENT = 'auth.development',
@@ -22,6 +24,7 @@ export class AuthConfig {
 
   @IsNotEmpty({ message: 'Set env variable PORT' })
   @IsNumber({}, { message: 'Env variable PORT has to type of number' })
+  @Min(1000)
   port: number = Number(this.configService.get('PORT'));
 
   @IsNotEmpty({ message: 'Set env variable DATABASE_URL' })
@@ -76,16 +79,44 @@ export class AuthConfig {
   })
   redirectUrlGoogleOauth = this.configService.get('REDIRECT_URL_GOOGLE_OAUTH');
 
+  @IsNotEmpty({ message: 'Set env variable IS_AUTOMATICALLY_CONFIRMED_USER' })
+  @IsBoolean({
+    message:
+      'Env variable IS_AUTOMATICALLY_CONFIRMED_USER has to type of boolean',
+  })
+  isAutomaticallyConfirmedUser: boolean =
+    this.configService.get('IS_AUTOMATICALLY_CONFIRMED_USER') === 'true';
+
   constructor(private configService: ConfigService) {
+    //todo delete console.log auth config
+    console.log('check my env all variables');
     console.log('auth.config port ', this.port);
     console.log('auth.config typeof port ', typeof this.port);
+    console.log('dbURL', this.dbURL);
+    console.log('jwtSecret', this.jwtSecret);
+    console.log('emailPass', this.emailPass);
+    console.log('googleClientId', this.googleClientId);
+    console.log('googleClientSecret', this.googleClientSecret);
+    console.log('googleCallBackLocalUrl', this.googleCallBackLocalUrl);
+    console.log('googleCallBackProdUrl', this.googleCallBackProdUrl);
+    console.log('recaptchaSecretKey', this.recaptchaSecretKey);
+    console.log('recaptchaUrl', this.recaptchaUrl);
+    console.log('emailConfirmUrl', this.emailConfirmUrl);
+    console.log('passwordRecoveryUrl', this.passwordRecoveryUrl);
+    console.log('redirectUrlGoogleOauth', this.redirectUrlGoogleOauth);
+    console.log(
+      'isAutomaticallyConfirmedUser',
+      this.isAutomaticallyConfirmedUser,
+    );
+    //*******
 
-    const errors = validateSync(this);
-    if (errors.length > 0) {
-      const sortedMessages = errors
-        .map((error) => Object.values(error.constraints || {}).join(', '))
-        .join('; ');
-      throw new Error('Validation failed: ' + sortedMessages);
-    }
+    configValidationUtility.validateConfig(this);
+    // const errors = validateSync(this);
+    // if (errors.length > 0) {
+    //   const sortedMessages = errors
+    //     .map((error) => Object.values(error.constraints || {}).join(', '))
+    //     .join('; ');
+    //   throw new Error('Validation failed: ' + sortedMessages);
+    // }
   }
 }

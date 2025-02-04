@@ -45,9 +45,9 @@ apps/auth/shared-env/.env
 .env.local
 .env.*.local
 .env.auth.development
-.env.post.development
+.env.files.development
 .env.auth.production
-.env.post.production
+.env.files.production
 .env.auth.testing
 
 # temp directory

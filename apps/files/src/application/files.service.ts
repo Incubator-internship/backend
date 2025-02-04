@@ -1,19 +1,19 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { S3 } from 'aws-sdk';
 import * as sharp from 'sharp';
-import { filesSettings } from '../../settings/file-configuration';
+import { FilesConfig } from '../../settings/files.config';
 
 @Injectable()
 export class FilesService {
   private s3: S3;
   private bucketName: string;
-  constructor() {
+  constructor(private filesConfig: FilesConfig) {
     this.s3 = new S3({
-      accessKeyId: filesSettings.api.S3_ACCESS_KEY_ID,
-      secretAccessKey: filesSettings.api.S3_SECRET_ACCESS_KEY,
-      region: filesSettings.api.S3_REGION,
+      accessKeyId: this.filesConfig.s3AccessKeyId,
+      secretAccessKey: this.filesConfig.s3SecretAccessKey,
+      region: this.filesConfig.s3Region,
     });
-    this.bucketName = filesSettings.api.S3_BUCKET_NAME;
+    this.bucketName = this.filesConfig.s3BucketName;
   }
 
   async uploadFile(file: Express.Multer.File): Promise<string> {

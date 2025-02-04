@@ -1,17 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { FilesModule } from './files.module';
-import { applyAppFileSettings } from '../settings/apply-app-file-setting';
-import { filesSettings } from '../settings/file-configuration';
+import { FilesConfig } from '../settings/files.config';
 
 async function bootstrap() {
   const app = await NestFactory.create(FilesModule);
-  applyAppFileSettings(app);
 
-  console.log('appSettings.api.FILE_PORT', filesSettings.api.FILE_PORT);
-  const port = filesSettings.api.FILE_PORT ?? filesSettings.api.PORT ?? 5001;
-
-  console.log('file port', port);
-  await app.listen(port ?? 3000);
-  console.log(`Files microservice is running on ${port}`);
+  const filesConfig = app.get<FilesConfig>(FilesConfig);
+  //todo delete console.log files maine
+  console.log('files port', filesConfig.port);
+  await app.listen(filesConfig.port);
+  console.log(`Files microservice is running on ${filesConfig.port} port`);
 }
 bootstrap();

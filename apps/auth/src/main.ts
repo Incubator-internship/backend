@@ -8,7 +8,7 @@ async function bootstrap() {
   const authConfig = app.get<AuthConfig>(AuthConfig);
 
   await app.listen(authConfig.port);
-
-  console.log(`Auth microservice is running on ${authConfig.port}`);
+  //todo delete console.log auth main
+  console.log(`Auth microservice is running on ${authConfig.port} port`);
 }
 bootstrap();

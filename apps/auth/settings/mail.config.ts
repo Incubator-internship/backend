@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { IsEnum, IsNotEmpty, IsString, validateSync } from 'class-validator';
+import { configValidationUtility } from '../../../common/config-validation.utility';
 
 export enum Environment {
   DEVELOPMENT = 'auth.development',
@@ -30,14 +31,18 @@ export class MailConfig {
 
   constructor(private configService: ConfigService) {
     console.log('mail.config');
-    console.log('mail.config first character emailPass', this.emailPass[0]);
+    console.log('mail.config first character emailPass', this.emailPass);
+    console.log('emailConfirmUrl', this.emailConfirmUrl);
+    console.log('passwordRecoveryUrl', this.passwordRecoveryUrl);
 
-    const errors = validateSync(this);
-    if (errors.length > 0) {
-      const sortedMessages = errors
-        .map((error) => Object.values(error.constraints || {}).join(', '))
-        .join('; ');
-      throw new Error('Validation failed: ' + sortedMessages);
-    }
+    configValidationUtility.validateConfig(this);
+
+    // const errors = validateSync(this);
+    // if (errors.length > 0) {
+    //   const sortedMessages = errors
+    //     .map((error) => Object.values(error.constraints || {}).join(', '))
+    //     .join('; ');
+    //   throw new Error('Validation failed: ' + sortedMessages);
+    //}
   }
 }
