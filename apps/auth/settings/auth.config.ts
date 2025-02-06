@@ -12,9 +12,9 @@ import { configValidationUtility } from '../../../common/config-validation.utili
 
 export enum Environment {
   DEVELOPMENT = 'auth.development',
-  PRODUCTION = 'production',
-  TESTING = 'testing',
-  STAGING = 'staging',
+  PRODUCTION = 'auth.production',
+  TESTING = 'auth.testing',
+  STAGING = 'auth.staging',
 }
 
 @Injectable()
@@ -108,6 +108,7 @@ export class AuthConfig {
       'isAutomaticallyConfirmedUser',
       this.isAutomaticallyConfirmedUser,
     );
+    console.log('env', this.env);
     //*******
 
     configValidationUtility.validateConfig(this);

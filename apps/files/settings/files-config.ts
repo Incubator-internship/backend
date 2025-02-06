@@ -1,6 +1,6 @@
 import { ConfigModule } from '@nestjs/config';
 
-export const configModule = ConfigModule.forRoot({
+export const filesConfigModule = ConfigModule.forRoot({
   envFilePath: [
     process.env.ENV_FILE_PATH?.trim(), // this example for devops we can start application usage another .env
     // for example in my system Windows i have another prod env .env.prodaction and path for this file G:/Backend/.env.prodaction

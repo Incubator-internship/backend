@@ -14,6 +14,7 @@ CREATE TABLE "UserMan" (
     "name" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
+
     CONSTRAINT "UserMan_pkey" PRIMARY KEY ("id")
 );
 

@@ -4,10 +4,10 @@ import { IsEnum, IsNotEmpty, IsNumber, IsString, Min } from 'class-validator';
 import { configValidationUtility } from '../../../common/config-validation.utility';
 
 export enum Environment {
-  DEVELOPMENT = 'auth.development',
-  PRODUCTION = 'production',
-  TESTING = 'testing',
-  STAGING = 'staging',
+  DEVELOPMENT = 'files.development',
+  PRODUCTION = 'files.production',
+  TESTING = 'files.testing',
+  STAGING = 'files.staging',
 }
 
 @Injectable()
