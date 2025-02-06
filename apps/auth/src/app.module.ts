@@ -1,3 +1,5 @@
+// import of this config 'configModule' module must be on the top of imports
+import { configModule } from '../settings/auth-config';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -7,6 +9,7 @@ import { PostsModule } from './posts.module';
 
 @Module({
   imports: [
+    configModule,
     AuthModule,
     PostsModule,
     ThrottlerModule.forRoot([

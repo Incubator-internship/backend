@@ -3,6 +3,7 @@ import { EmailConfirmationModel } from '../../domain/createEmailConfirmation.mod
 import { randomUUID } from 'crypto';
 import { add } from 'date-fns';
 import { EmailConfirmationRepository } from '../../infrastructure/emailConfirmation.repository';
+import { AuthConfig } from '../../../../settings/auth.config';
 
 export class CreateEmailConfirmationCommand {
   constructor(public readonly userId: number) {}
@@ -12,14 +13,17 @@ export class CreateEmailConfirmationCommand {
 export class CreateEmailConfirmationHandler
   implements ICommandHandler<CreateEmailConfirmationCommand>
 {
-  constructor(private emailConfirmation: EmailConfirmationRepository) {}
+  constructor(
+    private emailConfirmation: EmailConfirmationRepository,
+    private authConfig: AuthConfig,
+  ) {}
 
   async execute(command: CreateEmailConfirmationCommand) {
     const confirmationCode = randomUUID();
     const expirationDate = add(new Date(), {
       minutes: 5,
     });
-    const isConfirmed = false;
+    const isConfirmed = this.authConfig.isAutomaticallyConfirmedUser;
 
     const emailConfirmationDTO = EmailConfirmationModel.createEmailConfirmation(
       confirmationCode,

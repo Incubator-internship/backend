@@ -20,12 +20,10 @@ export class NewPasswordHandler implements ICommandHandler<NewPasswordCommand> {
   ) {}
 
   async execute(command: NewPasswordCommand) {
-    console.log(command.newPasswordModel.recoveryCode);
     const recoveryDTO =
       await this.passwordRecoveryRepository.findRecoveryCodeByCode(
         command.newPasswordModel.recoveryCode,
       );
-    console.log(recoveryDTO);
     if (!recoveryDTO) {
       return exceptionHandler(
         ResultCode.NotFound,

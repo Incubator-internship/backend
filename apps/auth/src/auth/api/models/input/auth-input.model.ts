@@ -100,6 +100,9 @@ export class InputNewPasswordModel {
   })
   @IsString()
   @Length(6, 20)
+  @Matches(
+    /^(?=.*[0-9])(?=.*[A-Z])(?=.*[! "#$%&'()*+,-./:;<=>?@[\\\]^_`{|}~]).*$/,
+  )
   newPassword: string;
   @ApiProperty({
     required: true,

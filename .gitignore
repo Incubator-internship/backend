@@ -36,14 +36,17 @@ lerna-debug.log*
 !.vscode/extensions.json
 
 # dotenv environment variable files
+.env
 apps/auth/shared-env/.env
 .auth.env
 .env.development.local
 .env.test.local
 .env.production.local
 .env.local
-.env
-
+.env.*.local
+.env.auth.testing
+.env.auth.development
+.env.files.development
 # temp directory
 .temp
 .tmp
@@ -56,3 +59,5 @@ pids
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+.env.auth.development
+.env.files.development

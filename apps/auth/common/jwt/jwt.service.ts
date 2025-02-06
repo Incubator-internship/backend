@@ -1,22 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-
-import { appSettings } from '../../settings/configuration';
-//config();
+import { AuthConfig } from '../../settings/auth.config';
 
 @Injectable()
 export class JWTService {
   constructor(
     private jwtService: JwtService,
-    //private configService: ConfigService<ConfigurationType, true>,
+    private configService: AuthConfig,
   ) {}
 
   async createJWT(userId: number, deviceId: string) {
     // const secretKey = this.configService.get('JwtSettings.JWT_SECRET', {
     //   infer: true,
     // });
-    const secretKey = appSettings.api.JWT_SECRET;
-    console.log('secretKey JWTService', secretKey);
+    const secretKey = this.configService.jwtSecret;
+    //todo after testing delete console.log below
+    console.log('secretKey JWTService in jwt service', secretKey);
 
     if (!secretKey) {
       throw new Error('Invalid JWT_SECRET');

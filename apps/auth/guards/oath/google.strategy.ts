@@ -2,11 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { AuthGuard, PassportStrategy } from '@nestjs/passport';
 import { Strategy, VerifyCallback } from 'passport-google-oauth20';
 import { ConfigService } from '@nestjs/config';
-import * as dotenv from 'dotenv';
-import * as process from 'node:process';
-import { appSettings } from '../../settings/configuration';
-
-dotenv.config();
+import { AuthConfig } from '../../settings/auth.config';
 
 @Injectable()
 export class GoogleOAuthGuard extends AuthGuard('google') {
@@ -19,15 +15,15 @@ export class GoogleOAuthGuard extends AuthGuard('google') {
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
-  constructor() {
-    console.log(appSettings.api.GOOGLE_CLIENT_ID);
+  constructor(private authConfig: AuthConfig) {
+    //todo delete console.log in google.strategy
+    console.log('GoogleStrategy clientID', authConfig.googleClientId);
+    console.log('GoogleStrategy clientSecret', authConfig.googleClientSecret);
+    console.log('GoogleStrategy callbackURL', authConfig.googleCallBackProdUrl);
     super({
-      clientID: appSettings.api.GOOGLE_CLIENT_ID,
-      clientSecret: appSettings.api.GOOGLE_CLIENT_SECRET,
-      callbackURL: appSettings.api.GOOGLE_CALLBACK_LOCAL_URL,
-      // clientID: process.env.GOOGLE_CLIENT_ID,
-      // clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      // callbackURL: process.env.GOOGLE_CALLBACK_PROD_URL,
+      clientID: authConfig.googleClientId,
+      clientSecret: authConfig.googleClientSecret,
+      callbackURL: authConfig.googleCallBackProdUrl,
       scope: ['email', 'profile'],
     });
   }

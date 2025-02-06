@@ -9,7 +9,7 @@ import * as cookieParser from 'cookie-parser';
 import { AppModule } from '../src/app.module';
 import { LoggerMiddlewareFunc } from '../../../common/logger.middleware';
 import { HttpExceptionFilter } from '../../../common/http-exception-filter';
-import { appSettings } from './configuration';
+import { AuthConfig } from './auth.config';
 
 interface CustomError {
   field: string;
@@ -60,7 +60,8 @@ const setAppPrefix = (app: INestApplication) => {
 };
 
 const setSwagger = (app: INestApplication) => {
-  if (!appSettings.env.isProduction()) {
+  const authConfig = app.get(AuthConfig); // Получаем AuthConfig из контейнера NestJS
+  if (authConfig.env === 'auth.production') {
     //const swaggerPath = APP_PREFIX + 'swagger-doc';
 
     const config = new DocumentBuilder()

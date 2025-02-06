@@ -9,6 +9,7 @@ import { HttpService } from '@nestjs/axios';
 import { UsersRepository } from '../../src/users/infrastructure/users.repository';
 import { Request } from 'express';
 import { lastValueFrom } from 'rxjs';
+import { AuthConfig } from '../../settings/auth.config';
 
 type RecaptchaResponse = {
   success: true | false;
@@ -22,16 +23,13 @@ type RecaptchaResponse = {
 export class RecaptchaAuthGuard implements CanActivate {
   constructor(
     private readonly httpService: HttpService,
-    //private readonly configService: ConfigService<ConfigurationType, true>,
     private readonly usersRepository: UsersRepository,
+    private authConfig: AuthConfig,
   ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request: Request = context.switchToHttp().getRequest();
-    console.log(RecaptchaAuthGuard);
     const recaptchaToken = request.body.recaptchaToken;
     const userEmail = request.body.email;
-    console.log('recaptchaToken ', recaptchaToken);
-    console.log('userEmail ', userEmail);
 
     if (!recaptchaToken) {
       throw new ForbiddenException('reCAPTCHA token missing');
@@ -41,20 +39,17 @@ export class RecaptchaAuthGuard implements CanActivate {
 
     const score = await this.getScore({ recaptchaToken });
     this.checkScore({ score });
-    console.log('score ', score);
     return true;
   }
 
   private async checkEmail({ email }: { email: string }) {
     if (!email) {
-      console.log('it`s not email');
       throw new ForbiddenException('user email missing');
     }
 
     const user = await this.usersRepository.findUserByEmail(email);
 
     if (!user) {
-      console.log('it`s not user');
       throw new BadRequestException(`User with this email doesn't exist`);
     }
   }
@@ -64,10 +59,18 @@ export class RecaptchaAuthGuard implements CanActivate {
   }: {
     recaptchaToken: string;
   }): Promise<number> {
-    // секретный ключ reCAPTCHA
-    //todo Need put this in env
-    const secretKey = '6LcghJMqAAAAAGUeTXwJ-m166AP7BoxmXAS4A6ax';
-    const recaptchaURL = 'https://www.google.com/recaptcha/api/siteverify';
+    //todo secretKey reCAPTCHA
+    //todo delete this
+    console.log(
+      'recaptcha auth guard secretKey recaptcha',
+      this.authConfig.recaptchaSecretKey,
+    );
+    console.log(
+      'recaptcha auth guard secretKey recaptchaURL',
+      this.authConfig.recaptchaUrl,
+    );
+    const secretKey = this.authConfig.recaptchaSecretKey;
+    const recaptchaURL = this.authConfig.recaptchaUrl;
 
     const response = await lastValueFrom(
       this.httpService.post<RecaptchaResponse>(recaptchaURL, null, {
@@ -77,9 +80,7 @@ export class RecaptchaAuthGuard implements CanActivate {
         },
       }),
     );
-    console.log('getScore response ', response);
     const { score } = response.data;
-    console.log('getScore response ', score);
     return score;
   }
 

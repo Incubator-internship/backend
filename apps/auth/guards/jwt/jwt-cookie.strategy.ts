@@ -4,13 +4,17 @@ import { SessionsRepository } from '../../src/devices/infrastructure/sessions.re
 import { ExtractJwt } from 'passport-jwt';
 import { Request } from 'express';
 import { Strategy } from 'passport-jwt';
+import { AuthConfig } from '../../settings/auth.config';
 
 @Injectable()
 export class JwtRefreshAuthGuard extends AuthGuard('jwt-cookie') {}
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt-cookie') {
-  constructor(private readonly sessionsRepository: SessionsRepository) {
+  constructor(
+    private readonly sessionsRepository: SessionsRepository,
+    private authConfig: AuthConfig,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: Request) => {
@@ -18,8 +22,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt-cookie') {
         },
       ]),
       ignoreExpiration: false,
-      secretOrKey: '12345',
-      /*appSettings.api.JWT_SECRET*/ /*|| process.env.JWT_SECRET || '123'*/
+      secretOrKey: authConfig.jwtSecret,
     });
   }
 

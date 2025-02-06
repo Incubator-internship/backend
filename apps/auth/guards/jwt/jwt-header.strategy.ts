@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthGuard, PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { UsersRepository } from '../../src/users/infrastructure/users.repository';
+import { AuthConfig } from '../../settings/auth.config';
 
 @Injectable()
 export class JwtAccessAuthGuard extends AuthGuard('jwt-header') {}
@@ -11,11 +12,14 @@ export class JwtAccessStrategy extends PassportStrategy(
   Strategy,
   'jwt-header',
 ) {
-  constructor(private readonly userRepositorySQL: UsersRepository) {
+  constructor(
+    private readonly userRepositorySQL: UsersRepository,
+    private authConfig: AuthConfig,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: process.env.JWT_SECRET,
+      secretOrKey: authConfig.jwtSecret,
     });
   }
 

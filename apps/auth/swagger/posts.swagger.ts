@@ -172,7 +172,7 @@ export function GetPostByPostIdEndpoint() {
     }),
     ApiResponse({
       status: 404,
-      description: 'Forbidden',
+      description: 'NotFound',
       type: () => ErrorsMessagesSwaggerType,
     }),
     ApiResponse({
@@ -206,6 +206,11 @@ export function GetPostsByUserIdEndpoint() {
     ApiResponse({
       status: 400,
       description: 'Forbidden',
+      type: () => ErrorsMessagesSwaggerType,
+    }),
+    ApiResponse({
+      status: 404,
+      description: 'NotFound',
       type: () => ErrorsMessagesSwaggerType,
     }),
     ApiResponse({
