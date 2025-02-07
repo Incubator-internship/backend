@@ -77,6 +77,11 @@ spec:
                  secretKeyRef:
                    name: auth-backend-production-config-secret
                    key: IS_AUTOMATICALLY_CONFIRMED_USER
+             - name: REDIRECT_URL_GOOGLE_OAUTH
+               valueFrom:
+                 secretKeyRef:
+                   name: auth-backend-production-config-secret
+                   key: REDIRECT_URL_GOOGLE_OAUTH
              - name: JWT_SECRET
                valueFrom:
                  secretKeyRef:
