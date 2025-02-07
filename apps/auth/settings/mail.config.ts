@@ -2,13 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { configValidationUtility } from '../../../common/config-validation.utility';
-
-export enum Environment {
-  DEVELOPMENT = 'auth.development',
-  PRODUCTION = 'production',
-  TESTING = 'testing',
-  STAGING = 'staging',
-}
+import { Environment } from './auth.config';
 
 @Injectable()
 export class MailConfig {
