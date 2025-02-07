@@ -3,6 +3,8 @@ import { EmailConfirmationExist } from '../../../../../decorators/emailConfirmat
 import { ConfirmationCodeIsValid } from '../../../../../decorators/confirmationCodeIsValid.decorator';
 import { EmailIsNotExist } from '../../../../../decorators/emailIsNotExist.decorator';
 import { ApiProperty } from '@nestjs/swagger';
+import { ParseIntPipe } from '@nestjs/common';
+import { Transform } from 'class-transformer';
 
 export class RegistrationInputUserModel {
   @ApiProperty({
@@ -83,9 +85,9 @@ export class InputPasswordRecoveryModel {
     example: 'example@example.com',
     pattern: '^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$',
   })
+  @EmailIsNotExist({ message: 'Email doesnt exist' })
   @IsString()
   @Matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
-  @EmailIsNotExist({ message: 'Email doesnt exist' })
   email: string;
 }
 export class InputNewPasswordModel {

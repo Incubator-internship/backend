@@ -5,7 +5,9 @@ import { applyAppSettings } from '../settings/apply-app-setting';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
   applyAppSettings(app);
+
   const authConfig = app.get<AuthConfig>(AuthConfig);
 
   await app.listen(authConfig.port);
