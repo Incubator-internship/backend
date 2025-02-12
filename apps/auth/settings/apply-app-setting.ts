@@ -60,36 +60,36 @@ const setAppPrefix = (app: INestApplication) => {
 };
 
 const setSwagger = (app: INestApplication) => {
-  const authConfig = app.get(AuthConfig); // Получаем AuthConfig из контейнера NestJS
-  if (authConfig.env === 'auth.production') {
-    //const swaggerPath = APP_PREFIX + 'swagger-doc';
+  //const authConfig = app.get(AuthConfig); // Получаем AuthConfig из контейнера NestJS
+  //if (authConfig.env === 'auth.production') {
+  //const swaggerPath = APP_PREFIX + 'swagger-doc';
 
-    const config = new DocumentBuilder()
-      .setTitle('INCTAGRAM API')
-      .addBearerAuth()
-      .setVersion('1.0')
-      .addApiKey(
-        {
-          type: 'apiKey',
-          name: 'refreshToken',
-          in: 'cookie',
-          description:
-            'JWT refreshToken inside cookie. Must be correct, and must not expire.',
-        },
-        'refreshToken',
-      )
-      .addBearerAuth({
-        description: 'Default JWT Authorization',
-        type: 'http',
-        in: 'header',
-        scheme: 'bearer',
-        bearerFormat: 'JWT',
-      })
-      .build();
+  const config = new DocumentBuilder()
+    .setTitle('INCTAGRAM API')
+    .addBearerAuth()
+    .setVersion('1.0')
+    .addApiKey(
+      {
+        type: 'apiKey',
+        name: 'refreshToken',
+        in: 'cookie',
+        description:
+          'JWT refreshToken inside cookie. Must be correct, and must not expire.',
+      },
+      'refreshToken',
+    )
+    .addBearerAuth({
+      description: 'Default JWT Authorization',
+      type: 'http',
+      in: 'header',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
+    })
+    .build();
 
-    const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('api/v1/swagger', app, document);
-  }
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api/v1/swagger', app, document);
+  //}
 };
 const setAppPipes = (app: INestApplication) => {
   app.useGlobalPipes(

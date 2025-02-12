@@ -1,5 +1,4 @@
 import {
-  IsDate,
   IsInt,
   IsNotEmpty,
   IsOptional,
@@ -11,30 +10,29 @@ import {
 import { EmailConfirmationExist } from '../../../../../decorators/emailConfirmationExist.decorator';
 import { ConfirmationCodeIsValid } from '../../../../../decorators/confirmationCodeIsValid.decorator';
 import { EmailIsNotExist } from '../../../../../decorators/emailIsNotExist.decorator';
-import { ApiProperty } from '@nestjs/swagger';
-import { BadRequestException } from '@nestjs/common';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 
 export class GetAllPostsModel {
-  @IsOptional()
-  @Transform(({ value }) => {
-    if (!value) return undefined;
-    try {
-      const decoded = Buffer.from(value, 'base64').toString('utf-8');
-      const date = new Date(decoded);
-      if (isNaN(date.getTime())) throw new BadRequestException('Invalid date');
-      return date;
-    } catch {
-      throw new BadRequestException('Invalid cursor format');
-    }
+  @ApiPropertyOptional({
+    example: 5,
+    description: 'Cursor for pagination (optional, starts from a post ID)',
+    type: Number,
   })
-  @IsDate()
-  cursor?: Date;
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value, 10))
+  @IsInt()
+  cursor?: number;
+  @ApiPropertyOptional({
+    example: 10,
+    description: 'Number of posts per page (optional, default: 4)',
+    type: Number,
+  })
   @IsOptional()
   @Transform(({ value }) => parseInt(value, 10)) // Преобразуем в число
   @IsInt()
   @Min(1) // Минимальное значение (например, 1 пост)
-  pageSize?: number = 4;
+  pageSize: number = 4;
 }
 
 export class RegistrationInputUserModel {

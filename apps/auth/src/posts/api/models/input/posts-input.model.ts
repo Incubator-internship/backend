@@ -1,7 +1,18 @@
 import { IsNotEmpty, IsString, Length, MaxLength } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class PostInputModel {
+  // @ApiProperty({
+  //   required: false,
+  //   description: 'Content description',
+  //   maxLength: 500,
+  //   example: 'some information about photo, this`s not mandatory',
+  // })
+  @ApiPropertyOptional({
+    description: 'Some content which describes the photos. This is optional.',
+    maxLength: 500,
+    example: 'Some information about the photo, this is not mandatory.',
+  })
   @IsString()
   @MaxLength(500)
   content: string;

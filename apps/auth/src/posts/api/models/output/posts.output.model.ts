@@ -39,3 +39,17 @@ export class PostOutputModel {
   })
   photos: PhotoOutputModel[];
 }
+
+export class CursorBasedPaginationPostsModel {
+  @ApiProperty({
+    type: [PostOutputModel],
+    description: 'Array of posts',
+  })
+  posts: PostOutputModel[];
+  @ApiProperty({
+    example: 2,
+    description: 'Cursor for pagination. number or null',
+    oneOf: [{ type: 'number' }, { type: 'null' }],
+  })
+  nextCursor: number | null;
+}

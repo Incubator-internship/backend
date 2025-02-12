@@ -2,13 +2,18 @@ import { applyDecorators } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiBody,
+  ApiConsumes,
   ApiOperation,
   ApiParam,
   ApiProperty,
+  ApiQuery,
   ApiResponse,
 } from '@nestjs/swagger';
 import { ErrorsMessagesSwaggerType } from '../src/auth/api/models/output/auth-output.model';
-import { PostOutputModel } from '../src/posts/api/models/output/posts.output.model';
+import {
+  CursorBasedPaginationPostsModel,
+  PostOutputModel,
+} from '../src/posts/api/models/output/posts.output.model';
 import { PostUpdateInputModel } from '../src/posts/api/models/input/posts-input.model';
 
 export function GetAllPostsEndpoint() {
@@ -16,10 +21,24 @@ export function GetAllPostsEndpoint() {
     ApiOperation({
       summary: 'Get all posts',
     }),
+    ApiQuery({
+      name: 'cursor',
+      required: false,
+      example: 5,
+      description: 'Cursor for pagination (optional, starts from a post ID)',
+      type: Number,
+    }),
+    ApiQuery({
+      name: 'pageSize',
+      required: false,
+      example: 10,
+      description: 'Number of posts per page (optional, default: 4)',
+      type: Number,
+    }),
     ApiResponse({
       status: 200,
       description: 'Success',
-      type: [PostOutputModel],
+      type: CursorBasedPaginationPostsModel,
     }),
     ApiResponse({
       status: 429,
@@ -34,8 +53,11 @@ export function CreatePostEndpoint() {
       summary: 'Create new post',
     }),
     ApiBearerAuth(),
+    ApiConsumes('multipart/form-data'),
+    //***********************
     ApiBody({
-      description: 'Create Post',
+      description: 'Create new post with photos',
+      type: 'multipart/form-data', // Указываем, что это multipart
       required: true,
       schema: {
         type: 'object',
@@ -43,22 +65,49 @@ export function CreatePostEndpoint() {
           content: {
             type: 'string',
             maxLength: 500,
-            description: 'Some content which describe photos, NO Mandatory!',
+            description:
+              'Some content which describe photos, It`s not mandatory!',
+            example: 'Some information about the photo, this is not mandatory.',
           },
-          photos: {
-            type: 'array',
+          files: {
+            type: 'array', // Указываем, что это массив файлов
             items: {
               type: 'string',
-              format: 'binary',
-              description: 'Download photo min 1 max 10',
+              format: 'binary', // Указываем, что это файл
             },
             minItems: 1,
             maxItems: 10,
           },
         },
-        required: ['photos'],
       },
     }),
+    //***********************
+    // ApiBody({
+    //   description: 'Create Post',
+    //   required: true,
+    //   schema: {
+    //     type: 'object',
+    //     properties: {
+    //       content: {
+    //         type: 'string',
+    //         maxLength: 500,
+    //         description: 'Some content which describe photos, NO Mandatory!',
+    //         example: 'Some information about the photo, this is not mandatory.',
+    //       },
+    //       photos: {
+    //         type: 'array',
+    //         items: {
+    //           type: 'string',
+    //           format: 'binary',
+    //           description: 'Download photo min 1 max 10',
+    //         },
+    //         minItems: 1,
+    //         maxItems: 10,
+    //       },
+    //     },
+    //     required: ['photos'],
+    //   },
+    // }),
     ApiResponse({
       status: 201,
       description: 'Return postId',

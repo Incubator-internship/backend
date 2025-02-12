@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { PostOutputModel } from '../api/models/output/posts.output.model';
+import {
+  CursorBasedPaginationPostsModel,
+  PostOutputModel,
+} from '../api/models/output/posts.output.model';
 import { GetAllPostsModel } from '../../auth/api/models/input/auth-input.model';
 import log from 'eslint-plugin-react/lib/util/log';
 
@@ -10,29 +13,34 @@ export class PostsQueryRepository {
 
   async getAllPosts(
     getAllPostsModel: GetAllPostsModel,
-  ) /*: Promise<PostOutputModel[]>*/ {
+  ): Promise<CursorBasedPaginationPostsModel> {
     const allPosts = await this.prismaService.post.findMany({
       take: getAllPostsModel.pageSize,
       skip: getAllPostsModel.cursor ? 1 : 0,
       cursor: getAllPostsModel.cursor
-        ? { createdAt: getAllPostsModel.cursor }
+        ? { id: getAllPostsModel.cursor }
         : undefined,
       where: { deletedAt: null },
       include: { photos: true },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: 'asc' },
     });
     console.log('repository allPosts --->', allPosts);
-    return allPosts.map((p) => {
-      console.log('p.photos,', p.photos);
-      return {
-        id: p.id,
-        content: p.content,
-        userId: p.userId,
-        createdAt: p.createdAt,
-        photos: p.photos,
-        ss:p.
-      };
-    });
+    return {
+      posts: allPosts.map((p) => {
+        console.log('p.photos,', p.photos);
+        return {
+          id: p.id,
+          content: p.content,
+          userId: p.userId,
+          createdAt: p.createdAt,
+          photos: p.photos,
+        };
+      }),
+      nextCursor:
+        allPosts.length === getAllPostsModel.pageSize
+          ? allPosts[allPosts.length - 1].id
+          : null,
+    };
   }
 
   async getPostByPostId(postId: number): Promise<PostOutputModel | null> {
