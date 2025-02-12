@@ -21,20 +21,6 @@ export function GetAllPostsEndpoint() {
     ApiOperation({
       summary: 'Get all posts',
     }),
-    ApiQuery({
-      name: 'cursor',
-      required: false,
-      example: 5,
-      description: 'Cursor for pagination (optional, starts from a post ID)',
-      type: Number,
-    }),
-    ApiQuery({
-      name: 'pageSize',
-      required: false,
-      example: 10,
-      description: 'Number of posts per page (optional, default: 4)',
-      type: Number,
-    }),
     ApiResponse({
       status: 200,
       description: 'Success',
