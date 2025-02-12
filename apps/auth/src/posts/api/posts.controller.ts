@@ -9,6 +9,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Query,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
@@ -44,6 +45,7 @@ import {
   exceptionHandler,
   ResultCode,
 } from '../../../common/exception-filters/exception.handler';
+import { GetAllPostsModel } from '../../auth/api/models/input/auth-input.model';
 
 @ApiTags('Posts')
 @UseGuards(ThrottlerGuard)
@@ -57,8 +59,8 @@ export class PostsController {
 
   @GetAllPostsEndpoint()
   @Get('all-posts')
-  async getAllPosts() {
-    return await this.postsQueryRepository.getAllPosts();
+  async getAllPosts(@Query() getAllPostsModel: GetAllPostsModel) {
+    return await this.postsQueryRepository.getAllPosts(getAllPostsModel);
   }
 
   @CreatePostEndpoint()

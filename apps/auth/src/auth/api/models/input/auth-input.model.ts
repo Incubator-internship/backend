@@ -1,10 +1,39 @@
-import { IsNotEmpty, IsString, Length, Matches } from 'class-validator';
+import {
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Length,
+  Matches,
+  Min,
+} from 'class-validator';
 import { EmailConfirmationExist } from '../../../../../decorators/emailConfirmationExist.decorator';
 import { ConfirmationCodeIsValid } from '../../../../../decorators/confirmationCodeIsValid.decorator';
 import { EmailIsNotExist } from '../../../../../decorators/emailIsNotExist.decorator';
-import { ApiProperty } from '@nestjs/swagger';
-import { ParseIntPipe } from '@nestjs/common';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
+
+export class GetAllPostsModel {
+  @ApiPropertyOptional({
+    example: 5,
+    description: 'Cursor for pagination (optional, starts from a post ID)',
+    type: Number,
+  })
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value, 10))
+  @IsInt()
+  cursor?: number;
+  @ApiPropertyOptional({
+    example: 10,
+    description: 'Number of posts per page (optional, default: 4)',
+    type: Number,
+  })
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value, 10)) // Преобразуем в число
+  @IsInt()
+  @Min(1) // Минимальное значение (например, 1 пост)
+  pageSize: number = 4;
+}
 
 export class RegistrationInputUserModel {
   @ApiProperty({
@@ -46,6 +75,7 @@ export class RegistrationInputUserModel {
   @Matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
   email: string;
 }
+
 export class LoginInputModelType {
   @ApiProperty({ required: true, example: 'string' })
   @IsNotEmpty()
@@ -56,6 +86,7 @@ export class LoginInputModelType {
   @IsString()
   password: string;
 }
+
 export class InputEmailModel {
   @ApiProperty({
     required: true,
@@ -68,6 +99,7 @@ export class InputEmailModel {
   @EmailConfirmationExist()
   email: string;
 }
+
 export class InputCodeModel {
   @ApiProperty({
     required: true,
@@ -78,6 +110,7 @@ export class InputCodeModel {
   @ConfirmationCodeIsValid()
   code: string;
 }
+
 export class InputPasswordRecoveryModel {
   @ApiProperty({
     required: true,
@@ -90,6 +123,7 @@ export class InputPasswordRecoveryModel {
   @Matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
   email: string;
 }
+
 export class InputNewPasswordModel {
   @ApiProperty({
     required: true,
