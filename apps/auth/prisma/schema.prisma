@@ -31,7 +31,16 @@ model User {
 
   @@map("users")
 }
-
+model Profile {
+  id Int @id @default(autoincrement())
+  firstName String
+  lastName String
+  dateOfBirthday DateTime
+  country String
+  city String
+  aboutMe String
+  @@map("profile")
+}
 model Provider {
   id           Int      @id @default(autoincrement())
   userId       Int
@@ -101,3 +110,4 @@ model Photo {
 
   @@map("photos")
 }
+

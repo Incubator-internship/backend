@@ -7,6 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "generate:auth": "npx prisma generate --schema=./apps/auth/prisma/schema.prisma",
+    "create-migrate:auth": "dotenv -e .auth.env -- npx prisma migrate dev --name init --schema=./apps/auth/prisma/schema.prisma --create-only",
     "migrate:auth": "dotenv -e .auth.env -- npx prisma migrate dev --name init --schema=./apps/auth/prisma/schema.prisma",
     "migrate:deploy-auth": "dotenv -e .auth.env -- npx prisma migrate deploy --schema=./apps/auth/prisma/schema.prisma",
     "build": "nest build",

@@ -5,7 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth.module';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { PostsModule } from './posts.module';
+import { PostsModule } from './posts/posts.module';
 
 @Module({
   imports: [
