@@ -94,10 +94,19 @@ export class AuthController {
     await this.commandBus.execute(
       new CreateDeviceSessionCommand(tokensPair.refreshToken, deviceName, ip),
     );
+    //these settings for frontend developer in time developing
+    //because they need to send request to backend from http
+    //maybe need use ngrok also
     res.cookie('refreshToken', tokensPair.refreshToken, {
       httpOnly: true,
-      secure: true,
+      secure: false,
+      sameSite: 'none',
     });
+    //these settings how must be for cookies
+    // res.cookie('refreshToken', tokensPair.refreshToken, {
+    //   httpOnly: true,
+    //   secure: true,
+    // });
     return { accessToken: tokensPair.accessToken };
   }
 
