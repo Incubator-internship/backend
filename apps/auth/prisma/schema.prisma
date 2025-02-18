@@ -28,19 +28,25 @@ model User {
   passwordRecovery  PasswordRecovery[] @relation("PasswordRecovery")
   provider          Provider[]         @relation("Providers")
   posts             Post[]             @relation("Posts")
+  profile           Profile?
 
   @@map("users")
 }
+
 model Profile {
-  id Int @id @default(autoincrement())
-  firstName String
-  lastName String
+  userId         Int @id
+  firstName      String
+  lastName       String
   dateOfBirthday DateTime
-  country String
-  city String
-  aboutMe String
+  country        String
+  city           String
+  aboutMe        String
+
+  user User @relation(fields: [userId], references: [id])
+
   @@map("profile")
 }
+
 model Provider {
   id           Int      @id @default(autoincrement())
   userId       Int
@@ -110,4 +116,3 @@ model Photo {
 
   @@map("photos")
 }
-
