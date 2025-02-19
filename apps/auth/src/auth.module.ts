@@ -44,6 +44,8 @@ import { UpdateUserHandler } from './users/application/use.cases/updateUser.comm
 import { RecaptchaAuthGuard } from '../guards/oath/recaptcha.auth.guard';
 import { HttpModule } from '@nestjs/axios';
 import { AuthConfig } from '../settings/auth.config';
+import { ProfileRepository } from './users/infrastructure/profile.repository';
+import { EditProfileHandler } from './users/application/use.cases/updateProfile.command';
 
 const commands = [
   CreateUserHandler,
@@ -63,6 +65,7 @@ const commands = [
   CreateUserProviderHandler,
   CreateUserAndProviderHandler,
   UpdateUserHandler,
+  EditProfileHandler,
 ];
 const service = [PrismaService, AuthService, JWTService, JwtService];
 const repositories = [
@@ -73,6 +76,7 @@ const repositories = [
   PasswordRecoveryRepository,
   SessionsQueryRepository,
   UsersProvidersRepository,
+  ProfileRepository,
 ];
 
 @Module({

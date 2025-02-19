@@ -34,15 +34,15 @@ model User {
 }
 
 model Profile {
-  userId         Int @id
+  profileId      Int      @id
   firstName      String
   lastName       String
-  dateOfBirthday DateTime
-  country        String
-  city           String
-  aboutMe        String
+  dateOfBirthday DateTime?
+  country        String?
+  city           String?
+  aboutMe        String?
 
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [profileId], references: [id])
 
   @@map("profile")
 }
