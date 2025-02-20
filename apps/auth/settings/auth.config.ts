@@ -87,6 +87,14 @@ export class AuthConfig {
   isAutomaticallyConfirmedUser: boolean =
     this.configService.get('IS_AUTOMATICALLY_CONFIRMED_USER') === 'true';
 
+  @IsNotEmpty({ message: 'Set env variable MIN_AGE' })
+  @IsNumber({}, { message: 'Env variable MIN_AGE has to type of number' })
+  minAge: number = Number(this.configService.get('MIN_AGE'));
+
+  @IsNotEmpty({ message: 'Set env variable MAX_AGE' })
+  @IsNumber({}, { message: 'Env variable MAX_AGE has to type of number' })
+  maxAge: number = Number(this.configService.get('MAX_AGE'));
+
   constructor(private configService: ConfigService) {
     //todo delete console.log auth config
     console.log('check my env all variables');

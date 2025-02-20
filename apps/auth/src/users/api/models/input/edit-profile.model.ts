@@ -25,7 +25,8 @@ export class EditProfileModel {
   lastName: string;
   @IsString()
   @Trim()
-  @IsISO8601()
+  //@IsISO8601()
+  @Matches(/^(\d{2}\.\d{2}\.\d{4})?$/)
   dateOfBirthday: string | null = null;
   @IsString()
   @Trim()

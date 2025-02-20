@@ -46,6 +46,7 @@ import { HttpModule } from '@nestjs/axios';
 import { AuthConfig } from '../settings/auth.config';
 import { ProfileRepository } from './users/infrastructure/profile.repository';
 import { EditProfileHandler } from './users/application/use.cases/updateProfile.command';
+import { ProfileOwnerGuard } from './users/guards/profile.owner.guard';
 
 const commands = [
   CreateUserHandler,
@@ -100,6 +101,7 @@ const repositories = [
     JwtAccessStrategy,
     GoogleStrategy,
     RecaptchaAuthGuard,
+    ProfileOwnerGuard,
   ],
   exports: [],
 })
