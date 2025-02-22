@@ -113,7 +113,7 @@ export class PostsController {
       }
       photoUrls.push(...response.data.urls);
     }
-
+    t;
     const postDTO: PostModelDTO = { ...content, photoUrls, userId };
     const postId = await this.commandBus.execute(
       new CreatePostCommand(postDTO),

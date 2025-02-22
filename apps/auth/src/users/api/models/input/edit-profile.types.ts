@@ -7,7 +7,7 @@ import {
 } from 'class-validator';
 import { Trim } from '../../../../../../../common/decorators/trim.decorator';
 
-export class EditProfileModel {
+export class EditProfileTypes {
   @IsString()
   @Trim()
   @Length(6, 30)

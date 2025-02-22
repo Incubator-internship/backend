@@ -1,11 +1,12 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ProfileRepository } from '../../infrastructure/profile.repository';
-import { EditProfileDTOModel } from '../../../posts/api/models/dto-models/edit-profile-dto.model';
 import { UsersRepository } from '../../infrastructure/users.repository';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { DateHelper } from '../../../../common/helpers/date.helpers';
 import { AuthConfig } from '../../../../settings/auth.config';
+import { ProfileModel } from '../../domain/smartProfile.model';
+import { EditProfileDTOModel } from '../../api/models/dto-models/edit-profile-dto.types';
 
 export class EditProfileCommand {
   constructor(public readonly editProfileDTO: EditProfileDTOModel) {}
@@ -32,7 +33,7 @@ export class EditProfileHandler implements ICommandHandler<EditProfileCommand> {
     } = command.editProfileDTO;
 
     //find user by profileID (because this is same value)
-    const user: User = await this.userRepository.getUserById(profileId);
+    const user: User | null = await this.userRepository.getUserById(profileId);
 
     if (!user) {
       throw new NotFoundException('user not found');
@@ -81,6 +82,46 @@ export class EditProfileHandler implements ICommandHandler<EditProfileCommand> {
       }
       await this.userRepository.editUserName(profileId, userName);
     }
-    return;
+
+    //search userProfile
+    const profile = await this.profileRepository.getProfileById(profileId);
+    console.log('profile', profile);
+    //if we did`t find userProfile we need to create new one
+    if (!profile) {
+      const profile = ProfileModel.createProfile({
+        profileId,
+        firstName,
+        lastName,
+        dateOfBirthday: parsedDateOfBirth,
+        country,
+        city,
+        aboutMe,
+      });
+      console.log('newProfile ', profile);
+      await this.profileRepository.createProfile(profile);
+      return;
+    }
+
+    //if we found Profile and Profile has some differences
+    if (
+      profile.firstName !== firstName ||
+      profile.lastName !== lastName ||
+      profile.dateOfBirthday!.getTime() !== parsedDateOfBirth.getTime() ||
+      profile.country !== country ||
+      profile.city !== city ||
+      profile.aboutMe !== aboutMe
+    ) {
+      const updatedProfile = ProfileModel.updateProfile(profile, {
+        firstName,
+        lastName,
+        dateOfBirthday: parsedDateOfBirth,
+        country,
+        city,
+        aboutMe,
+      });
+      console.log('updatedProfile ', updatedProfile);
+      await this.profileRepository.updateProfile(updatedProfile);
+      return;
+    }
   }
 }

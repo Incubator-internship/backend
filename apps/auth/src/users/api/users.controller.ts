@@ -10,7 +10,7 @@ import {
 import { CommandBus } from '@nestjs/cqrs';
 import { UsersQueryRepository } from '../infrastructure/users-query.repository';
 import { ApiTags } from '@nestjs/swagger';
-import { EditProfileModel } from './models/input/edit-profile.model';
+import { EditProfileTypes } from './models/input/edit-profile.types';
 import { EditProfileCommand } from '../application/use.cases/updateProfile.command';
 import { JwtAccessAuthGuard } from '../../../guards/jwt/jwt-header.strategy';
 import { ProfileOwnerGuard } from '../guards/profile.owner.guard';
@@ -32,7 +32,7 @@ export class UsersController {
   @Put('profile/:id')
   async editProfile(
     @Param('id', ParseIntPipe) profileId: number,
-    @Body() editProfileDTO: EditProfileModel,
+    @Body() editProfileDTO: EditProfileTypes,
   ) {
     await this.commandBus.execute(
       new EditProfileCommand({ ...editProfileDTO, profileId }),
