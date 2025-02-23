@@ -87,7 +87,7 @@ export class PostsController {
       throw new BadRequestException('At least one photo is required.');
     }
 
-    const photoUrls = [];
+    const photoUrls: string[] = [];
 
     for (const photo of photos) {
       const formData = new FormData();
@@ -113,7 +113,6 @@ export class PostsController {
       }
       photoUrls.push(...response.data.urls);
     }
-    t;
     const postDTO: PostModelDTO = { ...content, photoUrls, userId };
     const postId = await this.commandBus.execute(
       new CreatePostCommand(postDTO),
