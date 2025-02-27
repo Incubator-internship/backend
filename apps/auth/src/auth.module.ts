@@ -47,6 +47,7 @@ import { AuthConfig } from '../settings/auth.config';
 import { ProfileRepository } from './users/infrastructure/profile.repository';
 import { EditProfileHandler } from './users/application/use.cases/updateProfile.command';
 import { ProfileOwnerGuard } from './users/guards/profile.owner.guard';
+import { UploadProfileAvatarHandler } from './users/application/use.cases/uploadProfileAvatar.command';
 
 const commands = [
   CreateUserHandler,
@@ -67,6 +68,7 @@ const commands = [
   CreateUserAndProviderHandler,
   UpdateUserHandler,
   EditProfileHandler,
+  UploadProfileAvatarHandler,
 ];
 const service = [PrismaService, AuthService, JWTService, JwtService];
 const repositories = [

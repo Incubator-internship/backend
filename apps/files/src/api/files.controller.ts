@@ -1,14 +1,17 @@
 import {
   BadRequestException,
+  Body,
   Controller,
   Get,
   Post,
+  UploadedFile,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
 import { FilesService } from '../application/files.service';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
+import log from 'eslint-plugin-react/lib/util/log';
 
 @Controller('file')
 export class FilesController {
@@ -45,10 +48,30 @@ export class FilesController {
       //   .toFile(compressedPath);
       //fileUrls.push(`/uploads/${compressedFilename}`);
 
-      // Используем сервис для загрузки файла в S3
+      // Using the service to upload a file to S3 and compress a photo
       const fileUrl = await this.filesService.uploadFile(file);
       fileUrls.push(fileUrl);
     }
     return { urls: fileUrls };
+  }
+
+  @Post('avatar-file')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: memoryStorage(),
+      limits: { fileSize: 2 * 1024 * 1024 },
+    }),
+  )
+  async uploadAvatar(
+    @UploadedFile() file: Express.Multer.File,
+    @Body('userId') userId: number,
+  ) {
+    if (!file) {
+      console.error('No files uploaded');
+      throw new BadRequestException('No files uploaded');
+    }
+    const avatarUrl = await this.filesService.uploadFile(file);
+    console.log(avatarUrl);
+    return { avatarUrl };
   }
 }
