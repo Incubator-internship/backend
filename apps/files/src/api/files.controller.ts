@@ -49,7 +49,7 @@ export class FilesController {
       //fileUrls.push(`/uploads/${compressedFilename}`);
 
       // Using the service to upload a file to S3 and compress a photo
-      const fileUrl = await this.filesService.uploadFile(file);
+      const fileUrl = await this.filesService.uploadFile(file, 800);
       fileUrls.push(fileUrl);
     }
     return { urls: fileUrls };
@@ -70,8 +70,10 @@ export class FilesController {
       console.error('No files uploaded');
       throw new BadRequestException('No files uploaded');
     }
-    const avatarUrl = await this.filesService.uploadFile(file);
-    console.log(avatarUrl);
-    return { avatarUrl };
+    const originalAvatarUrl = await this.filesService.uploadFile(file, 800);
+    const smallAvatarUrl = await this.filesService.uploadFile(file, 400);
+    //console.log(avatarUrl);
+    //return { avatarUrl };
+    return { originalAvatarUrl, smallAvatarUrl };
   }
 }

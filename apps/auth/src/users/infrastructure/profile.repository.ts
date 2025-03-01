@@ -30,4 +30,15 @@ export class ProfileRepository {
       },
     });
   }
+
+  async updateProfileAvatar(
+    profileId: number,
+    originalAvatarUrl: string,
+    smallAvatarUrl: string,
+  ) {
+    await this.prismaService.profile.update({
+      where: { profileId },
+      data: { originalAvatarUrl, smallAvatarUrl },
+    });
+  }
 }

@@ -30,7 +30,7 @@ export class RegistrationEmailResendingHandler
     if (!user) {
       return exceptionHandler(ResultCode.NotFound, 'user has`n found');
     }
-    if (user.emailConfirmation.isConfirmed) {
+    if (!user.emailConfirmation || user.emailConfirmation.isConfirmed) {
       return exceptionHandler(
         ResultCode.NotFound,
         'user has been already confirmed',

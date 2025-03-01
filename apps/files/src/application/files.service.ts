@@ -16,10 +16,13 @@ export class FilesService {
     this.bucketName = this.filesConfig.s3BucketName;
   }
 
-  async uploadFile(file: Express.Multer.File): Promise<string> {
+  async uploadFile(
+    file: Express.Multer.File,
+    pixelSizePhoto: number,
+  ): Promise<string> {
     // Сжатие файла с помощью Sharp
     const compressedBuffer = await sharp(file.buffer)
-      .resize(800) // Сжимаем изображение до 800 пикселей по ширине
+      .resize(pixelSizePhoto) // Сжимаем изображение до 800 пикселей по ширине
       .toBuffer();
 
     // Уникальное имя файла

@@ -46,6 +46,7 @@ import {
   ResultCode,
 } from '../../../common/exception-filters/exception.handler';
 import { GetAllPostsModel } from '../../auth/api/models/input/auth-input.model';
+import { AuthConfig } from '../../../settings/auth.config';
 
 @ApiTags('Posts')
 @UseGuards(ThrottlerGuard)
@@ -55,6 +56,7 @@ export class PostsController {
     private commandBus: CommandBus,
     private httpService: HttpService,
     private postsQueryRepository: PostsQueryRepository,
+    private authConfig: AuthConfig,
   ) {}
 
   @GetAllPostsEndpoint()
@@ -91,24 +93,21 @@ export class PostsController {
 
     for (const photo of photos) {
       const formData = new FormData();
-      console.log('formData ', formData);
-      // formData.append('file', photo.buffer, photo.originalname);
       formData.append('files', photo.buffer, {
         filename: photo.originalname,
         contentType: photo.mimetype,
       });
-      console.log('formData with append file ', formData);
       const response = await firstValueFrom(
         this.httpService.post(
+          this.authConfig.uploadPhotosForPostFileMicroservice,
+          //todo delete links below
           //'http://localhost:5001/api/v1/file/post-files',
-          'https://files.excubator.xyz:443/api/v1/file/post-files',
+          //'https://files.excubator.xyz:443/api/v1/file/post-files',
           formData,
           { headers: { ...formData.getHeaders() } },
         ),
       );
-      console.log('response ', response);
       if (!response.data.urls) {
-        console.error('No URLs returned from Files service');
         throw new BadRequestException('No URLs returned from Files service');
       }
       photoUrls.push(...response.data.urls);
