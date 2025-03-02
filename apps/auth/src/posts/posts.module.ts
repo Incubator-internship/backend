@@ -9,6 +9,7 @@ import { HttpModule } from '@nestjs/axios';
 import { PostsQueryRepository } from './infrastructure/posts-query.repository';
 import { UpdatePostHandler } from './application/use.cases/updatePost.command';
 import { DeletePostHandler } from './application/use.cases/deletePost.command';
+import { AuthConfig } from '../../settings/auth.config';
 
 const commands = [CreatePostHandler, UpdatePostHandler, DeletePostHandler];
 const repositories = [PostsRepository, PostsQueryRepository];
@@ -23,7 +24,7 @@ const service = [PrismaService];
     }),
   ],
   controllers: [PostsController],
-  providers: [...repositories, ...service, ...commands],
+  providers: [AuthConfig, ...repositories, ...service, ...commands],
   exports: [],
 })
 export class PostsModule {}
