@@ -127,7 +127,7 @@ export function CreatePostEndpoint() {
     }),
     ApiResponse({
       status: 413,
-      description: 'Payload to Large',
+      description: 'Payload too Large',
     }),
     ApiResponse({
       status: 429,

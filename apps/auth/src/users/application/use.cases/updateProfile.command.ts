@@ -38,7 +38,6 @@ export class EditProfileHandler implements ICommandHandler<EditProfileCommand> {
     if (!user) {
       throw new NotFoundException('user not found');
     }
-    console.log('user by postId', user);
 
     let parsedDateOfBirth;
 
@@ -76,7 +75,6 @@ export class EditProfileHandler implements ICommandHandler<EditProfileCommand> {
     if (user.userName !== userName) {
       const uniqUser =
         await this.userRepository.findUniqueUserByUserName(userName);
-      console.log('uniqUser', uniqUser);
       if (uniqUser) {
         throw new BadRequestException('User with this user name already exist');
       }
@@ -85,7 +83,6 @@ export class EditProfileHandler implements ICommandHandler<EditProfileCommand> {
 
     //search userProfile
     const profile = await this.profileRepository.getProfileById(profileId);
-    console.log('profile', profile);
     //if we did`t find userProfile we need to create new one
     if (!profile) {
       const profile = ProfileModel.createProfile({
@@ -97,7 +94,6 @@ export class EditProfileHandler implements ICommandHandler<EditProfileCommand> {
         city,
         aboutMe,
       });
-      console.log('newProfile ', profile);
       await this.profileRepository.createProfile(profile);
       return;
     }
@@ -119,7 +115,6 @@ export class EditProfileHandler implements ICommandHandler<EditProfileCommand> {
         city,
         aboutMe,
       });
-      console.log('updatedProfile ', updatedProfile);
       await this.profileRepository.updateProfile(updatedProfile);
       return;
     }

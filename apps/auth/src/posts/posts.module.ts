@@ -16,13 +16,7 @@ const repositories = [PostsRepository, PostsQueryRepository];
 const service = [PrismaService];
 
 @Module({
-  imports: [
-    HttpModule,
-    CqrsModule,
-    MulterModule.register({
-      dest: 'E:/BackEnd/backendIntership/photoForMyProject',
-    }),
-  ],
+  imports: [HttpModule, CqrsModule, MulterModule.register()],
   controllers: [PostsController],
   providers: [AuthConfig, ...repositories, ...service, ...commands],
   exports: [],

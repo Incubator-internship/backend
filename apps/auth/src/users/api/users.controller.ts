@@ -2,7 +2,6 @@ import {
   BadRequestException,
   Body,
   Controller,
-  Get,
   HttpCode,
   Param,
   ParseIntPipe,
@@ -13,7 +12,6 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
-import { UsersQueryRepository } from '../infrastructure/users-query.repository';
 import { ApiTags } from '@nestjs/swagger';
 import { EditProfileTypes } from './models/input/edit-profile.types';
 import { EditProfileCommand } from '../application/use.cases/updateProfile.command';
@@ -24,13 +22,19 @@ import { memoryStorage } from 'multer';
 import { TakeUserId } from '../../../decorators/authMeTakeUserId.decorator';
 
 import { UploadProfileAvatarCommand } from '../application/use.cases/uploadProfileAvatar.command';
+import {
+  EditProfileEndpoint,
+  UploadAvatarEndpoint,
+} from '../../../swagger/users.swagger';
 
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
   constructor(private commandBus: CommandBus) {}
 
+  @EditProfileEndpoint()
   @UseGuards(JwtAccessAuthGuard, ProfileOwnerGuard)
+  @HttpCode(200)
   @Put('profile/:id')
   async editProfile(
     @Param('id', ParseIntPipe) profileId: number,
@@ -39,9 +43,9 @@ export class UsersController {
     await this.commandBus.execute(
       new EditProfileCommand({ ...editProfileDTO, profileId }),
     );
-    return editProfileDTO;
   }
 
+  @UploadAvatarEndpoint()
   @UseGuards(JwtAccessAuthGuard)
   @HttpCode(201)
   @Post('avatar')
@@ -50,10 +54,14 @@ export class UsersController {
       storage: memoryStorage(),
       limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
       fileFilter: (req, file, cb) => {
-        console.log('file UseInterceptors', file);
         if (!['image/jpeg', 'image/png'].includes(file.mimetype)) {
           return cb(
-            new BadRequestException('Only .jpg or .png files allowed!'),
+            new BadRequestException([
+              {
+                message: 'Only .jpg or .png files allowed!',
+                field: 'download avatar',
+              },
+            ]),
             false,
           );
         }

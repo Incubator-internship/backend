@@ -99,7 +99,7 @@ export class AuthController {
     //maybe need use ngrok also
     res.cookie('refreshToken', tokensPair.refreshToken, {
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite: 'none',
     });
     //these settings how must be for cookies
@@ -179,6 +179,7 @@ export class AuthController {
     res.cookie('refreshToken', tokensPair.refreshToken, {
       httpOnly: true,
       secure: true,
+      sameSite: 'none',
     });
     return { accessToken: tokensPair.accessToken };
   }

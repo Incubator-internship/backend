@@ -1,16 +1,15 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ProfileRepository } from '../../infrastructure/profile.repository';
-import { UsersRepository } from '../../infrastructure/users.repository';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { User } from '@prisma/client';
-import { DateHelper } from '../../../../common/helpers/date.helpers';
+import { BadRequestException } from '@nestjs/common';
 import { AuthConfig } from '../../../../settings/auth.config';
-import { ProfileModel } from '../../domain/smartProfile.model';
-import { EditProfileDTOModel } from '../../api/models/dto-models/edit-profile-dto.types';
 import { randomUUID } from 'crypto';
 import * as FormData from 'form-data';
 import { firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
+import {
+  exceptionHandler,
+  ResultCode,
+} from '../../../../common/exception-filters/exception.handler';
 
 export class UploadProfileAvatarCommand {
   constructor(
@@ -25,19 +24,30 @@ export class UploadProfileAvatarHandler
 {
   constructor(
     private profileRepository: ProfileRepository,
-    private userRepository: UsersRepository,
     private authConfig: AuthConfig,
     private httpService: HttpService,
   ) {}
 
   async execute(command: UploadProfileAvatarCommand): Promise<void> {
     if (!command.avatar) {
-      throw new BadRequestException('At least one photo is required.');
+      exceptionHandler(
+        ResultCode.BadRequest,
+        'At least one1 photo is required',
+        'download avatar',
+      );
+      // throw new BadRequestException([
+      //   { message: 'At least one1 photo is required.' },
+      // ]);
     }
     const profile = await this.profileRepository.getProfileById(command.userId);
 
     if (!profile) {
-      throw new BadRequestException('Profile doesnt exist');
+      exceptionHandler(
+        ResultCode.BadRequest,
+        'Profile doesnt exist',
+        'download avatar',
+      );
+      // throw new BadRequestException('Profile doesnt exist');
     }
 
     const uniqueFilename = `${randomUUID()}.${command.avatar.mimetype.split('/')[1]}`;

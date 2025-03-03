@@ -22,6 +22,10 @@ export class TestingController {
       where: { userId: id },
     });
     await this.prismaService.provider.deleteMany({ where: { userId: id } });
+    await this.prismaService.photo.deleteMany();
+    await this.prismaService.post.deleteMany({ where: { userId: id } });
+    await this.prismaService.profile.deleteMany({ where: { profileId: id } });
+
     // Delete the user
     await this.prismaService.user.delete({ where: { id } });
   }
