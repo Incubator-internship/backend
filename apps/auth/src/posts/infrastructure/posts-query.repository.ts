@@ -22,7 +22,7 @@ export class PostsQueryRepository {
         : undefined,
       where: { deletedAt: null },
       include: { photos: true },
-      orderBy: { createdAt: 'asc' },
+      orderBy: { createdAt: 'desc' },
     });
     console.log('repository allPosts --->', allPosts);
     return {
