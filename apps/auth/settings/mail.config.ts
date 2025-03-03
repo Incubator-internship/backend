@@ -7,21 +7,25 @@ import { Environment } from './auth.config';
 @Injectable()
 export class MailConfig {
   @IsEnum(Environment)
-  env: string = this.configService.get('NODE_ENV');
+  env: string = this.configService.get('NODE_ENV') as string;
 
   @IsNotEmpty({ message: 'Set env variable EMAIL_PASS' })
   @IsString({ message: 'Env variable EMAIL_PASS has to type of string' })
-  emailPass: string = this.configService.get('EMAIL_PASS');
+  emailPass: string = this.configService.get('EMAIL_PASS') as string;
 
   @IsNotEmpty({ message: 'Set env variable EMAIL_CONFIRM_URL' })
   @IsString({ message: 'Env variable EMAIL_CONFIRM_URL has to type of string' })
-  emailConfirmUrl: string = this.configService.get('EMAIL_CONFIRM_URL');
+  emailConfirmUrl: string = this.configService.get(
+    'EMAIL_CONFIRM_URL',
+  ) as string;
 
   @IsNotEmpty({ message: 'Set env variable PASSWORD_RECOVERY_URL' })
   @IsString({
     message: 'Env variable PASSWORD_RECOVERY_URL has to type of string',
   })
-  passwordRecoveryUrl: string = this.configService.get('PASSWORD_RECOVERY_URL');
+  passwordRecoveryUrl: string = this.configService.get(
+    'PASSWORD_RECOVERY_URL',
+  ) as string;
 
   constructor(private configService: ConfigService) {
     console.log('mail.config');

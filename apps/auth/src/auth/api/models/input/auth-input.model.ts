@@ -40,7 +40,7 @@ export class RegistrationInputUserModel {
     required: true,
     description: 'User name',
     minLength: 6,
-    maxLength: 15,
+    maxLength: 30,
     pattern: '^[a-zA-Z0-9_-]*$',
   })
   @IsNotEmpty()

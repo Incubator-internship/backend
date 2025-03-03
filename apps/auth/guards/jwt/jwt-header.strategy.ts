@@ -13,7 +13,7 @@ export class JwtAccessStrategy extends PassportStrategy(
   'jwt-header',
 ) {
   constructor(
-    private readonly userRepositorySQL: UsersRepository,
+    private readonly userRepository: UsersRepository,
     private authConfig: AuthConfig,
   ) {
     super({
@@ -24,8 +24,9 @@ export class JwtAccessStrategy extends PassportStrategy(
   }
 
   async validate({ userId }: { userId: number }) {
+    //Todo delete userId console.log from jwt-header.strategy
     console.log('userId', userId);
-    const user = await this.userRepositorySQL.getUserById(Number(userId));
+    const user = await this.userRepository.getUserById(Number(userId));
     if (!user) {
       throw new UnauthorizedException();
     }

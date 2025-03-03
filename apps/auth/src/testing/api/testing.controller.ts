@@ -1,11 +1,15 @@
-import { Controller, Delete, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Delete, Get, Param, ParseIntPipe } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { PrismaService } from '../../../prisma/prisma.service';
+import { UsersQueryRepository } from '../../users/infrastructure/users-query.repository';
 
-@ApiTags('Testing')
+@ApiTags('Endpoints for development')
 @Controller('testing')
 export class TestingController {
-  constructor(protected prismaService: PrismaService) {}
+  constructor(
+    protected prismaService: PrismaService,
+    private userQueryRepository: UsersQueryRepository,
+  ) {}
 
   @Delete(':id')
   async deleteUser(@Param('id', ParseIntPipe) id: number) {
@@ -18,7 +22,16 @@ export class TestingController {
       where: { userId: id },
     });
     await this.prismaService.provider.deleteMany({ where: { userId: id } });
+    await this.prismaService.photo.deleteMany();
+    await this.prismaService.post.deleteMany({ where: { userId: id } });
+    await this.prismaService.profile.deleteMany({ where: { profileId: id } });
+
     // Delete the user
     await this.prismaService.user.delete({ where: { id } });
+  }
+
+  @Get()
+  async getAllUsers() {
+    return await this.userQueryRepository.getAllUsers();
   }
 }

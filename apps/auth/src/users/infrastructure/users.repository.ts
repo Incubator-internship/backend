@@ -80,4 +80,15 @@ export class UsersRepository {
     });
     return user.id;
   }
+
+  async findUniqueUserByUserName(userName: string): Promise<User | null> {
+    return this.prismaService.user.findUnique({ where: { userName } });
+  }
+
+  async editUserName(userId: number, userName: string): Promise<void> {
+    await this.prismaService.user.update({
+      where: { id: userId },
+      data: { userName },
+    });
+  }
 }

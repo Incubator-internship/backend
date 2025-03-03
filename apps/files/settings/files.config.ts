@@ -13,7 +13,7 @@ export enum Environment {
 @Injectable()
 export class FilesConfig {
   @IsEnum(Environment)
-  env: string = this.configService.get('NODE_ENV');
+  env: string = this.configService.get('NODE_ENV') as string;
 
   @IsNotEmpty({ message: 'Set env variable PORT' })
   @IsNumber({}, { message: 'Env variable PORT has to type of number' })
@@ -22,21 +22,23 @@ export class FilesConfig {
 
   @IsNotEmpty({ message: 'Set env variable S3_ACCESS_KEY_ID' })
   @IsString({ message: 'Env variable S3_ACCESS_KEY_ID has to type of string' })
-  s3AccessKeyId: string = this.configService.get('S3_ACCESS_KEY_ID');
+  s3AccessKeyId: string = this.configService.get('S3_ACCESS_KEY_ID') as string;
 
   @IsNotEmpty({ message: 'Set env variable S3_SECRET_ACCESS_KEY' })
   @IsString({
     message: 'Env variable S3_SECRET_ACCESS_KEY has to type of string',
   })
-  s3SecretAccessKey: string = this.configService.get('S3_SECRET_ACCESS_KEY');
+  s3SecretAccessKey: string = this.configService.get(
+    'S3_SECRET_ACCESS_KEY',
+  ) as string;
 
   @IsNotEmpty({ message: 'Set env variable S3_REGION' })
   @IsString({ message: 'Env variable S3_REGION has to type of string' })
-  s3Region: string = this.configService.get('S3_REGION');
+  s3Region: string = this.configService.get('S3_REGION') as string;
 
   @IsNotEmpty({ message: 'Set env variable S3_BUCKET_NAME' })
   @IsString({ message: 'Env variable S3_BUCKET_NAME has to type of string' })
-  s3BucketName: string = this.configService.get('S3_BUCKET_NAME');
+  s3BucketName: string = this.configService.get('S3_BUCKET_NAME') as string;
 
   constructor(private configService: ConfigService) {
     //todo delete console.log auth config

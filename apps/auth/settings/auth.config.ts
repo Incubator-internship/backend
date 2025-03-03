@@ -20,64 +20,78 @@ export enum Environment {
 @Injectable()
 export class AuthConfig {
   @IsEnum(Environment)
-  env: string = this.configService.get('NODE_ENV');
+  env: string = this.configService.get('NODE_ENV') as string;
 
   @IsNotEmpty({ message: 'Set env variable PORT' })
   @IsNumber({}, { message: 'Env variable PORT has to type of number' })
   @Min(1000)
-  port: number = Number(this.configService.get('PORT'));
+  port: number = Number(this.configService.get('PORT')) as number;
 
   @IsNotEmpty({ message: 'Set env variable DATABASE_URL' })
   @IsString({ message: 'Env variable DATABASE_URL has to type of string' })
-  dbURL: string = this.configService.get('DATABASE_URL');
+  dbURL: string = this.configService.get('DATABASE_URL') as string;
 
   @IsNotEmpty({ message: 'Set env variable JWT_SECRET' })
   @IsString({ message: 'Env variable JWT_SECRET has to type of number' })
-  jwtSecret: string = this.configService.get('JWT_SECRET');
+  jwtSecret: string = this.configService.get('JWT_SECRET') as string;
 
   @IsNotEmpty({ message: 'Set env variable EMAIL_PASS' })
   @IsString({ message: 'Env variable EMAIL_PASS has to type of string' })
-  emailPass = this.configService.get('EMAIL_PASS');
+  emailPass: string = this.configService.get('EMAIL_PASS') as string;
 
   @IsNotEmpty({ message: 'Set env variable GOOGLE_CLIENT_ID' })
   @IsString({ message: 'Env variable GOOGLE_CLIENT_ID has to type of string' })
-  googleClientId = this.configService.get('GOOGLE_CLIENT_ID');
+  googleClientId: string = this.configService.get('GOOGLE_CLIENT_ID') as string;
 
   @IsNotEmpty({ message: 'Set env variable GOOGLE_CLIENT_SECRET' })
   @IsString({
     message: 'Env variable GOOGLE_CLIENT_SECRET has to type of string',
   })
-  googleClientSecret = this.configService.get('GOOGLE_CLIENT_SECRET');
+  googleClientSecret: string = this.configService.get(
+    'GOOGLE_CLIENT_SECRET',
+  ) as string;
 
   @IsNotEmpty({ message: 'Set env variable GOOGLE_CLIENT_ID' })
   @IsString({ message: 'Env variable GOOGLE_CLIENT_ID has to type of string' })
-  googleCallBackLocalUrl = this.configService.get('GOOGLE_CALLBACK_LOCAL_URL');
+  googleCallBackLocalUrl: string = this.configService.get(
+    'GOOGLE_CALLBACK_LOCAL_URL',
+  ) as string;
 
   @IsNotEmpty({ message: 'Set env variable GOOGLE_CLIENT_ID' })
   @IsString({ message: 'Env variable GOOGLE_CLIENT_ID has to type of string' })
-  googleCallBackProdUrl = this.configService.get('GOOGLE_CALLBACK_PROD_URL');
+  googleCallBackProdUrl: string = this.configService.get(
+    'GOOGLE_CALLBACK_PROD_URL',
+  ) as string;
 
   @IsNotEmpty({ message: 'Set env variable GOOGLE_CLIENT_ID' })
   @IsString({ message: 'Env variable GOOGLE_CLIENT_ID has to type of string' })
-  recaptchaSecretKey = this.configService.get('RECAPTCHA_SECRET_KEY');
+  recaptchaSecretKey: string = this.configService.get(
+    'RECAPTCHA_SECRET_KEY',
+  ) as string;
 
   @IsNotEmpty({ message: 'Set env variable GOOGLE_CLIENT_ID' })
   @IsString({ message: 'Env variable GOOGLE_CLIENT_ID has to type of string' })
-  recaptchaUrl = this.configService.get('RECAPTCHA_URL');
+  recaptchaUrl: string = this.configService.get('RECAPTCHA_URL') as string;
 
   @IsNotEmpty({ message: 'Set env variable EMAIL_CONFIRM_URL' })
   @IsString({ message: 'Env variable EMAIL_CONFIRM_URL has to type of string' })
-  emailConfirmUrl = this.configService.get('EMAIL_CONFIRM_URL');
+  emailConfirmUrl: string = this.configService.get(
+    'EMAIL_CONFIRM_URL',
+  ) as string;
 
   @IsNotEmpty({ message: 'Set env variable EMAIL_CONFIRM_URL' })
   @IsString({ message: 'Env variable EMAIL_CONFIRM_URL has to type of string' })
-  passwordRecoveryUrl = this.configService.get('PASSWORD_RECOVERY_URL');
+  passwordRecoveryUrl: string = this.configService.get(
+    'PASSWORD_RECOVERY_URL',
+  ) as string;
 
   @IsNotEmpty({ message: 'Set env variable REDIRECT_URL_GOOGLE_OAUTH' })
   @IsString({
     message: 'Env variable REDIRECT_URL_GOOGLE_OAUTH has to type of string',
   })
-  redirectUrlGoogleOauth = this.configService.get('REDIRECT_URL_GOOGLE_OAUTH');
+  redirectUrlGoogleOauth: string = this.configService.get(
+    'REDIRECT_URL_GOOGLE_OAUTH',
+  ) as string;
 
   @IsNotEmpty({ message: 'Set env variable IS_AUTOMATICALLY_CONFIRMED_USER' })
   @IsBoolean({
@@ -86,6 +100,34 @@ export class AuthConfig {
   })
   isAutomaticallyConfirmedUser: boolean =
     this.configService.get('IS_AUTOMATICALLY_CONFIRMED_USER') === 'true';
+
+  @IsNotEmpty({ message: 'Set env variable MIN_AGE' })
+  @IsNumber({}, { message: 'Env variable MIN_AGE has to type of number' })
+  minAge: number = Number(this.configService.get('MIN_AGE'));
+
+  @IsNotEmpty({ message: 'Set env variable MAX_AGE' })
+  @IsNumber({}, { message: 'Env variable MAX_AGE has to type of number' })
+  maxAge: number = Number(this.configService.get('MAX_AGE'));
+
+  @IsNotEmpty({ message: 'Set env variable UPLOAD_AVATAR_FILE_MICROSERVICE' })
+  @IsString({
+    message:
+      'Env variable UPLOAD_AVATAR_FILE_MICROSERVICE has to type of string',
+  })
+  uploadAvatarFileMicroservice: string = this.configService.get(
+    'UPLOAD_AVATAR_FILE_MICROSERVICE',
+  ) as string;
+
+  @IsNotEmpty({
+    message: 'Set env variable UPLOAD_PHOTOS_FOR_POST_FILE_MICROSERVICE',
+  })
+  @IsString({
+    message:
+      'Env variable UPLOAD_PHOTOS_FOR_POST_FILE_MICROSERVICE has to type of string',
+  })
+  uploadPhotosForPostFileMicroservice: string = this.configService.get(
+    'UPLOAD_PHOTOS_FOR_POST_FILE_MICROSERVICE',
+  ) as string;
 
   constructor(private configService: ConfigService) {
     //todo delete console.log auth config

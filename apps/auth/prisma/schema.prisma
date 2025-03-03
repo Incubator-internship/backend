@@ -28,8 +28,27 @@ model User {
   passwordRecovery  PasswordRecovery[] @relation("PasswordRecovery")
   provider          Provider[]         @relation("Providers")
   posts             Post[]             @relation("Posts")
+  profile           Profile?
 
   @@map("users")
+}
+
+model Profile {
+  profileId         Int       @id
+  firstName         String
+  lastName          String
+  dateOfBirthday    DateTime?
+  country           String?
+  city              String?
+  aboutMe           String?
+  originalAvatarUrl String?
+  smallAvatarUrl    String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  user User @relation(fields: [profileId], references: [id])
+
+  @@map("profile")
 }
 
 model Provider {
