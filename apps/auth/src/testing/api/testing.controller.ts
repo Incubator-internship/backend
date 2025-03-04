@@ -22,7 +22,13 @@ export class TestingController {
       where: { userId: id },
     });
     await this.prismaService.provider.deleteMany({ where: { userId: id } });
-    await this.prismaService.photo.deleteMany();
+    await this.prismaService.photo.deleteMany({
+      where: {
+        post: {
+          userId: id,
+        },
+      },
+    });
     await this.prismaService.post.deleteMany({ where: { userId: id } });
     await this.prismaService.profile.deleteMany({ where: { profileId: id } });
 
@@ -30,7 +36,7 @@ export class TestingController {
     await this.prismaService.user.delete({ where: { id } });
   }
 
-  @Get()
+  @Get('get-all-users')
   async getAllUsers() {
     return await this.userQueryRepository.getAllUsers();
   }
