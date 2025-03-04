@@ -20,14 +20,6 @@ pipeline {
                 checkout scm
             }
         }
-        stage('deploy DB migration') {
-                             steps {
-                                 script {
-                                     sh "yarn run generate:auth"
-                                     sh "yarn migrate:deploy-auth"
-                                 }
-                             }
-                         }
         stage('Unit tests') {
             steps {
                 script {
