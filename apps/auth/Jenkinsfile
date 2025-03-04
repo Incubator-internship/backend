@@ -37,6 +37,7 @@ pipeline {
                        nvm use --lts
                         yarn install
                         yarn run generate:auth
+                        yarn migrate:deploy-auth
                     '''
                 }
             }
