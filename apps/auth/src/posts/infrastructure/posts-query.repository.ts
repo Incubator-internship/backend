@@ -5,7 +5,6 @@ import {
   PostOutputModel,
 } from '../api/models/output/posts.output.model';
 import { GetAllPostsModel } from '../../auth/api/models/input/auth-input.model';
-import log from 'eslint-plugin-react/lib/util/log';
 
 @Injectable()
 export class PostsQueryRepository {
