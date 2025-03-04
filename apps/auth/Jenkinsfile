@@ -23,7 +23,7 @@ pipeline {
         stage('deploy DB migration') {
                      steps {
                          script {
-                             sh "yarn run generate:app"
+                             sh "yarn generate:app"
                              sh "yarn migrate:deploy-auth"
                          }
                      }
