@@ -10,7 +10,7 @@
 
     "create-migrate:auth": "cross-env NODE_ENV=auth.development -- npx prisma migrate dev --name init --schema=./apps/auth/prisma/schema.prisma --create-only",
     "migrate:auth": "cross-env NODE_ENV=auth.development -- npx prisma migrate dev --name init --schema=./apps/auth/prisma/schema.prisma",
-    "migrate:deploy-auth": "cross-env NODE_ENV=auth.production -- npx prisma migrate deploy --schema=./apps/auth/prisma/schema.prisma",
+    "migrate:deploy-auth": "cross-env NODE_ENV=auth.production -- npx prisma migrate deploy --name init --schema=./apps/auth/prisma/schema.prisma",
 
     "build": "nest build",
     "build:auth": "nest build auth",

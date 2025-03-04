@@ -23,8 +23,13 @@ pipeline {
         stage('deploy DB migration') {
              steps {
                  script {
-                    sh '''yarn run generate:auth
-                          yarn migrate:deploy-auth
+                    sh '''
+                     export NVM_DIR="$HOME/.nvm"
+                     [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+                     nvm use --lts
+                     yarn install
+                     yarn run generate:auth
+                     yarn migrate:deploy-auth
                     '''
                  }
              }
