@@ -11,6 +11,18 @@ export class TestingController {
     private userQueryRepository: UsersQueryRepository,
   ) {}
 
+  @Delete('all-delete')
+  async deleteAll() {
+    await this.prismaService.photo.deleteMany(),
+      this.prismaService.post.deleteMany(),
+      this.prismaService.passwordRecovery.deleteMany(),
+      this.prismaService.session.deleteMany(),
+      this.prismaService.emailConfirmation.deleteMany(),
+      this.prismaService.provider.deleteMany(),
+      this.prismaService.profile.deleteMany(),
+      this.prismaService.user.deleteMany();
+  }
+
   @Delete(':id')
   async deleteUser(@Param('id', ParseIntPipe) id: number) {
     // Delete all related data
@@ -39,17 +51,5 @@ export class TestingController {
   @Get('get-all-users')
   async getAllUsers() {
     return await this.userQueryRepository.getAllUsers();
-  }
-
-  @Delete('all-delete')
-  async deleteAll() {
-    await this.prismaService.photo.deleteMany(),
-      this.prismaService.post.deleteMany(),
-      this.prismaService.passwordRecovery.deleteMany(),
-      this.prismaService.session.deleteMany(),
-      this.prismaService.emailConfirmation.deleteMany(),
-      this.prismaService.provider.deleteMany(),
-      this.prismaService.profile.deleteMany(),
-      this.prismaService.user.deleteMany();
   }
 }
