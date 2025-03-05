@@ -24,10 +24,24 @@ pipeline {
                      steps {
                          script {
                             sh '''
-                                nvm install 20.9.0
-                                nvm use 20.9.0
-                                yarn run generate:auth
-                                yarn migrate:deploy-auth
+                                echo "Setting up NVM..."
+                                                       export NVM_DIR="$HOME/.nvm"
+                                                       [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+
+                                                       echo "Installing Node.js 22.12.0..."
+                                                       nvm install 22.12.0
+                                                       nvm use 22.12.0
+
+                                                       echo "Node.js version:"
+                                                       node -v
+                                                       echo "Yarn version:"
+                                                       yarn -v
+
+                                                       echo "Running Prisma generate..."
+                                                       yarn install
+                                                       yarn run generate:auth
+                                                       echo "Running Prisma migrate..."
+                                                       yarn migrate:deploy-auth
                             '''
                          }
                      }
