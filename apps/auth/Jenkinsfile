@@ -21,16 +21,14 @@ pipeline {
             }
         }
         stage('deploy DB migration') {
-             steps {
-                 script {
-                    sh '''
-                     yarn install
-                     yarn run generate:auth
-                     yarn migrate:deploy-auth
-                    '''
-                 }
-             }
-        }
+                     steps {
+                         script {
+                            sh '''yarn run generate:auth
+                                  yarn migrate:deploy-auth
+                            '''
+                         }
+                     }
+                }
         stage('Unit tests') {
             steps {
                 script {
