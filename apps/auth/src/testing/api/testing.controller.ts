@@ -40,4 +40,16 @@ export class TestingController {
   async getAllUsers() {
     return await this.userQueryRepository.getAllUsers();
   }
+
+  @Delete('all-delete')
+  async deleteAll() {
+    await this.prismaService.photo.deleteMany(),
+      this.prismaService.post.deleteMany(),
+      this.prismaService.passwordRecovery.deleteMany(),
+      this.prismaService.session.deleteMany(),
+      this.prismaService.emailConfirmation.deleteMany(),
+      this.prismaService.provider.deleteMany(),
+      this.prismaService.profile.deleteMany(),
+      this.prismaService.user.deleteMany();
+  }
 }
