@@ -23,8 +23,11 @@ pipeline {
         stage('deploy DB migration') {
                      steps {
                          script {
-                            sh '''yarn run generate:auth
-                                  yarn migrate:deploy-auth
+                            sh '''
+                                nvm install 20.9.0
+                                nvm use 20.9.0
+                                yarn run generate:auth
+                                yarn migrate:deploy-auth
                             '''
                          }
                      }
