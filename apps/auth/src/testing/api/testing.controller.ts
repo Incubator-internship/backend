@@ -13,14 +13,14 @@ export class TestingController {
 
   @Delete('all-delete')
   async deleteAll() {
-    await this.prismaService.photo.deleteMany(),
-      this.prismaService.post.deleteMany(),
-      this.prismaService.passwordRecovery.deleteMany(),
-      this.prismaService.session.deleteMany(),
-      this.prismaService.emailConfirmation.deleteMany(),
-      this.prismaService.provider.deleteMany(),
-      this.prismaService.profile.deleteMany(),
-      this.prismaService.user.deleteMany();
+    await this.prismaService.photo.deleteMany({});
+    await this.prismaService.post.deleteMany({});
+    await this.prismaService.passwordRecovery.deleteMany({});
+    await this.prismaService.session.deleteMany({});
+    await this.prismaService.emailConfirmation.deleteMany({});
+    await this.prismaService.provider.deleteMany({});
+    await this.prismaService.profile.deleteMany({});
+    await this.prismaService.user.deleteMany({});
   }
 
   @Delete(':id')
