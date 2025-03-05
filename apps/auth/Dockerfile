@@ -26,8 +26,8 @@ RUN yarn install
 # Bundle app source code
 COPY --chown=node . .
 
-RUN yarn 'generate:auth'
 RUN yarn build:${SERVICE}
+RUN yarn 'generate:auth'
 # Bind to all network interfaces so that it can be mapped to the host OS
 
 EXPOSE ${PORT}
