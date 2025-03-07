@@ -77,6 +77,20 @@ export class PostsController {
         files: 10, // limit 10 photos
         fieldSize: 20 * 1024 * 1024, // limit 20mb for all photos
       },
+      fileFilter: (req, file, cb) => {
+        if (!['image/jpeg', 'image/png'].includes(file.mimetype)) {
+          return cb(
+            new BadRequestException([
+              {
+                message: 'Only .jpg or .png files are allowed!',
+                field: 'create post',
+              },
+            ]),
+            false,
+          );
+        }
+        cb(null, true);
+      },
     }),
   )
   async createMultiplePost(
@@ -86,7 +100,12 @@ export class PostsController {
   ) {
     //Check, user has to download min 1 photo
     if (photos.length === 0) {
-      throw new BadRequestException('At least one photo is required.');
+      throw new BadRequestException([
+        {
+          message: 'At least one photo is required.',
+          field: 'create post',
+        },
+      ]);
     }
 
     const photoUrls: string[] = [];
