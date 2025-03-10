@@ -140,6 +140,7 @@ export class AuthController {
   @HttpCode(204)
   @Post('logout')
   async logout(
+    @Res({ passthrough: true }) res: Response,
     @Req() req,
     @RefreshPayload()
     { userId, deviceId }: { userId: number; deviceId: string },
@@ -151,6 +152,7 @@ export class AuthController {
     if (!session) {
       throw new UnauthorizedException();
     }
+    res.clearCookie('refreshToken');
     await this.commandBus.execute(new DeleteSessionCommand(userId, deviceId));
   }
 
