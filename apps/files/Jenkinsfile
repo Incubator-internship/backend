@@ -70,15 +70,7 @@ pipeline {
                      sh "cat ./apps/${env.SERVICE}/deployment.yaml"
              }
         }
-        stage('deploy DB migration') {
-                             steps {
-                                 script {
-                                    sh '''
-                                          yarn migrate:deploy-auth
-                                    '''
-                                 }
-                             }
-                        }
+
         stage('Deploy to Kubernetes') {
              steps {
                  withKubeConfig([credentialsId: 'prod-kubernetes']) {
