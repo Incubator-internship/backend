@@ -3,7 +3,7 @@ import { PostsRepository } from '../../infrastructure/posts.repository';
 import { PrePostCreationModelDTO } from '../../api/models/input/posts-input.model';
 
 export class CreatePostWithoutPhotoCommand {
-  constructor(public readonly postDTO: PrePostCreationModelDTO) {}
+  constructor(public readonly prePostDTO: PrePostCreationModelDTO) {}
 }
 
 @CommandHandler(CreatePostWithoutPhotoCommand)
@@ -13,6 +13,6 @@ export class CreatePostWithoutPhotoCommandHandler
   constructor(private postsRepository: PostsRepository) {}
 
   async execute(command: CreatePostWithoutPhotoCommand): Promise<number> {
-    return await this.postsRepository.createPrePost(command.postDTO);
+    return await this.postsRepository.createPrePost(command.prePostDTO);
   }
 }

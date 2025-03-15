@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { PostsController } from './api/posts.controller';
-import { CreatePostHandler } from './application/use.cases/createPost.command';
 import { PostsRepository } from './infrastructure/posts.repository';
 import { CqrsModule } from '@nestjs/cqrs';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -10,8 +9,13 @@ import { PostsQueryRepository } from './infrastructure/posts-query.repository';
 import { UpdatePostHandler } from './application/use.cases/updatePost.command';
 import { DeletePostHandler } from './application/use.cases/deletePost.command';
 import { AuthConfig } from '../../settings/auth.config';
+import { CreatePostWithoutPhotoCommandHandler } from './application/use.cases/createPostWithoutPhoto.command';
 
-const commands = [CreatePostHandler, UpdatePostHandler, DeletePostHandler];
+const commands = [
+  CreatePostWithoutPhotoCommandHandler,
+  UpdatePostHandler,
+  DeletePostHandler,
+];
 const repositories = [PostsRepository, PostsQueryRepository];
 const service = [PrismaService];
 

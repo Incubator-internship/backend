@@ -1,20 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { PostModelDTO } from '../api/models/input/posts-input.model';
 import { Post } from '@prisma/client';
+import { PrePostCreationModelDTO } from '../api/models/input/posts-input.model';
 
 @Injectable()
 export class PostsRepository {
   constructor(protected prismaService: PrismaService) {}
 
-  async createPost(postDTO: PostModelDTO): Promise<number> {
+  async createPrePost(postDTO: PrePostCreationModelDTO): Promise<number> {
     const post = await this.prismaService.post.create({
       data: {
         content: postDTO.content,
         userId: postDTO.userId,
-        photos: { create: postDTO.photoUrls.map((url) => ({ url })) },
       },
-      include: { photos: true },
     });
     return post.id;
   }

@@ -129,6 +129,29 @@ export class AuthConfig {
     'UPLOAD_PHOTOS_FOR_POST_FILE_MICROSERVICE',
   ) as string;
 
+  @IsNotEmpty({ message: 'Set env variable MAX_FILES' })
+  @IsNumber({}, { message: 'Env variable MAX_FILES has to type of number' })
+  maxFiles: number = Number(this.configService.get('MAX_FILES'));
+
+  @IsNotEmpty({ message: 'Set env variable MAX_FILE_SIZE' })
+  @IsNumber({}, { message: 'Env variable MAX_FILE_SIZE has to type of number' })
+  maxFileSize: number = Number(this.configService.get('MAX_FILE_SIZE'));
+
+  @IsNotEmpty({ message: 'Set env variable MAX_FILES_SIZE' })
+  @IsNumber(
+    {},
+    { message: 'Env variable MAX_FILES_SIZE has to type of number' },
+  )
+  maxFilesSize: number = Number(this.configService.get('MAX_FILES_SIZE'));
+
+  @IsNotEmpty({ message: 'Set env variable JPEG_FORMAT' })
+  @IsString({ message: 'Env variable JPEG_FORMAT has to type of string' })
+  photoJpegFormat: string = this.configService.get('JPEG_FORMAT') as string;
+
+  @IsNotEmpty({ message: 'Set env variable PNG_FORMAT' })
+  @IsString({ message: 'Env variable PNG_FORMAT has to type of string' })
+  photoPngFormat: string = this.configService.get('PNG_FORMAT') as string;
+
   constructor(private configService: ConfigService) {
     //todo delete console.log auth config
     console.log('check my env all variables');
@@ -150,6 +173,7 @@ export class AuthConfig {
       'isAutomaticallyConfirmedUser',
       this.isAutomaticallyConfirmedUser,
     );
+    console.log('photoPngFormat', this.photoPngFormat);
     console.log('env', this.env);
     //*******
 

@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsString, Length, MaxLength } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Length,
+  MaxLength,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class PostInputModel {
@@ -13,9 +19,10 @@ export class PostInputModel {
     maxLength: 500,
     example: 'Some information about the photo, this is not mandatory.',
   })
+  @IsOptional()
   @IsString()
   @MaxLength(500)
-  content: string;
+  content: string = '';
 }
 export class PostUpdateInputModel {
   @ApiProperty({
@@ -31,9 +38,8 @@ export class PostUpdateInputModel {
   content: string;
 }
 
-export class PostModelDTO {
+export class PrePostCreationModelDTO {
   content: string;
-  photoUrls: string[];
   userId: number;
 }
 export class UpdatePostModelDTO {

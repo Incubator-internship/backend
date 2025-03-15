@@ -23,10 +23,8 @@ export class PostsQueryRepository {
       include: { photos: true },
       orderBy: { createdAt: 'desc' },
     });
-    console.log('repository allPosts --->', allPosts);
     return {
       posts: allPosts.map((p) => {
-        console.log('p.photos,', p.photos);
         return {
           id: p.id,
           content: p.content,

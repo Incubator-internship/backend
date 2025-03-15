@@ -11,7 +11,6 @@ import {
 import { FilesService } from '../application/files.service';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
-import log from 'eslint-plugin-react/lib/util/log';
 
 @Controller('file')
 export class FilesController {
@@ -34,7 +33,6 @@ export class FilesController {
   async uploadFiles(@UploadedFiles() files: Express.Multer.File[]) {
     console.log('files in files', files);
     if (!files || files.length === 0) {
-      console.error('No files uploaded');
       throw new BadRequestException('No files uploaded');
     }
 

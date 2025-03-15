@@ -40,6 +40,14 @@ export class FilesConfig {
   @IsString({ message: 'Env variable S3_BUCKET_NAME has to type of string' })
   s3BucketName: string = this.configService.get('S3_BUCKET_NAME') as string;
 
+  @IsNotEmpty({ message: 'Set env variable DATABASE_URL_MONGO' })
+  @IsString({
+    message: 'Env variable DATABASE_URL_MONGO has to type of string',
+  })
+  dataBaseMongoURL: string = this.configService.get(
+    'DATABASE_URL_MONGO',
+  ) as string;
+
   constructor(private configService: ConfigService) {
     //todo delete console.log auth config
     console.log('check my env all variables');

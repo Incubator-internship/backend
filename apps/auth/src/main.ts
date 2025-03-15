@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { AuthConfig } from '../settings/auth.config';
-import { applyAppSettings } from '../settings/apply-app-setting';
+import { applyAppSettings } from '../settings/apply-app-auth-setting';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

@@ -5,6 +5,7 @@ import {
   Delete,
   Get,
   HttpCode,
+  NestInterceptor,
   Param,
   ParseIntPipe,
   Post,
@@ -21,12 +22,10 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import {
   PostInputModel,
-  PostModelDTO,
   PostUpdateInputModel,
 } from './models/input/posts-input.model';
 import { JwtAccessAuthGuard } from '../../../guards/jwt/jwt-header.strategy';
 import { TakeUserId } from '../../../decorators/authMeTakeUserId.decorator';
-import { CreatePostCommand } from '../application/use.cases/createPost.command';
 import { firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import * as FormData from 'form-data';
@@ -47,6 +46,8 @@ import {
 } from '../../../common/exception-filters/exception.handler';
 import { GetAllPostsModel } from '../../auth/api/models/input/auth-input.model';
 import { AuthConfig } from '../../../settings/auth.config';
+import { PostFileUploadInterceptor } from '../../../common/helpers/fileUploadInterceptor.helper';
+import { CreatePostWithoutPhotoCommand } from '../application/use.cases/createPostWithoutPhoto.command';
 
 @ApiTags('Posts')
 @UseGuards(ThrottlerGuard)
@@ -69,35 +70,13 @@ export class PostsController {
   @Post('post')
   @UseGuards(JwtAccessAuthGuard)
   @HttpCode(201)
-  @UseInterceptors(
-    FilesInterceptor('photos', 10, {
-      storage: memoryStorage(),
-      limits: {
-        fileSize: 2 * 1024 * 1024, // limit 2mb per photo
-        files: 10, // limit 10 photos
-        fieldSize: 20 * 1024 * 1024, // limit 20mb for all photos
-      },
-      fileFilter: (req, file, cb) => {
-        if (!['image/jpeg', 'image/png'].includes(file.mimetype)) {
-          return cb(
-            new BadRequestException([
-              {
-                message: 'Only .jpg or .png files are allowed!',
-                field: 'create post',
-              },
-            ]),
-            false,
-          );
-        }
-        cb(null, true);
-      },
-    }),
-  )
+  @UseInterceptors(PostFileUploadInterceptor)
   async createMultiplePost(
     @TakeUserId() { userId }: { userId: number },
     @Body() content: PostInputModel,
     @UploadedFiles() photos: Express.Multer.File[],
   ) {
+    console.log(content, 'content');
     //Check, user has to download min 1 photo
     if (photos.length === 0) {
       throw new BadRequestException([
@@ -107,6 +86,11 @@ export class PostsController {
         },
       ]);
     }
+
+    const test = { content, userId };
+    const postId = await this.commandBus.execute(
+      new CreatePostWithoutPhotoCommand(test),
+    );
 
     const photoUrls: string[] = [];
 
@@ -131,10 +115,10 @@ export class PostsController {
       }
       photoUrls.push(...response.data.urls);
     }
-    const postDTO: PostModelDTO = { ...content, photoUrls, userId };
-    const postId = await this.commandBus.execute(
-      new CreatePostCommand(postDTO),
-    ); // Сохранение поста и фотографий в базе данных
+    // const postDTO: PostModelDTO = { ...content, photoUrls, userId };
+    // const postId = await this.commandBus.execute(
+    //   new CreatePostCommand(postDTO),
+    // ); // Сохранение поста и фотографий в базе данных
     return { postId };
   }
 
