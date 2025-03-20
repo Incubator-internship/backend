@@ -1,7 +1,4 @@
-import {
-  DeleteePostModelDTO,
-  UpdatePostModelDTO,
-} from '../../api/models/input/posts-input.model';
+import { DeleteePostModelDTO } from '../../api/models/input/posts-input.model';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { PostsRepository } from '../../infrastructure/posts.repository';
 import {
@@ -25,14 +22,14 @@ export class DeletePostHandler implements ICommandHandler<DeletePostCommand> {
       return exceptionHandler(
         ResultCode.NotFound,
         'Post has been not found',
-        'PostId',
+        'delete post',
       );
     }
     if (post.userId !== command.deletePostDTO.userId) {
       return exceptionHandler(
         ResultCode.Forbidden,
         'You do`t have permission to edit this post.',
-        'Forbidden',
+        'delete post',
       );
     }
     await this.postsRepository.deletePost(command.deletePostDTO.postId);

@@ -2,6 +2,8 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
+  Get,
   HttpCode,
   Param,
   ParseIntPipe,
@@ -20,17 +22,27 @@ import { ProfileOwnerGuard } from '../guards/profile.owner.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { TakeUserId } from '../../../decorators/authMeTakeUserId.decorator';
-
 import { UploadProfileAvatarCommand } from '../application/use.cases/uploadProfileAvatar.command';
 import {
+  DeleteAvatarEndpoint,
   EditProfileEndpoint,
+  GetProfileById,
   UploadAvatarEndpoint,
 } from '../../../swagger/users.swagger';
+import { ProfileQueryRepository } from '../infrastructure/profile-query.repository';
+import {
+  exceptionHandler,
+  ResultCode,
+} from '../../../common/exception-filters/exception.handler';
+import { DeleteAvatarCommand } from '../../devices/application/use.cases/deleteAvatar.command';
 
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
-  constructor(private commandBus: CommandBus) {}
+  constructor(
+    private commandBus: CommandBus,
+    private profileQueryRepository: ProfileQueryRepository,
+  ) {}
 
   @EditProfileEndpoint()
   @UseGuards(JwtAccessAuthGuard, ProfileOwnerGuard)
@@ -76,5 +88,31 @@ export class UsersController {
     await this.commandBus.execute(
       new UploadProfileAvatarCommand(userId, avatar),
     );
+  }
+
+  @GetProfileById()
+  @HttpCode(200)
+  @Get('profile/:id')
+  async getProfile(@Param('id', ParseIntPipe) profileId: number) {
+    const profile = await this.profileQueryRepository.getProfileById(profileId);
+    if (!profile) {
+      return exceptionHandler(
+        ResultCode.NotFound,
+        'Profile does not exist',
+        'get profile by profileID',
+      );
+    }
+    return profile;
+  }
+
+  @DeleteAvatarEndpoint()
+  @HttpCode(204)
+  @UseGuards(JwtAccessAuthGuard)
+  @Delete('avatar/:id')
+  async deleteAvatarById(
+    @Param('id', ParseIntPipe) profileId: number,
+    @TakeUserId() { userId }: { userId: number },
+  ) {
+    await this.commandBus.execute(new DeleteAvatarCommand(profileId, userId));
   }
 }
