@@ -4,12 +4,14 @@ import {
   ApiBody,
   ApiConsumes,
   ApiOperation,
+  ApiParam,
   ApiProperty,
   ApiQuery,
   ApiResponse,
 } from '@nestjs/swagger';
 import { ErrorsMessagesSwaggerType } from '../src/auth/api/models/output/auth-output.model';
 import { EditProfileTypes } from '../src/users/api/models/input/edit-profile.types';
+import { ProfileOutputDTO } from '../src/users/api/models/output/profileOutput.types';
 
 export function EditProfileEndpoint() {
   return applyDecorators(
@@ -105,7 +107,43 @@ export function GetProfileById() {
     ApiResponse({
       status: 200,
       description: 'Success',
-      type: ProfileType,
+      type: ProfileOutputDTO,
+    }),
+    ApiResponse({
+      status: 404,
+      description: 'NotFound',
+      type: () => ErrorsMessagesSwaggerType,
+    }),
+    ApiResponse({
+      status: 429,
+      description: 'More than 5 attempts from one IP-address during 10 seconds',
+    }),
+  );
+}
+
+export function DeleteAvatarEndpoint() {
+  return applyDecorators(
+    ApiOperation({
+      summary: 'Delete avatar',
+    }),
+    ApiBearerAuth(),
+    ApiParam({
+      name: 'id',
+      description: 'profileId',
+      required: true,
+      type: Number,
+    }),
+    ApiResponse({
+      status: 204,
+      description: 'Avatar has been deleted',
+    }),
+    ApiResponse({
+      status: 401,
+      description: 'Unauthorized',
+    }),
+    ApiResponse({
+      status: 403,
+      description: 'Forbidden',
     }),
     ApiResponse({
       status: 429,

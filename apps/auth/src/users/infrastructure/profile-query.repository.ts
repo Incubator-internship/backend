@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { Profile } from '@prisma/client';
 import { format } from 'date-fns';
 import { ProfileOutputDTO } from '../api/models/output/profileOutput.types';
 
@@ -20,6 +19,8 @@ export class ProfileQueryRepository {
       dateOfBirthday: profile.dateOfBirthday
         ? format(new Date(profile.dateOfBirthday), 'dd.MM.yyyy')
         : null,
+      createdAt: profile.createdAt.toISOString(),
+      updatedAt: profile.updatedAt.toISOString(),
     };
   }
 }

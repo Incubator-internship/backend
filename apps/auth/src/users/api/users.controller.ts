@@ -24,6 +24,7 @@ import { memoryStorage } from 'multer';
 import { TakeUserId } from '../../../decorators/authMeTakeUserId.decorator';
 import { UploadProfileAvatarCommand } from '../application/use.cases/uploadProfileAvatar.command';
 import {
+  DeleteAvatarEndpoint,
   EditProfileEndpoint,
   GetProfileById,
   UploadAvatarEndpoint,
@@ -104,6 +105,7 @@ export class UsersController {
     return profile;
   }
 
+  @DeleteAvatarEndpoint()
   @HttpCode(204)
   @UseGuards(JwtAccessAuthGuard)
   @Delete('avatar/:id')
