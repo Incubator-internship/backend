@@ -4,17 +4,11 @@ import {
   ApiBody,
   ApiConsumes,
   ApiOperation,
-  ApiParam,
   ApiProperty,
   ApiQuery,
   ApiResponse,
 } from '@nestjs/swagger';
 import { ErrorsMessagesSwaggerType } from '../src/auth/api/models/output/auth-output.model';
-import {
-  CursorBasedPaginationPostsModel,
-  PostOutputModel,
-} from '../src/posts/api/models/output/posts.output.model';
-import { PostUpdateInputModel } from '../src/posts/api/models/input/posts-input.model';
 import { EditProfileTypes } from '../src/users/api/models/input/edit-profile.types';
 
 export function EditProfileEndpoint() {
@@ -95,6 +89,23 @@ export function UploadAvatarEndpoint() {
     ApiResponse({
       status: 413,
       description: 'Payload too Large',
+    }),
+    ApiResponse({
+      status: 429,
+      description: 'More than 5 attempts from one IP-address during 10 seconds',
+    }),
+  );
+}
+
+export function GetProfileById() {
+  return applyDecorators(
+    ApiOperation({
+      summary: 'Get profile by id',
+    }),
+    ApiResponse({
+      status: 200,
+      description: 'Success',
+      type: ProfileType,
     }),
     ApiResponse({
       status: 429,
