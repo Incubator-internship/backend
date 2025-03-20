@@ -48,6 +48,8 @@ import { ProfileRepository } from './users/infrastructure/profile.repository';
 import { EditProfileHandler } from './users/application/use.cases/updateProfile.command';
 import { ProfileOwnerGuard } from './users/guards/profile.owner.guard';
 import { UploadProfileAvatarHandler } from './users/application/use.cases/uploadProfileAvatar.command';
+import { ProfileQueryRepository } from './users/infrastructure/profile-query.repository';
+import { DeleteAvatarHandler } from './devices/application/use.cases/deleteAvatar.command';
 
 const commands = [
   CreateUserHandler,
@@ -69,6 +71,7 @@ const commands = [
   UpdateUserHandler,
   EditProfileHandler,
   UploadProfileAvatarHandler,
+  DeleteAvatarHandler,
 ];
 const service = [PrismaService, AuthService, JWTService, JwtService];
 const repositories = [
@@ -80,6 +83,7 @@ const repositories = [
   SessionsQueryRepository,
   UsersProvidersRepository,
   ProfileRepository,
+  ProfileQueryRepository,
 ];
 
 @Module({

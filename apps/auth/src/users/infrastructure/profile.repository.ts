@@ -41,4 +41,11 @@ export class ProfileRepository {
       data: { originalAvatarUrl, smallAvatarUrl },
     });
   }
+
+  async deleteAvatar(profileId: number) {
+    await this.prismaService.profile.update({
+      where: { profileId },
+      data: { originalAvatarUrl: null, smallAvatarUrl: null },
+    });
+  }
 }
