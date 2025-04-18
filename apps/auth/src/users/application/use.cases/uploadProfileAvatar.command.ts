@@ -59,24 +59,42 @@ export class UploadProfileAvatarHandler
       contentType: command.avatar.mimetype,
     });
     formData.append('userId', command.userId.toString());
+    console.log(
+      'this.authConfig.uploadAvatarFileMicroservice ',
+      this.authConfig.uploadAvatarFileMicroservice,
+    );
+    try {
+      const response = await firstValueFrom(
+        this.httpService.post(
+          this.authConfig.uploadAvatarFileMicroservice,
+          //todo delete links below
+          //'http://localhost:5001/api/v1/file/avatar-file',
+          //'https://files.excubator.xyz:443/api/v1/file/avatar-files',
+          formData,
+          { headers: { ...formData.getHeaders() } },
+        ),
+      );
+      console.log('command.avatar ', response.data.originalAvatarUrl);
+      console.log('command.avatar ', response.data.smallAvatarUrl);
+      await this.profileRepository.updateProfileAvatar(
+        command.userId,
+        response.data.originalAvatarUrl,
+        response.data.smallAvatarUrl,
+      );
+    } catch (error) {
+      console.error('Avatar upload failed', {
+        url: this.authConfig.uploadAvatarFileMicroservice,
+        errorMessage: error.message,
+        status: error.response?.status,
+        data: error.response?.data,
+      });
 
-    const response = await firstValueFrom(
-      this.httpService.post(
-        this.authConfig.uploadAvatarFileMicroservice,
-        //todo delete links below
-        //'http://localhost:5001/api/v1/file/avatar-file',
-        //'https://files.excubator.xyz:443/api/v1/file/avatar-files',
-        formData,
-        { headers: { ...formData.getHeaders() } },
-      ),
-    );
-    console.log('command.avatar ', response.data.originalAvatarUrl);
-    console.log('command.avatar ', response.data.smallAvatarUrl);
-    await this.profileRepository.updateProfileAvatar(
-      command.userId,
-      response.data.originalAvatarUrl,
-      response.data.smallAvatarUrl,
-    );
+      return exceptionHandler(
+        ResultCode.BadRequest,
+        'Failed to upload avatar. Please try again later.',
+        'upload avatar',
+      );
+    }
     //return { avatarUrl: response.data.avatarUrl };
   }
 }
