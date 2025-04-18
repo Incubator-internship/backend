@@ -37,6 +37,7 @@ export const PostFileUploadInterceptor = FilesInterceptor('photos', 10, {
 //
 //   constructor(private readonly authConfig: AuthConfig) {
 //     // Инициализируем FileInterceptor с настройками multer
+//     console.log('authConfig ', authConfig);
 //     this.fileInterceptor = FilesInterceptor(
 //       'photos',
 //       this.authConfig.maxFiles,

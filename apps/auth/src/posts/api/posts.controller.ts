@@ -5,7 +5,6 @@ import {
   Delete,
   Get,
   HttpCode,
-  NestInterceptor,
   Param,
   ParseIntPipe,
   Post,
@@ -18,8 +17,6 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { ThrottlerGuard } from '@nestjs/throttler';
 import { CommandBus } from '@nestjs/cqrs';
-import { FilesInterceptor } from '@nestjs/platform-express';
-import { memoryStorage } from 'multer';
 import {
   PostInputModel,
   PostUpdateInputModel,
@@ -46,8 +43,9 @@ import {
 } from '../../../common/exception-filters/exception.handler';
 import { GetAllPostsModel } from '../../auth/api/models/input/auth-input.model';
 import { AuthConfig } from '../../../settings/auth.config';
-import { PostFileUploadInterceptor } from '../../../common/helpers/fileUploadInterceptor.helper';
+//import { PostFileUploadInterceptor } from '../../../common/helpers/fileUploadInterceptor.helper';
 import { CreatePostWithoutPhotoCommand } from '../application/use.cases/createPostWithoutPhoto.command';
+import { PostFileUploadInterceptor } from '../../../common/helpers/fileUploadInterceptor.helper';
 
 @ApiTags('Posts')
 @UseGuards(ThrottlerGuard)
@@ -119,7 +117,7 @@ export class PostsController {
     // const postId = await this.commandBus.execute(
     //   new CreatePostCommand(postDTO),
     // ); // Сохранение поста и фотографий в базе данных
-    return { postId };
+    //return { postId };
   }
 
   @UpdatePostEndpoint()
