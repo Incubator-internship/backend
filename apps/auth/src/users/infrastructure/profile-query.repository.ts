@@ -2,17 +2,30 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { format } from 'date-fns';
 import { ProfileOutputDTO } from '../api/models/output/profileOutput.types';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Injectable()
 export class ProfileQueryRepository {
   constructor(protected prismaService: PrismaService) {}
 
-  async getProfileById(profileId: number): Promise<ProfileOutputDTO | null> {
+  async getProfileById(profileId: number): Promise<ProfileOutputDTO> {
     const profile = await this.prismaService.profile.findUnique({
       where: { profileId },
     });
     if (!profile) {
-      return null;
+      return {
+        profileId,
+        firstName: '',
+        lastName: '',
+        dateOfBirthday: '',
+        country: '',
+        city: '',
+        aboutMe: '',
+        originalAvatarUrl: '',
+        smallAvatarUrl: '',
+        createdAt: '',
+        updatedAt: '',
+      };
     }
     return {
       ...profile,

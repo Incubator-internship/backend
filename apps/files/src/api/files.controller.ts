@@ -11,7 +11,6 @@ import {
 import { FilesService } from '../application/files.service';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
-import log from 'eslint-plugin-react/lib/util/log';
 
 @Controller('file')
 export class FilesController {

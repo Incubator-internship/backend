@@ -96,11 +96,12 @@ export class UsersController {
   async getProfile(@Param('id', ParseIntPipe) profileId: number) {
     const profile = await this.profileQueryRepository.getProfileById(profileId);
     if (!profile) {
-      return exceptionHandler(
-        ResultCode.NotFound,
-        'Profile does not exist',
-        'get profile by profileID',
-      );
+      // return exceptionHandler(
+      //   ResultCode.NotFound,
+      //   'Profile does not exist',
+      //   'get profile by profileID',
+      // );
+      return profile;
     }
     return profile;
   }
