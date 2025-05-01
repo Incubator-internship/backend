@@ -40,9 +40,10 @@ import { JwtAccessAuthGuard } from '../../../guards/jwt/jwt-header.strategy';
 import { TakeUserId } from '../../../decorators/authMeTakeUserId.decorator';
 import { UsersQueryRepository } from '../../users/infrastructure/users-query.repository';
 import { GoogleOAuthGuard } from '../../../guards/oath/google.strategy';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
 import {
   AuthMeEndpoint,
+  GitHubUrl,
   LoginUserEndpoint,
   LogoutEndpoint,
   NewPasswordEndpoint,
@@ -55,8 +56,15 @@ import {
 import { ThrottlerGuard } from '@nestjs/throttler';
 import { GoogleAuthInformation } from '../../../decorators/googleAuthInformation.decorator';
 import { GoogleAuthCommand } from '../application/use.cases/google-auth.command';
-import { RecaptchaAuthGuard } from '../../../guards/oath/recaptcha.auth.guard';
 import { AuthConfig } from '../../../settings/auth.config';
+import {
+  exceptionHandler,
+  ResultCode,
+} from 'apps/auth/common/exception-filters/exception.handler';
+import { AuthService } from '../application/auth.service';
+import { GitHubOAuthGuard } from 'apps/auth/guards/oath/github.strategy';
+import { GitHubAuthInformation } from 'apps/auth/decorators/gitHubAuthInformation.decorator';
+import { GitHubAuthCommand } from '../application/use.cases/github-auth.command';
 
 @ApiTags('Auth')
 @UseGuards(ThrottlerGuard)
@@ -65,6 +73,7 @@ export class AuthController {
   constructor(
     private commandBus: CommandBus,
     private jwtService: JWTService,
+    private authService: AuthService,
     private usersQueryRepository: UsersQueryRepository,
     private authConfig: AuthConfig,
   ) {}
@@ -189,7 +198,6 @@ export class AuthController {
     return authMe;
   }
 
-  //----------------------------------
   @Get('google')
   @UseGuards(GoogleOAuthGuard)
   async googleAuth() {}
@@ -218,5 +226,47 @@ export class AuthController {
     //const redirectUrl = `http://localhost:3000/authentication?accessToken=${tokensPair.accessToken}`;
     const redirectUrl = `${this.authConfig.redirectUrlGoogleOauth}${tokensPair.accessToken}`;
     return res.redirect(redirectUrl);
+  }
+
+  @Get('github/callback')
+  @UseGuards(GitHubOAuthGuard)
+  @ApiExcludeEndpoint()
+  async githubCallback(
+    @Ip() ip: string,
+    @Req() req,
+    @GitHubAuthInformation()
+    githubInfo: { email: string; providerId: string; providerType: string },
+    @UserAgent() deviceName: string,
+    @Res({ passthrough: true })
+    res: Response,
+  ) {
+    const tokensPair = await this.commandBus.execute(
+      new GitHubAuthCommand({ ...githubInfo, deviceName, ip }),
+    );
+    res.cookie('refreshToken', tokensPair.refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+    });
+    const redirectUrl = `${this.authConfig.redirectUrlGoogleOauth}${tokensPair.accessToken}`;
+    return res.redirect(redirectUrl);
+  }
+
+  @GitHubUrl()
+  @Get('github')
+  @HttpCode(302)
+  async gitOauthGitHub(@Res() res: Response) {
+    const result = await this.authService.getOauthGitHub();
+
+    if (!result.success) {
+      return exceptionHandler(ResultCode.ServerError, `${result.message}`);
+    }
+    if (!result.data) {
+      return exceptionHandler(
+        ResultCode.ServerError,
+        'Authorization URL not found',
+      );
+    }
+    return res.redirect(result.data.authUrl);
   }
 }

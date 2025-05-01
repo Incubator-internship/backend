@@ -51,6 +51,26 @@ export class AuthConfig {
     'GOOGLE_CLIENT_SECRET',
   ) as string;
 
+  @IsNotEmpty({ message: 'Set env variable GITHUB_CLIENT_ID' })
+  @IsString({ message: 'Env variable GITHUB_CLIENT_ID has to type of string' })
+  githubClientId: string = this.configService.get('GITHUB_CLIENT_ID') as string;
+
+  @IsNotEmpty({ message: 'Set env variable GITHUB_CLIENT_SECRET' })
+  @IsString({
+    message: 'Env variable GITHUB_CLIENT_SECRET has to type of string',
+  })
+  githubClientSecret: string = this.configService.get(
+    'GITHUB_CLIENT_SECRET',
+  ) as string;
+
+  @IsNotEmpty({ message: 'Set env variable GITHUB_CALLBACK_URL' })
+  @IsString({
+    message: 'Env variable GITHUB_CALLBACK_URL has to be of type string',
+  })
+  githubCallbackUrl: string = this.configService.get(
+    'GITHUB_CALLBACK_URL',
+  ) as string;
+
   @IsNotEmpty({ message: 'Set env variable GOOGLE_CLIENT_ID' })
   @IsString({ message: 'Env variable GOOGLE_CLIENT_ID has to type of string' })
   googleCallBackLocalUrl: string = this.configService.get(
