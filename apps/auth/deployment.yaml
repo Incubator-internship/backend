@@ -107,3 +107,21 @@ spec:
                 secretKeyRef:
                   name: auth-backend-production-config-secret
                   key: JWT_SECRET
+            - name: GITHUB_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: auth-backend-production-config-secret
+                  key: GITHUB_CLIENT_ID
+            - name: GITHUB_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: auth-backend-production-config-secret
+                  key: GITHUB_CLIENT_SECRET
+            - name: GITHUB_CALLBACK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: auth-backend-production-config-secret
+                  key: GITHUB_CALLBACK_URL
+
+
+
