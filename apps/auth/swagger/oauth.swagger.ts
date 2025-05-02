@@ -238,3 +238,37 @@ export function AuthMeEndpoint() {
     }),
   );
 }
+
+export function GitHubUrl() {
+  return applyDecorators(
+    ApiOperation({
+      summary: 'Initiate GitHub OAuth flow',
+      description:
+        'Redirects user to GitHub for authentication. After successful login, GitHub will redirect back to the callback URL.',
+    }),
+    ApiResponse({
+      status: 302,
+      description:
+        'Redirects user to GitHub OAuth page for authentication. After successful login on GitHub, user will be redirected to `${base_url}auth/github/login-success` with access token in response and refresh token set in HttpOnly cookie. If authentication fails, user will be redirected to `${base_url}auth/login`.',
+      headers: {
+        Location: {
+          description: 'GitHub OAuth URL',
+          schema: {
+            type: 'string',
+            example: 'https://github.com/login/oauth/authorize?client_id=...',
+          },
+        },
+      },
+    }),
+    ApiResponse({
+      status: 500,
+      description: 'Internal server error',
+      schema: {
+        example: {
+          statusCode: 500,
+          message: 'Authorization URL not found',
+        },
+      },
+    }),
+  );
+}

@@ -7,11 +7,9 @@
   "license": "UNLICENSED",
   "scripts": {
     "generate:auth": "npx prisma generate --schema=./apps/auth/prisma/schema.prisma",
-
     "create-migrate:auth": "dotenv -e .env.auth.development -- npx prisma migrate dev --name init --schema=./apps/auth/prisma/schema.prisma --create-only",
-    "migrate:auth": "dotenv -e .env.auth.development -- npx prisma migrate dev--schema=./apps/auth/prisma/schema.prisma",
+    "migrate:auth": "dotenv -e .env.auth.development -- npx prisma migrate dev --schema=./apps/auth/prisma/schema.prisma",
     "migrate:deploy-auth": "dotenv -e .env.auth.production -- npx prisma migrate deploy --schema=./apps/auth/prisma/schema.prisma",
-
     "build": "nest build",
     "build:auth": "nest build auth",
     "build:files": "nest build files",
@@ -58,10 +56,11 @@
     "form-data": "^4.0.1",
     "multer": "^1.4.5-lts.1",
     "passport": "^0.7.0",
-    "prisma": "^5.22.0",
+    "passport-github2": "^0.1.12",
     "passport-google-oauth20": "^2.0.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
+    "prisma": "^5.22.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
     "sharp": "^0.33.5"
@@ -87,7 +86,6 @@
     "eslint-plugin-prettier": "^5.0.0",
     "jest": "^29.5.0",
     "prettier": "^3.0.0",
-
     "source-map-support": "^0.5.21",
     "supertest": "^7.0.0",
     "ts-jest": "^29.1.0",

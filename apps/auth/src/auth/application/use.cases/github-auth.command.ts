@@ -7,19 +7,22 @@ import {
   CreateDeviceSessionCommand,
   CreateDeviceSessionHandler,
 } from '../../../devices/application/use.cases/createDeviceSession.command';
-import { GoogleAuthCommandDTO } from '../../api/models/input/googleAuth-input.model';
 import {
   CreateUserProviderCommand,
   CreateUserProviderHandler,
 } from './create-userProvider.command';
-import { CreateUserAndProviderCommand, CreateUserAndProviderHandler } from 'apps/auth/src/users/application/use.cases/createUser-provider.command';
+import { GitHubAuthCommandDTO } from '../../api/models/input/gitHubAuth-input.model';
+import {
+  CreateUserAndProviderCommand,
+  CreateUserAndProviderHandler,
+} from 'apps/auth/src/users/application/use.cases/createUser-provider.command';
 
-export class GoogleAuthCommand {
-  constructor(public readonly googleDTO: GoogleAuthCommandDTO) {}
+export class GitHubAuthCommand {
+  constructor(public readonly gitHubDTO: GitHubAuthCommandDTO) {}
 }
 
-@CommandHandler(GoogleAuthCommand)
-export class GoogleAuthHandler implements ICommandHandler<GoogleAuthCommand> {
+@CommandHandler(GitHubAuthCommand)
+export class GitHubAuthHandler implements ICommandHandler<GitHubAuthCommand> {
   constructor(
     private usersRepository: UsersRepository,
     private usersProvidersRepository: UsersProvidersRepository,
@@ -29,37 +32,37 @@ export class GoogleAuthHandler implements ICommandHandler<GoogleAuthCommand> {
     private createUserAndProviderHandler: CreateUserAndProviderHandler,
   ) {}
 
-  async execute(command: GoogleAuthCommand) {
-    const googleProvider =
+  async execute(command: GitHubAuthCommand) {
+    const gitHubProvider =
       await this.usersProvidersRepository.findProviderByProviderId(
-        command.googleDTO.providerId,
+        command.gitHubDTO.providerId,
       );
 
-    if (googleProvider) {
+    if (gitHubProvider) {
       const deviceId = randomUUID();
       const tokensPair = await this.jwtService.createJWT(
-        googleProvider.userId,
+        gitHubProvider.userId,
         deviceId,
       );
       await this.createDeviceSessionHandler.execute(
         new CreateDeviceSessionCommand(
           tokensPair.refreshToken,
-          command.googleDTO.deviceName,
-          command.googleDTO.ip,
+          command.gitHubDTO.deviceName,
+          command.gitHubDTO.ip,
         ),
       );
       return tokensPair;
     }
 
     const user = await this.usersRepository.findUserByEmail(
-      command.googleDTO.email,
+      command.gitHubDTO.email,
     );
     if (user) {
       await this.createUserProviderHandler.execute(
         new CreateUserProviderCommand({
           userId: user.id,
-          providerId: command.googleDTO.providerId,
-          providerType: command.googleDTO.providerType,
+          providerId: command.gitHubDTO.providerId,
+          providerType: command.gitHubDTO.providerType,
         }),
       );
       const deviceId = randomUUID();
@@ -67,24 +70,24 @@ export class GoogleAuthHandler implements ICommandHandler<GoogleAuthCommand> {
       await this.createDeviceSessionHandler.execute(
         new CreateDeviceSessionCommand(
           tokensPair.refreshToken,
-          command.googleDTO.deviceName,
-          command.googleDTO.ip,
+          command.gitHubDTO.deviceName,
+          command.gitHubDTO.ip,
         ),
       );
       return tokensPair;
     }
     if (!user) {
       const password = randomUUID();
-      const emailPrefix = command.googleDTO.email.split('@')[0];
+      const emailPrefix = command.gitHubDTO.email.split('@')[0];
       const timeStampSuffix = Date.now().toString().slice(-6);
       const userName = emailPrefix + timeStampSuffix;
       const userId = await this.createUserAndProviderHandler.execute(
         new CreateUserAndProviderCommand({
           userName,
           password,
-          email: command.googleDTO.email,
-          providerId: command.googleDTO.providerId,
-          providerType: command.googleDTO.providerType,
+          email: command.gitHubDTO.email,
+          providerId: command.gitHubDTO.providerId,
+          providerType: command.gitHubDTO.providerType,
         }),
       );
       const deviceId = randomUUID();
@@ -92,8 +95,8 @@ export class GoogleAuthHandler implements ICommandHandler<GoogleAuthCommand> {
       await this.createDeviceSessionHandler.execute(
         new CreateDeviceSessionCommand(
           tokensPair.refreshToken,
-          command.googleDTO.deviceName,
-          command.googleDTO.ip,
+          command.gitHubDTO.deviceName,
+          command.gitHubDTO.ip,
         ),
       );
       return tokensPair;

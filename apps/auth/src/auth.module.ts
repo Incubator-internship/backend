@@ -38,7 +38,6 @@ import { GoogleStrategy } from '../guards/oath/google.strategy';
 import { UsersProvidersRepository } from './users/infrastructure/users-providers.repository';
 import { GoogleAuthHandler } from './auth/application/use.cases/google-auth.command';
 import { CreateUserProviderHandler } from './auth/application/use.cases/create-userProvider.command';
-import { CreateUserAndProviderHandler } from './users/application/use.cases/createUser-google.command';
 import { TestingController } from './testing/api/testing.controller';
 import { UpdateUserHandler } from './users/application/use.cases/updateUser.command';
 import { RecaptchaAuthGuard } from '../guards/oath/recaptcha.auth.guard';
@@ -50,6 +49,8 @@ import { ProfileOwnerGuard } from './users/guards/profile.owner.guard';
 import { UploadProfileAvatarHandler } from './users/application/use.cases/uploadProfileAvatar.command';
 import { ProfileQueryRepository } from './users/infrastructure/profile-query.repository';
 import { DeleteAvatarHandler } from './devices/application/use.cases/deleteAvatar.command';
+import { GithubStrategy } from '../guards/oath/github.strategy';
+import { CreateUserAndProviderHandler } from './users/application/use.cases/createUser-provider.command';
 
 const commands = [
   CreateUserHandler,
@@ -106,6 +107,7 @@ const repositories = [
     JwtStrategy,
     JwtAccessStrategy,
     GoogleStrategy,
+    GithubStrategy,
     RecaptchaAuthGuard,
     ProfileOwnerGuard,
   ],
