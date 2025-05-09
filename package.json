@@ -13,6 +13,7 @@
     "build": "nest build",
     "build:auth": "nest build auth",
     "build:files": "nest build files",
+    "build:payments": "nest build files",
     "start:auth": "cross-env NODE_ENV=auth.production node dist/apps/auth/main",
     "start:files": "cross-env NODE_ENV=files.production node dist/apps/files/main",
     "start:dev:auth": "cross-env NODE_ENV=auth.development nest start auth --watch",
