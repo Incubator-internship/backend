@@ -2,6 +2,10 @@
 /dist
 /node_modules
 /build
+/apps/auth/prisma/auth-database-client-types
+/apps/files/prisma/generated
+/apps/payments/prisma-payments-database/payments-database-client-types
+
 
 # Logs
 logs
@@ -61,3 +65,5 @@ pids
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 .env.auth.development
 .env.files.development
+.env.payments.development
+.git

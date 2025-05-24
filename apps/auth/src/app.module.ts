@@ -6,12 +6,14 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { PostsModule } from './posts/posts.module';
+import { PaymentsApiModule } from './payments/payments.module';
 
 @Module({
   imports: [
     configModule,
     AuthModule,
     PostsModule,
+    PaymentsApiModule,
     ThrottlerModule.forRoot([
       {
         ttl: 10000,
