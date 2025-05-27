@@ -5,7 +5,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("PAYMENTS_DATABASE_URL")
+  url      = "postgresql://content_owner:npg_PxdXUC3cBE2V@ep-wandering-silence-a5xf8fxt-pooler.us-east-2.aws.neon.tech/content?sslmode=require"
 }
 
 model InformatioPayYoo {
