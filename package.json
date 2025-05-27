@@ -72,6 +72,7 @@
     "rxjs": "^7.8.1",
     "sharp": "^0.33.5",
     "string-width": "^7.2.0",
+    "strip-ansi": "^7.1.0",
     "wrap-ansi": "^9.0.0"
   },
   "devDependencies": {
