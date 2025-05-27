@@ -120,6 +120,10 @@
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],
+    "resolutions": {
+      "string-width": "4.2.3",
+      "wrap-ansi": "7.0.0"
+    },
     "coverageDirectory": "./coverage",
     "testEnvironment": "node",
     "roots": [
