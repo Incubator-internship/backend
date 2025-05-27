@@ -70,7 +70,9 @@
     "prisma": "^5.22.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
-    "sharp": "^0.33.5"
+    "sharp": "^0.33.5",
+    "string-width": "^7.2.0",
+    "wrap-ansi": "^9.0.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
@@ -120,10 +122,6 @@
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],
-    "resolutions": {
-      "string-width": "4.2.3",
-      "wrap-ansi": "7.0.0"
-    },
     "coverageDirectory": "./coverage",
     "testEnvironment": "node",
     "roots": [
