@@ -12,7 +12,7 @@
     "migrate:auth": "dotenv -e .env.auth.development -- npx prisma migrate dev --schema=./apps/auth/prisma/schema.prisma",
     "migrate:deploy-auth": "dotenv -e .env.auth.production -- npx prisma migrate deploy --schema=./apps/auth/prisma/schema.prisma",
     "build": "nest build",
-    "build:auth": "nest build auth",
+    "build:auth": "prisma generate --schema=apps/auth/prisma/schema.prisma && nest build auth",
     "build:files": "nest build files",
     "build:payments": "nest build files",
     "start:auth": "cross-env NODE_ENV=auth.production node dist/apps/auth/main",
