@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { PasswordRecoveryModel } from '../domain/createPasswwordRecovery.model';
-import { PasswordRecovery } from '@prisma/client';
+import { PasswordRecovery } from '../../../prisma/auth-database-client-types';
 
 @Injectable()
 export class PasswordRecoveryRepository {

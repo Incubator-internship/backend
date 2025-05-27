@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { SessionModel } from '../domain/createDeviceSession.model';
-import { Session } from '@prisma/client';
+import { Session } from '../../../prisma/auth-database-client-types';
 
 @Injectable()
 export class SessionsRepository {

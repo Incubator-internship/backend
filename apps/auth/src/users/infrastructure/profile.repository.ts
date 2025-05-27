@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { Profile } from '@prisma/client';
 import { ProfileDTOModel } from '../api/models/dto-models/createProfile.types';
+import { Profile } from '../../../prisma/auth-database-client-types';
 
 @Injectable()
 export class ProfileRepository {

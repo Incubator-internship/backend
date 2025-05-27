@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { userCreateDTO } from '../api/models/input/users.types';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { EmailConfirmation, User } from '@prisma/client';
+import {
+  EmailConfirmation,
+  User,
+} from '../../../prisma/auth-database-client-types';
 
 @Injectable()
 export class UsersRepository {

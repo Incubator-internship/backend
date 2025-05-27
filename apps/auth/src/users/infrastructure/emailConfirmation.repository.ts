@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { EmailConfirmationModel } from '../domain/createEmailConfirmation.model';
-import { EmailConfirmation } from '@prisma/client';
+import { EmailConfirmation } from '../../../prisma/auth-database-client-types';
 
 @Injectable()
 export class EmailConfirmationRepository {
