@@ -51,6 +51,7 @@ import { ProfileQueryRepository } from './users/infrastructure/profile-query.rep
 import { DeleteAvatarHandler } from './devices/application/use.cases/deleteAvatar.command';
 import { GithubStrategy } from '../guards/oath/github.strategy';
 import { CreateUserAndProviderHandler } from './users/application/use.cases/createUser-provider.command';
+import { UpdateUserTypeHandler } from './users/application/use.cases/updateUserType.command';
 
 const commands = [
   CreateUserHandler,
@@ -73,6 +74,7 @@ const commands = [
   EditProfileHandler,
   UploadProfileAvatarHandler,
   DeleteAvatarHandler,
+  UpdateUserTypeHandler,
 ];
 const service = [PrismaService, AuthService, JWTService, JwtService];
 const repositories = [
@@ -111,6 +113,6 @@ const repositories = [
     RecaptchaAuthGuard,
     ProfileOwnerGuard,
   ],
-  exports: [],
+  exports: [UpdateUserTypeHandler],
 })
 export class AuthModule {}

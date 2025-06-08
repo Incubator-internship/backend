@@ -9,6 +9,7 @@ import * as cookieParser from 'cookie-parser';
 import { AppModule } from '../src/app.module';
 import { LoggerMiddlewareFunc } from '../../../common/logger.middleware';
 import { HttpExceptionFilter } from '../../../common/http-exception-filter';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { AuthConfig } from './auth.config';
 
 interface CustomError {
@@ -50,6 +51,8 @@ export const applyAppSettings = (app: INestApplication) => {
 
   // Применение глобальных exceptions filters
   setAppExceptionsFilters(app);
+
+  connectRabbit(app);
 };
 
 const setAppPrefix = (app: INestApplication) => {
@@ -123,4 +126,21 @@ const setAppExceptionsFilters = (app: INestApplication) => {
   app.useGlobalFilters(
     /*new ErrorExceptionFilter(),*/ new HttpExceptionFilter(),
   );
+};
+
+const connectRabbit = (app: INestApplication) => {
+  const rabbitURL = app.get<AuthConfig>(AuthConfig).rabbitURL;
+
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.RMQ,
+    options: {
+      urls: [rabbitURL],
+      queue: 'auth_queue',
+      queueOptions: {
+        durable: true,
+        noAck: true,
+        prefetchCount: 1,
+      },
+    },
+  });
 };

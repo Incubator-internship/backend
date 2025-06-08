@@ -31,6 +31,10 @@ export class AuthConfig {
   @IsString({ message: 'Env variable DATABASE_URL has to type of string' })
   dbURL: string = this.configService.get('DATABASE_URL') as string;
 
+  @IsNotEmpty({ message: 'Set env variable RABBIT_URL' })
+  @IsString({ message: 'Env variable RABBIT_URL has to type of string' })
+  rabbitURL: string = this.configService.get('RABBIT_URL') as string;
+
   @IsNotEmpty({ message: 'Set env variable JWT_SECRET' })
   @IsString({ message: 'Env variable JWT_SECRET has to type of number' })
   jwtSecret: string = this.configService.get('JWT_SECRET') as string;
@@ -155,6 +159,7 @@ export class AuthConfig {
     console.log('auth.config port ', this.port);
     console.log('auth.config typeof port ', typeof this.port);
     console.log('dbURL', this.dbURL);
+    console.log('dbURL', this.rabbitURL);
     console.log('jwtSecret', this.jwtSecret);
     console.log('emailPass', this.emailPass);
     console.log('googleClientId', this.googleClientId);

@@ -16,112 +16,114 @@ spec:
         project: PROJECT
     spec:
       containers:
-        - name: PROJECT
-          image: REGISTRY_HOSTNAME/PROJECT:TAG_VERSION
-          ports:
-            - containerPort: PORT_CONTAINER
+         - name: PROJECT
+           image: REGISTRY_HOSTNAME/PROJECT:TAG_VERSION
+           ports:
+             - containerPort: PORT_CONTAINER
 
-          env:
-            - name: EMAIL_PASS
-              valueFrom:
-                secretKeyRef:
-                  name: auth-backend-production-config-secret
-                  key: EMAIL_PASS
-            - name: GOOGLE_CLIENT_ID
-              valueFrom:
-                secretKeyRef:
-                  name: auth-backend-production-config-secret
-                  key: GOOGLE_CLIENT_ID
-            - name: GOOGLE_CLIENT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: auth-backend-production-config-secret
-                  key: GOOGLE_CLIENT_SECRET
-            - name: GOOGLE_CALLBACK_LOCAL_URL
-              valueFrom:
-                secretKeyRef:
-                  name: auth-backend-production-config-secret
-                  key: GOOGLE_CALLBACK_LOCAL_URL
-            - name: GOOGLE_CALLBACK_PROD_URL
-              valueFrom:
-                secretKeyRef:
-                  name: auth-backend-production-config-secret
-                  key: GOOGLE_CALLBACK_PROD_URL
-            - name: DATABASE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: auth-backend-production-config-secret
-                  key: DATABASE_URL
-            - name: RECAPTCHA_SECRET_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: auth-backend-production-config-secret
-                  key: RECAPTCHA_SECRET_KEY
-            - name: RECAPTCHA_URL
-              valueFrom:
-                secretKeyRef:
-                  name: auth-backend-production-config-secret
-                  key: RECAPTCHA_URL
-            - name: EMAIL_CONFIRM_URL
-              valueFrom:
-                secretKeyRef:
-                  name: auth-backend-production-config-secret
-                  key: EMAIL_CONFIRM_URL
-            - name: PASSWORD_RECOVERY_URL
-              valueFrom:
-                secretKeyRef:
-                  name: auth-backend-production-config-secret
-                  key: PASSWORD_RECOVERY_URL
-            - name: IS_AUTOMATICALLY_CONFIRMED_USER
-              valueFrom:
-                secretKeyRef:
-                  name: auth-backend-production-config-secret
-                  key: IS_AUTOMATICALLY_CONFIRMED_USER
-            - name: REDIRECT_URL_GOOGLE_OAUTH
-              valueFrom:
-                secretKeyRef:
-                  name: auth-backend-production-config-secret
-                  key: REDIRECT_URL_GOOGLE_OAUTH
-            - name: UPLOAD_AVATAR_FILE_MICROSERVICE
-              valueFrom:
-                secretKeyRef:
-                  name: auth-backend-production-config-secret
-                  key: UPLOAD_AVATAR_FILE_MICROSERVICE
-            - name: UPLOAD_PHOTOS_FOR_POST_FILE_MICROSERVICE
-              valueFrom:
-                secretKeyRef:
-                  name: auth-backend-production-config-secret
-                  key: UPLOAD_PHOTOS_FOR_POST_FILE_MICROSERVICE
-            - name: MIN_AGE
-              valueFrom:
-                secretKeyRef:
-                  name: auth-backend-production-config-secret
-                  key: MIN_AGE
-            - name: MAX_AGE
-              valueFrom:
-                secretKeyRef:
-                  name: auth-backend-production-config-secret
-                  key: MAX_AGE
-            - name: JWT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: auth-backend-production-config-secret
-                  key: JWT_SECRET
-            - name: GITHUB_CLIENT_ID
-              valueFrom:
-                secretKeyRef:
-                  name: auth-backend-production-config-secret
-                  key: GITHUB_CLIENT_ID
-            - name: GITHUB_CLIENT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: auth-backend-production-config-secret
-                  key: GITHUB_CLIENT_SECRET
-            - name: GITHUB_CALLBACK_URL
-              valueFrom:
-                secretKeyRef:
-                  name: auth-backend-production-config-secret
-                  key: GITHUB_CALLBACK_URL
-
-
-
+           env:
+             - name: EMAIL_PASS
+               valueFrom:
+                 secretKeyRef:
+                   name: auth-backend-production-config-secret
+                   key: EMAIL_PASS
+             - name: GOOGLE_CLIENT_ID
+               valueFrom:
+                 secretKeyRef:
+                   name: auth-backend-production-config-secret
+                   key: GOOGLE_CLIENT_ID
+             - name: GOOGLE_CLIENT_SECRET
+               valueFrom:
+                 secretKeyRef:
+                   name: auth-backend-production-config-secret
+                   key: GOOGLE_CLIENT_SECRET
+             - name: GOOGLE_CALLBACK_LOCAL_URL
+               valueFrom:
+                 secretKeyRef:
+                   name: auth-backend-production-config-secret
+                   key: GOOGLE_CALLBACK_LOCAL_URL
+             - name: GOOGLE_CALLBACK_PROD_URL
+               valueFrom:
+                 secretKeyRef:
+                   name: auth-backend-production-config-secret
+                   key: GOOGLE_CALLBACK_PROD_URL
+             - name: DATABASE_URL
+               valueFrom:
+                 secretKeyRef:
+                   name: auth-backend-production-config-secret
+                   key: DATABASE_URL
+             - name: RECAPTCHA_SECRET_KEY
+               valueFrom:
+                 secretKeyRef:
+                   name: auth-backend-production-config-secret
+                   key: RECAPTCHA_SECRET_KEY
+             - name: RECAPTCHA_URL
+               valueFrom:
+                 secretKeyRef:
+                   name: auth-backend-production-config-secret
+                   key: RECAPTCHA_URL
+             - name: EMAIL_CONFIRM_URL
+               valueFrom:
+                 secretKeyRef:
+                   name: auth-backend-production-config-secret
+                   key: EMAIL_CONFIRM_URL
+             - name: PASSWORD_RECOVERY_URL
+               valueFrom:
+                 secretKeyRef:
+                   name: auth-backend-production-config-secret
+                   key: PASSWORD_RECOVERY_URL
+             - name: IS_AUTOMATICALLY_CONFIRMED_USER
+               valueFrom:
+                 secretKeyRef:
+                   name: auth-backend-production-config-secret
+                   key: IS_AUTOMATICALLY_CONFIRMED_USER
+             - name: REDIRECT_URL_GOOGLE_OAUTH
+               valueFrom:
+                 secretKeyRef:
+                   name: auth-backend-production-config-secret
+                   key: REDIRECT_URL_GOOGLE_OAUTH
+             - name: UPLOAD_AVATAR_FILE_MICROSERVICE
+               valueFrom:
+                 secretKeyRef:
+                   name: auth-backend-production-config-secret
+                   key: UPLOAD_AVATAR_FILE_MICROSERVICE
+             - name: UPLOAD_PHOTOS_FOR_POST_FILE_MICROSERVICE
+               valueFrom:
+                 secretKeyRef:
+                   name: auth-backend-production-config-secret
+                   key: UPLOAD_PHOTOS_FOR_POST_FILE_MICROSERVICE
+             - name: MIN_AGE
+               valueFrom:
+                 secretKeyRef:
+                   name: auth-backend-production-config-secret
+                   key: MIN_AGE
+             - name: MAX_AGE
+               valueFrom:
+                 secretKeyRef:
+                   name: auth-backend-production-config-secret
+                   key: MAX_AGE
+             - name: GITHUB_CLIENT_ID
+               valueFrom:
+                 secretKeyRef:
+                   name: auth-backend-production-config-secret
+                   key: GITHUB_CLIENT_ID
+             - name: GITHUB_CLIENT_SECRET
+               valueFrom:
+                 secretKeyRef:
+                   name: auth-backend-production-config-secret
+                   key: GITHUB_CLIENT_SECRET
+             - name: GITHUB_CALLBACK_URL
+               valueFrom:
+                 secretKeyRef:
+                   name: auth-backend-production-config-secret
+                   key: GITHUB_CALLBACK_URL
+             - name: RABBIT_URL
+               valueFrom:
+                 secretKeyRef:
+                   name: auth-backend-production-config-secret
+                   key: RABBIT_URL
+             - name: JWT_SECRET
+               valueFrom:
+                 secretKeyRef:
+                   name: auth-backend-production-config-secret
+                   key: JWT_SECRET

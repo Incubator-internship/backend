@@ -21,3 +21,14 @@ spec:
            ports:
              - containerPort: PORT_CONTAINER
 
+           env:
+             - name: RABBIT_URL
+               valueFrom:
+                 secretKeyRef:
+                   name: payments-backend-production-config-secret
+                   key: RABBIT_URL
+             - name: PAYMENTS_DATABASE_URL
+               valueFrom:
+                 secretKeyRef:
+                   name: payments-backend-production-config-secret
+                   key: PAYMENTS_DATABASE_URL

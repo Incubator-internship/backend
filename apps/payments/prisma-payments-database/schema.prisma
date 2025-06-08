@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../prisma-payments-database/payments-database-client-types"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("PAYMENTS_DATABASE_URL")
+}
+
+model InformatioPayYoo {
+  payid              Int       @id @default(autoincrement())
+  payIdYoo           String    @unique
+  status             String
+  amount             String
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  IPaymentMethodData String
+  userId             Int    
+  autoPay            Boolean
+  subscriptionStart  DateTime? // Дата начала текущей подписки
+  subscriptionEnd    DateTime? // Дата окончания текущей подписки
+  renewalDate        DateTime? // Дата продления (если было)
+  subscriptionTerm   String? // Период подписки (месяц/год)
+
+  isRenewed Boolean? @default(false)
+
+  @@map("InformatioPayYoo")
+}
+
+model paymentsUser {
+  payid              Int       @id @default(autoincrement())
+  payIdYoo           String    @unique
+  status             String
+  amount             String
+  subscriptionStart  DateTime? // Дата начала текущей подписки
+  subscriptionTerm   String? // Период подписки (месяц/год)
+  userId             Int       @unique
+  IPaymentMethodData String
+
+  @@map("paymentsUser")
+}

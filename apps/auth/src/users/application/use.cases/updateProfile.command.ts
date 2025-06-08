@@ -2,11 +2,11 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ProfileRepository } from '../../infrastructure/profile.repository';
 import { UsersRepository } from '../../infrastructure/users.repository';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { User } from '@prisma/client';
 import { DateHelper } from '../../../../common/helpers/date.helpers';
 import { AuthConfig } from '../../../../settings/auth.config';
 import { ProfileModel } from '../../domain/smartProfile.model';
 import { EditProfileDTOModel } from '../../api/models/dto-models/edit-profile-dto.types';
+import { User } from '../../../../prisma/auth-database-client-types';
 
 export class EditProfileCommand {
   constructor(public readonly editProfileDTO: EditProfileDTOModel) {}

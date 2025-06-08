@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { userCreateDTO } from '../api/models/input/users.types';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { EmailConfirmation, User } from '@prisma/client';
+import {
+  EmailConfirmation,
+  User,
+} from '../../../prisma/auth-database-client-types';
 
 @Injectable()
 export class UsersRepository {
@@ -89,6 +92,14 @@ export class UsersRepository {
     await this.prismaService.user.update({
       where: { id: userId },
       data: { userName },
+    });
+  }
+  async updateUserType(type: string, userId: number) {
+    await this.prismaService.user.update({
+      where: { id: userId },
+      data: {
+        accountType: type,
+      },
     });
   }
 }

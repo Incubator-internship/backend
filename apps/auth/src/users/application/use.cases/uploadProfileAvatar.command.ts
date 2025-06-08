@@ -1,6 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ProfileRepository } from '../../infrastructure/profile.repository';
-import { BadRequestException } from '@nestjs/common';
 import { AuthConfig } from '../../../../settings/auth.config';
 import { randomUUID } from 'crypto';
 import * as FormData from 'form-data';
