@@ -5,7 +5,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://content_owner:npg_PxdXUC3cBE2V@ep-wandering-silence-a5xf8fxt-pooler.us-east-2.aws.neon.tech/content?sslmode=require"
+  url      = env("PAYMENTS_DATABASE_URL")
 }
 
 model InformatioPayYoo {
@@ -16,7 +16,7 @@ model InformatioPayYoo {
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
   IPaymentMethodData String
-  userId             Int       @unique
+  userId             Int    
   autoPay            Boolean
   subscriptionStart  DateTime? // Дата начала текущей подписки
   subscriptionEnd    DateTime? // Дата окончания текущей подписки

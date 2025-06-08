@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { IsEnum } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 
 export enum Environment {
   DEVELOPMENT = 'payments.development',
@@ -14,18 +14,16 @@ export class PaymentsConfig {
   @IsEnum(Environment)
   env: string = this.configService.get('NODE_ENV') as string;
 
-  constructor(private configService: ConfigService) {
-    //todo delete console.log auth config
-    console.log('check my env all variables');
-    //*******
+  @IsNotEmpty({ message: 'Set env variable DATABASE_URL' })
+  @IsString({ message: 'Env variable RABBIT_URL has to type of string' })
+  dbURL: string = this.configService.get('PAYMENTS_DATABASE_URL') as string;
 
-    // configValidationUtility.validateConfig(this);
-    // const errors = validateSync(this);
-    // if (errors.length > 0) {
-    //   const sortedMessages = errors
-    //     .map((error) => Object.values(error.constraints || {}).join(', '))
-    //     .join('; ');
-    //   throw new Error('Validation failed: ' + sortedMessages);
-    // }
+  @IsNotEmpty({ message: 'Set env variable RABBIT_URL' })
+  @IsString({ message: 'Env variable RABBIT_URL has to type of string' })
+  rabbitURL: string = this.configService.get('RABBIT_URL') as string;
+  static rabbitURL: any;
+
+  constructor(private configService: ConfigService) {
+    console.log('check my env all variables');
   }
 }

@@ -7,11 +7,9 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
+import { ClientProxy, EventPattern, Payload } from '@nestjs/microservices';
 import { ApiTags } from '@nestjs/swagger';
-import { ThrottlerGuard } from '@nestjs/throttler';
 import { HttpStatusCode } from 'axios';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { YooInputModel } from './models/input/yooPay-input.model';
 import { JwtAccessAuthGuard } from 'apps/auth/guards/jwt/jwt-header.strategy';
 import { TakeUserId } from 'apps/auth/decorators/authMeTakeUserId.decorator';
@@ -25,26 +23,31 @@ import {
   cancelYooEndpoint,
   getMyPaymentsEndpoint,
 } from 'apps/auth/swagger/oauth.swagger';
+import { CommandBus } from '@nestjs/cqrs';
+import { UpdateUserTypeCommand } from '../../users/application/use.cases/updateUserType.command';
+import { ThrottlerGuard } from '@nestjs/throttler';
+import { DatateT } from '../types/types';
 
 @ApiTags('Payments')
-@UseGuards(ThrottlerGuard)
 @Controller('payments')
 export class PaymentsApiController {
-  constructor(@Inject('PAYMENTS-SERVICE') private client: ClientProxy) {}
+  constructor(
+    private commandBus: CommandBus,
+    @Inject('PAYMENTS-SERVICE') private client: ClientProxy,
+  ) {}
 
   @buyYooEndpoint()
   @Post('buyYoo')
+  @UseGuards(ThrottlerGuard)
   @UseGuards(JwtAccessAuthGuard)
   @HttpCode(HttpStatusCode.Created)
-  async buy(
-    @Body() YooInputModel: YooInputModel,
+  async buyYoo(
+    @Body() dto: YooInputModel,
     @TakeUserId() { userId }: { userId: number },
   ) {
     const pattern = 'buyYoo';
-    YooInputModel.userID = userId;
-    const result = await firstValueFrom(
-      this.client.send(pattern, YooInputModel),
-    );
+    dto.userID = userId;
+    const result = await firstValueFrom(this.client.send(pattern, dto));
 
     if (!result.succeeded) {
       return exceptionHandler(
@@ -59,8 +62,9 @@ export class PaymentsApiController {
   @cancelYooEndpoint()
   @Post('cancelYoo')
   @UseGuards(JwtAccessAuthGuard)
+  @UseGuards(ThrottlerGuard)
   @HttpCode(HttpStatusCode.NoContent)
-  async cancelAutoPayment(@TakeUserId() { userId }: { userId: number }) {
+  async cancelAutoPaymentYoo(@TakeUserId() { userId }: { userId: number }) {
     const pattern = 'buyYooCancel';
     const result = await firstValueFrom(this.client.send(pattern, userId));
 
@@ -75,8 +79,9 @@ export class PaymentsApiController {
   @getMyPaymentsEndpoint()
   @Get('myPaymentsYoo')
   @UseGuards(JwtAccessAuthGuard)
+  @UseGuards(ThrottlerGuard)
   @HttpCode(HttpStatusCode.Ok)
-  async getMyPayments(@TakeUserId() { userId }: { userId: number }) {
+  async getMyPaymentsYoo(@TakeUserId() { userId }: { userId: number }) {
     const pattern = 'myPaymentsYoo';
     const result = await firstValueFrom(this.client.send(pattern, userId));
 
@@ -85,5 +90,16 @@ export class PaymentsApiController {
     }
 
     return result.data;
+  }
+
+  @EventPattern('payment_succeeded_yoo')
+  async handlePaymentSuccessYoo(@Payload() data: DatateT) {
+    try {
+      await this.commandBus.execute(
+        new UpdateUserTypeCommand(data.userId, data.type),
+      );
+    } catch (error) {
+      console.error('Error processing payment_succeeded:', error);
+    }
   }
 }

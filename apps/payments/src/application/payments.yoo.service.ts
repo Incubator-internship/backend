@@ -1,16 +1,18 @@
-import { Injectable } from '@nestjs/common';
-import { Payload } from '@nestjs/microservices';
+import { Inject, Injectable } from '@nestjs/common';
+import { ClientProxy, Payload } from '@nestjs/microservices';
 import { ICreatePayment, YooCheckout } from '@a2seven/yoo-checkout';
 import { YooInputModel } from 'apps/auth/src/payments/api/models/input/yooPay-input.model';
 import { PaymentsRepository } from '../infrastructure/payments.repository';
-import { Cron } from '@nestjs/schedule';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { PaymentsQueryRepository } from '../infrastructure/payments-query.repository';
+import { UpdatedSubscriptionDataT } from 'apps/payments/types/types';
 
 @Injectable()
-export class PaymentsService {
+export class PaymentsYooService {
   constructor(
     protected paymentsRepository: PaymentsRepository,
     protected paymentsQueryRepository: PaymentsQueryRepository,
+    @Inject('AUTH_SERVICE') private readonly authClient: ClientProxy,
   ) {}
   private readonly checkout = new YooCheckout({
     shopId: '1088840',
@@ -63,12 +65,26 @@ export class PaymentsService {
         createPaymentPayload(yooInputModel),
       );
 
-      await this.paymentsRepository.createPayInformation(
+      await this.paymentsRepository.createPayYooInformation(
         payment,
         yooInputModel.userID || 0,
       );
 
-      this.pollPaymentStatus(payment.id, yooInputModel.subscriptionTerm);
+      await this.paymentsRepository.createPaymentsUserYoo({
+        payIdYoo: payment.id,
+        amount: payment.amount.value,
+        IPaymentMethodData: payment.payment_method.type,
+        userId: yooInputModel.userID || 0,
+        status: payment.status,
+        subscriptionStart: undefined,
+        subscriptionTerm: undefined,
+      });
+
+      this.pollPaymentStatus(
+        payment.id,
+        yooInputModel.subscriptionTerm,
+        yooInputModel.userID,
+      );
 
       return {
         succeeded: true,
@@ -94,7 +110,12 @@ export class PaymentsService {
       if (!payYouId) {
         throw new Error('error');
       }
-      await this.paymentsRepository.cancelAutoPayment(payYouId.payIdYoo);
+
+      await this.paymentsRepository.cancelAutoPaymentYoo(payYouId.payIdYoo);
+      this.authClient.emit('payment_cancel_status', {
+        userId: userId,
+        type: 'Personal',
+      });
       return {
         succeeded: true,
         message: '',
@@ -113,6 +134,7 @@ export class PaymentsService {
     paymentMethodId: string,
     amount: string,
     subscriptionTerm: '1day' | '7days' | 'month',
+    userId: number,
   ) {
     const payment = await this.checkout.createPayment({
       amount: {
@@ -123,23 +145,31 @@ export class PaymentsService {
       capture: true,
       description: 'dsadasd',
     });
-    this.pollPaymentStatus(payment.id, subscriptionTerm);
+    this.pollPaymentStatus(payment.id, subscriptionTerm, userId);
     return payment;
   }
 
   private pollPaymentStatus(
     paymentId: string,
     subscriptionTerm: '1day' | '7days' | 'month',
+    userId?: number,
   ) {
     const interval = setInterval(async () => {
       try {
         const payment = await this.checkout.getPayment(paymentId);
         if (payment.status === 'succeeded') {
-          console.log(payment, 'payment');
-          await this.paymentsRepository.insertPayInformation(
+          await this.paymentsRepository.insertPayYooInformation(
             paymentId,
             subscriptionTerm,
           );
+          await this.paymentsRepository.insertUserPayYooInformation(
+            paymentId,
+            subscriptionTerm,
+          );
+          this.authClient.emit('payment_succeeded_yoo', {
+            userId: userId,
+            type: 'Business',
+          });
           clearInterval(interval);
         } else if (payment.status === 'canceled') {
           clearInterval(interval);
@@ -151,12 +181,42 @@ export class PaymentsService {
     }, 10000);
   }
 
-  @Cron('0 3 * * *')
+  @Cron(CronExpression.EVERY_5_MINUTES)
+  async checkPendingPayments() {
+    const pending = await this.paymentsRepository.getPendingPaymentsYoo();
+
+    for (const payment of pending) {
+      try {
+        const status = (await this.checkout.getPayment(payment.payIdYoo))
+          .status;
+
+        if (status === 'succeeded') {
+          await this.paymentsRepository.insertPayYooInformation(
+            payment.payIdYoo,
+            payment.subscriptionTerm || 'month',
+          );
+          await this.paymentsRepository.insertUserPayYooInformation(
+            payment.payIdYoo,
+            payment.subscriptionTerm || 'month',
+          );
+
+          this.authClient.emit('payment_succeeded_yoo', {
+            userId: payment.userId,
+            type: 'Business',
+          });
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_3AM)
   async checkSubscriptionsYoo() {
     const now = new Date();
 
     const subscriptions =
-      await this.paymentsRepository.getActiveSubscriptions();
+      await this.paymentsRepository.getActiveSubscriptionsYoo();
 
     for (const sub of subscriptions) {
       if (sub.autoPay === false) {
@@ -171,7 +231,12 @@ export class PaymentsService {
       const paymentMethodId = sub.IPaymentMethodData;
 
       try {
-        const payments = await this.autoPayment(paymentMethodId, amount, term);
+        const payments = await this.autoPayment(
+          paymentMethodId,
+          amount,
+          term,
+          sub.userId,
+        );
 
         const newStart = now;
         const newEnd = new Date(newStart);
@@ -189,22 +254,22 @@ export class PaymentsService {
           default:
             throw new Error('Неверный период подписки');
         }
-        const updatedSubscriptionData = {
+        const updatedSubscriptionData: UpdatedSubscriptionDataT = {
           newStart,
           newEnd,
           payIdYoo: sub.payIdYoo,
         };
 
-        await this.paymentsRepository.createPaymentsUser({
+        await this.paymentsRepository.createPaymentsUserYoo({
           payIdYoo: payments.id,
           status: payments.status,
-          amount: payments.amount.value,
+          amount: amount,
           IPaymentMethodData: payments.payment_method.type,
           subscriptionStart: updatedSubscriptionData.newStart,
-          subscriptionTerm: updatedSubscriptionData.newEnd,
+          subscriptionTerm: term,
           userId: sub.userId,
         });
-        await this.paymentsRepository.updateSubscriptions(
+        await this.paymentsRepository.updateSubscriptionsYoo(
           updatedSubscriptionData,
         );
       } catch (error) {

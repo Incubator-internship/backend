@@ -1,21 +1,42 @@
 import { Module } from '@nestjs/common';
 import { PaymentsController } from './payments.controller';
-import { PaymentsService } from './application/payments.service';
 import { PaymentsRepository } from './infrastructure/payments.repository';
 import { PaymentsQueryRepository } from './infrastructure/payments-query.repository';
 import { PrismaPaymentsService } from '../prisma-payments-database/prisma.service';
-import { paymentsConfigModule } from '../settings/payments-config';
 import { PaymentsConfig } from '../settings/payments.config';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { PaymentsYooService } from './application/payments.yoo.service';
+import { PaymentsConfigModule } from '../settings/payments.config.module';
 
 @Module({
-  imports: [paymentsConfigModule],
+  imports: [
+    PaymentsConfigModule,
+    ClientsModule.registerAsync([
+      {
+        name: 'AUTH_SERVICE',
+        imports: [PaymentsConfigModule],
+        inject: [PaymentsConfig],
+        useFactory: (paymentsConfig: PaymentsConfig) => ({
+          transport: Transport.RMQ,
+          options: {
+            urls: [paymentsConfig.rabbitURL],
+            queue: 'auth_queue',
+            queueOptions: {
+              durable: true,
+              noAck: true,
+              prefetchCount: 1,
+            },
+          },
+        }),
+      },
+    ]),
+  ],
   controllers: [PaymentsController],
   providers: [
-    PaymentsService,
+    PaymentsYooService,
     PrismaPaymentsService,
     PaymentsRepository,
     PaymentsQueryRepository,
-    PaymentsConfig,
   ],
 })
 export class PaymentsModule {}

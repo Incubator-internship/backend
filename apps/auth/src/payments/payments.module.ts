@@ -1,9 +1,13 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { PaymentsApiController } from './api/payments.api.controller';
+import { PaymentsAuthService } from './application/payments.service';
+import { AuthModule } from '../auth.module';
+import { CqrsModule } from '@nestjs/cqrs';
 
 @Module({
   imports: [
+    CqrsModule,
     ClientsModule.register([
       {
         name: 'PAYMENTS-SERVICE',
@@ -14,9 +18,10 @@ import { PaymentsApiController } from './api/payments.api.controller';
         },
       },
     ]),
+    AuthModule,
   ],
   controllers: [PaymentsApiController],
-  providers: [],
+  providers: [PaymentsAuthService],
   exports: [],
 })
 export class PaymentsApiModule {}

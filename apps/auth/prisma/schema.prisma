@@ -23,6 +23,7 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   isDelete     Boolean  @default(false)
+  accountType  String   @default("Personal")
 
   emailConfirmation EmailConfirmation?
   sessions          Session[]          @relation("UserSessions")

@@ -1,27 +1,32 @@
 import { Payment } from '@a2seven/yoo-checkout';
 import { Injectable } from '@nestjs/common';
 import { PrismaPaymentsService } from 'apps/payments/prisma-payments-database/prisma.service';
+import {
+  InsertPaymentsUserData,
+  UpdatedSubscriptionDataT,
+} from 'apps/payments/types/types';
 
 @Injectable()
 export class PaymentsRepository {
   constructor(protected prismapaymentsService: PrismaPaymentsService) {}
 
-  async createPayInformation(payInformation: Payment, userID: number) {
-    await this.prismapaymentsService.informatioPayYoo.create({
-      data: {
-        payIdYoo: payInformation.id,
-        status: payInformation.status,
-        amount: payInformation.amount.value,
-        IPaymentMethodData: payInformation.payment_method.type,
-        userId: userID,
-        autoPay: true,
-      },
-    });
+  async createPayYooInformation(payInformation: Payment, userID: number) {
+    try {
+      await this.prismapaymentsService.informatioPayYoo.create({
+        data: {
+          payIdYoo: payInformation.id,
+          status: payInformation.status,
+          amount: payInformation.amount.value,
+          IPaymentMethodData: payInformation.payment_method.type,
+          userId: userID,
+          autoPay: true,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }
-  async insertPayInformation(
-    payIdYoo: string,
-    term: '1day' | '7days' | 'month',
-  ) {
+  async insertPayYooInformation(payIdYoo: string, term: string) {
     const now = new Date();
     const endDate = new Date();
 
@@ -55,7 +60,7 @@ export class PaymentsRepository {
     });
   }
 
-  async cancelAutoPayment(payIdYoo: string) {
+  async cancelAutoPaymentYoo(payIdYoo: string) {
     await this.prismapaymentsService.informatioPayYoo.update({
       where: { payIdYoo },
       data: {
@@ -64,7 +69,15 @@ export class PaymentsRepository {
     });
   }
 
-  async getActiveSubscriptions() {
+  async getPendingPaymentsYoo() {
+    return await this.prismapaymentsService.informatioPayYoo.findMany({
+      where: {
+        status: 'pending',
+      },
+    });
+  }
+
+  async getActiveSubscriptionsYoo() {
     const now = new Date();
 
     const result = await this.prismapaymentsService.informatioPayYoo.findMany({
@@ -78,7 +91,9 @@ export class PaymentsRepository {
 
     return result;
   }
-  async updateSubscriptions(updatedSubscriptionData: any) {
+  async updateSubscriptionsYoo(
+    updatedSubscriptionData: UpdatedSubscriptionDataT,
+  ) {
     await this.prismapaymentsService.informatioPayYoo.update({
       where: { payIdYoo: updatedSubscriptionData.payIdYoo },
       data: {
@@ -90,16 +105,29 @@ export class PaymentsRepository {
     });
   }
 
-  async createPaymentsUser(insertPaymentsUserData: any) {
+  async createPaymentsUserYoo(insertPaymentsUserData: InsertPaymentsUserData) {
     await this.prismapaymentsService.paymentsUser.create({
       data: {
-        payIdYoo: insertPaymentsUserData.id,
+        payIdYoo: insertPaymentsUserData.payIdYoo,
         status: insertPaymentsUserData.status,
-        amount: insertPaymentsUserData.amount.value,
-        IPaymentMethodData: insertPaymentsUserData.payment_method.type,
-        subscriptionStart: insertPaymentsUserData.subscriptionStart,
-        subscriptionTerm: insertPaymentsUserData.subscriptionTerm,
-        userId: insertPaymentsUserData.userID,
+        amount: insertPaymentsUserData.amount,
+        IPaymentMethodData: insertPaymentsUserData.IPaymentMethodData,
+        subscriptionStart: insertPaymentsUserData.subscriptionStart || null,
+        subscriptionTerm: insertPaymentsUserData.subscriptionTerm || null,
+        userId: insertPaymentsUserData.userId,
+      },
+    });
+  }
+
+  async insertUserPayYooInformation(payIdYoo: string, term: string) {
+    const now = new Date();
+
+    await this.prismapaymentsService.paymentsUser.update({
+      where: { payIdYoo },
+      data: {
+        status: 'succeeded',
+        subscriptionStart: now,
+        subscriptionTerm: term,
       },
     });
   }
