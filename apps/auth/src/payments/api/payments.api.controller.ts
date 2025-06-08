@@ -22,7 +22,7 @@ import {
   buyYooEndpoint,
   cancelYooEndpoint,
   getMyPaymentsEndpoint,
-} from 'apps/auth/swagger/oauth.swagger';
+} from 'apps/auth/swagger/payments.swagger';
 import { CommandBus } from '@nestjs/cqrs';
 import { UpdateUserTypeCommand } from '../../users/application/use.cases/updateUserType.command';
 import { ThrottlerGuard } from '@nestjs/throttler';
