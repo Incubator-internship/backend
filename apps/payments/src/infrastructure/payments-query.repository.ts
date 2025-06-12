@@ -6,7 +6,7 @@ export class PaymentsQueryRepository {
   constructor(protected prismaPaymentsService: PrismaPaymentsService) {}
 
   async getPayInformationByUserId(userId: number) {
-    return this.prismaPaymentsService.informatioPayYoo.findUnique({
+    return this.prismaPaymentsService.informatioPayYoo.findFirst({
       where: {
         userId: userId,
       },
