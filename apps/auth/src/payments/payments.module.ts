@@ -14,7 +14,7 @@ import { CqrsModule } from '@nestjs/cqrs';
         transport: Transport.TCP,
         options: {
           host: 'payments-backend-service',
-          port: 3903,
+          port: 3877,
         },
       },
     ]),
