@@ -77,7 +77,7 @@ export class PaymentsYooService {
         userId: yooInputModel.userID || 0,
         status: payment.status,
         subscriptionStart: undefined,
-        subscriptionTerm: undefined,
+        subscriptionTerm: yooInputModel.subscriptionTerm,
       });
 
       this.pollPaymentStatus(
