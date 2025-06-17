@@ -27,8 +27,11 @@ export class PaymentsQueryRepository {
   }
 
   async getUserPaymentHistory(userId: number) {
-    return await this.prismaPaymentsService.paymentsUser.findMany({
-      where: { userId },
+    return this.prismaPaymentsService.paymentsUser.findMany({
+      where: {
+        userId,
+        status: 'succeeded',
+      },
     });
   }
 }
