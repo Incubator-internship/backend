@@ -3,7 +3,7 @@ pipeline {
     agent any
     environment {
         ENV_TYPE = "production"
-        PORT = 3698
+        PORT = 3905
         NAMESPACE = "excubator-xyz"
         REGISTRY_HOSTNAME = "ngisss"
         PROJECT = "files-backend"
@@ -20,7 +20,6 @@ pipeline {
                 checkout scm
             }
         }
-
         stage('Unit tests') {
             steps {
                 script {
