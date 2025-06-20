@@ -21,7 +21,6 @@ export class PostUpdateInputModel {
   @ApiProperty({
     required: true,
     description: 'Post description',
-    minLength: 1,
     maxLength: 500,
     example: 'some information about photo',
   })
