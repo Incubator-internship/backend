@@ -4,9 +4,9 @@ export class ProfileOutputDTO {
   @ApiProperty({ example: 1 })
   profileId: number;
   @ApiProperty({ example: 'Gabe' })
-  firstName: string;
+  firstName: string | null;
   @ApiProperty({ example: 'Newell' })
-  lastName: string;
+  lastName: string | null;
   @ApiProperty({ example: '03.11.1962' })
   dateOfBirthday: string | null;
   @ApiProperty({ example: 'USA' })
