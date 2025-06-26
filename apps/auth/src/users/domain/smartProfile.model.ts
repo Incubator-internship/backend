@@ -20,8 +20,8 @@ import { ProfileDTOModel } from '../api/models/dto-models/createProfile.types';
 
 export class ProfileModel {
   profileId: number;
-  firstName: string;
-  lastName: string;
+  firstName: string | null;
+  lastName: string | null;
   dateOfBirthday: Date | null;
   country: string | null;
   city: string | null;

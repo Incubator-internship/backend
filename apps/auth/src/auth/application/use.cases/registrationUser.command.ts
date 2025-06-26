@@ -80,6 +80,8 @@ export class RegistrationUserHandler
       new CreateUserCommand(command.registrationDTO),
     );
 
+    await this.usersRepository.createProfile(data.userId);
+
     await this.emailService.sendUserConfirmationCode(
       command.registrationDTO.email,
       command.registrationDTO.userName,

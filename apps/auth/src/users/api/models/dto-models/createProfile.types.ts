@@ -1,6 +1,6 @@
 export abstract class ProfileDTOModel {
-  firstName: string;
-  lastName: string;
+  firstName: string | null;
+  lastName: string | null;
   dateOfBirthday: Date | null;
   country: string | null;
   city: string | null;

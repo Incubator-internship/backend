@@ -102,4 +102,13 @@ export class UsersRepository {
       },
     });
   }
+  async createProfile(userId: number) {
+    await this.prismaService.profile.create({
+      data: {
+        user: {
+          connect: { id: userId },
+        },
+      },
+    });
+  }
 }
