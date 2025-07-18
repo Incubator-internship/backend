@@ -4,6 +4,7 @@ import { PaymentsApiController } from './api/payments.api.controller';
 import { PaymentsAuthService } from './application/payments.service';
 import { AuthModule } from '../auth.module';
 import { CqrsModule } from '@nestjs/cqrs';
+import { PaymentsEventsHandler } from './api/payments.events.handler';
 
 @Module({
   imports: [
@@ -13,14 +14,14 @@ import { CqrsModule } from '@nestjs/cqrs';
         name: 'PAYMENTS-SERVICE',
         transport: Transport.TCP,
         options: {
-          host: 'payments-backend-service',
+          host: 'localhost',
           port: 3877,
         },
       },
     ]),
     AuthModule,
   ],
-  controllers: [PaymentsApiController],
+  controllers: [PaymentsApiController, PaymentsEventsHandler],
   providers: [PaymentsAuthService],
   exports: [],
 })

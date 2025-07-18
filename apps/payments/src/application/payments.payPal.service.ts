@@ -135,7 +135,6 @@ export class PaymentsPaypalService {
         };
       }
 
-      // Обновляем статус подписки
       await this.prismaPaymentsService.informatioPayPal.update({
         where: { payIdPal: payment.payIdPal },
         data: { autoPay: false, updatedAt: new Date() },
@@ -191,11 +190,15 @@ export class PaymentsPaypalService {
 
           console.log(userId, 'fsdfsdfsd');
           try {
-            this.authClient.emit('payment_change_status', {
-              //@ts-ignore
-              userId: +userId,
-              type: 'Business',
-            });
+            this.authClient
+              .emit('payment_change_status', {
+                userId: userId,
+                type: 'Business',
+              })
+              .subscribe({
+                error: (err) => console.error('Emit error:', err),
+                complete: () => console.log('Emit sent'),
+              });
           } catch (error) {
             console.log(error, 'error');
           }

@@ -106,17 +106,6 @@ export class PaymentsApiController {
     return result.data;
   }
 
-  @EventPattern('payment_change_status')
-  async handlePaymentSuccessYoo(@Payload() data: DatateT) {
-    try {
-      await this.commandBus.execute(
-        new UpdateUserTypeCommand(data.userId, data.type),
-      );
-    } catch (error) {
-      console.error('Error processing payment_succeeded:', error);
-    }
-  }
-
   @buyPayPalEndpoint()
   @Post('buyPaypal')
   @UseGuards(ThrottlerGuard)
