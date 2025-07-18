@@ -163,50 +163,50 @@ export class PaymentsApiController {
     return result.data;
   }
 
-  @Post('webhook')
-  @HttpCode(HttpStatus.OK)
-  async handlePaypalWebhook(@Body() webhookEvent: any) {
-    try {
-      console.log(webhookEvent, '=========stasrt=============');
-      console.log(webhookEvent, 'aloooooooooooooooo');
+  // @Post('webhook')
+  // @HttpCode(HttpStatus.OK)
+  // async handlePaypalWebhook(@Body() webhookEvent: any) {
+  //   try {
+  //     console.log(webhookEvent, '=========stasrt=============');
+  //     console.log(webhookEvent, 'aloooooooooooooooo');
 
-      // Верификация вебхука
-      // const verifyRequest = new paypal.webhooks.WebhookVerifySignatureRequest();
-      // verifyRequest.requestBody({
-      //   auth_algo: webhookEvent.auth_algo,
-      //   cert_url: webhookEvent.cert_url,
-      //   transmission_id: webhookEvent.transmission_id,
-      //   transmission_sig: webhookEvent.transmission_sig,
-      //   transmission_time: webhookEvent.transmission_time,
-      //   webhook_id: 'WH-6J297149UT492630Y',
-      //   webhook_event: webhookEvent,
-      // });
+  //     // Верификация вебхука
+  //     // const verifyRequest = new paypal.webhooks.WebhookVerifySignatureRequest();
+  //     // verifyRequest.requestBody({
+  //     //   auth_algo: webhookEvent.auth_algo,
+  //     //   cert_url: webhookEvent.cert_url,
+  //     //   transmission_id: webhookEvent.transmission_id,
+  //     //   transmission_sig: webhookEvent.transmission_sig,
+  //     //   transmission_time: webhookEvent.transmission_time,
+  //     //   webhook_id: 'WH-6J297149UT492630Y',
+  //     //   webhook_event: webhookEvent,
+  //     // });
 
-      // const verification = await this.clientPay.execute(verifyRequest);
-      // if (verification.result.verification_status !== 'SUCCESS') {
-      //   console.error('Webhook verification failed');
-      //   return { status: 'error', message: 'Invalid webhook signature' };
-      // }
+  //     // const verification = await this.clientPay.execute(verifyRequest);
+  //     // if (verification.result.verification_status !== 'SUCCESS') {
+  //     //   console.error('Webhook verification failed');
+  //     //   return { status: 'error', message: 'Invalid webhook signature' };
+  //     // }
 
-      // // Обработка события PAYMENT.CAPTURE.COMPLETED
-      // if (webhookEvent.event_type === 'PAYMENT.CAPTURE.COMPLETED') {
-      //   const orderId = webhookEvent.resource.id;
-      //   const userId = webhookEvent.resource.custom_id; // Предполагается, что userId передается в custom_id при создании заказа
+  //     // // Обработка события PAYMENT.CAPTURE.COMPLETED
+  //     // if (webhookEvent.event_type === 'PAYMENT.CAPTURE.COMPLETED') {
+  //     //   const orderId = webhookEvent.resource.id;
+  //     //   const userId = webhookEvent.resource.custom_id; // Предполагается, что userId передается в custom_id при создании заказа
 
-      //   // Отправляем событие в payments микросервис для обновления статуса
-      //   // await firstValueFrom(
-      //   //   this.client.emit('payment_succeeded_paypal', {
-      //   //     userId: parseInt(userId, 10),
-      //   //     type: 'premium',
-      //   //     orderId,
-      //   //   }),
-      //   // );
-      // }
+  //     //   // Отправляем событие в payments микросервис для обновления статуса
+  //     //   // await firstValueFrom(
+  //     //   //   this.client.emit('payment_succeeded_paypal', {
+  //     //   //     userId: parseInt(userId, 10),
+  //     //   //     type: 'premium',
+  //     //   //     orderId,
+  //     //   //   }),
+  //     //   // );
+  //     // }
 
-      return { status: 'success' };
-    } catch (error) {
-      console.error('Error processing PayPal webhook:', error);
-      return { status: 'error', message: 'Webhook processing failed' };
-    }
-  }
+  //     return { status: 'success' };
+  //   } catch (error) {
+  //     console.error('Error processing PayPal webhook:', error);
+  //     return { status: 'error', message: 'Webhook processing failed' };
+  //   }
+  // }
 }
