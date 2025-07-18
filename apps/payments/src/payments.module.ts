@@ -7,6 +7,7 @@ import { PaymentsConfig } from '../settings/payments.config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { PaymentsYooService } from './application/payments.yoo.service';
 import { PaymentsConfigModule } from '../settings/payments.config.module';
+import { PaymentsPaypalService } from './application/payments.payPal.service';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { PaymentsConfigModule } from '../settings/payments.config.module';
   ],
   controllers: [PaymentsController],
   providers: [
+    PaymentsPaypalService,
     PaymentsYooService,
     PrismaPaymentsService,
     PaymentsRepository,
