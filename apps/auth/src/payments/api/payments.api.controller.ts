@@ -8,7 +8,7 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ClientProxy, EventPattern, Payload } from '@nestjs/microservices';
+import { ClientProxy } from '@nestjs/microservices';
 import { ApiTags } from '@nestjs/swagger';
 import { HttpStatusCode } from 'axios';
 import { YooInputModel } from './models/input/yooPay-input.model';
@@ -29,9 +29,7 @@ import {
   getMyPaymentsPayPalEndpoint,
 } from 'apps/auth/swagger/payments.swagger';
 import { CommandBus } from '@nestjs/cqrs';
-import { UpdateUserTypeCommand } from '../../users/application/use.cases/updateUserType.command';
 import { ThrottlerGuard } from '@nestjs/throttler';
-import { DatateT } from '../types/types';
 import { PayPalInputModel } from './models/input/payPal-input.model';
 
 @ApiTags('Payments')
@@ -169,39 +167,41 @@ export class PaymentsApiController {
   @HttpCode(HttpStatus.OK)
   async handlePaypalWebhook(@Body() webhookEvent: any) {
     try {
+      console.log(webhookEvent, '=========stasrt=============');
+      console.log(webhookEvent, 'aloooooooooooooooo');
+
       // Верификация вебхука
-      //@ts-ignore
-      const verifyRequest = new paypal.webhooks.WebhookVerifySignatureRequest();
-      verifyRequest.requestBody({
-        auth_algo: webhookEvent.auth_algo,
-        cert_url: webhookEvent.cert_url,
-        transmission_id: webhookEvent.transmission_id,
-        transmission_sig: webhookEvent.transmission_sig,
-        transmission_time: webhookEvent.transmission_time,
-        webhook_id: 'WH-6J297149UT492630Y',
-        webhook_event: webhookEvent,
-      });
+      // const verifyRequest = new paypal.webhooks.WebhookVerifySignatureRequest();
+      // verifyRequest.requestBody({
+      //   auth_algo: webhookEvent.auth_algo,
+      //   cert_url: webhookEvent.cert_url,
+      //   transmission_id: webhookEvent.transmission_id,
+      //   transmission_sig: webhookEvent.transmission_sig,
+      //   transmission_time: webhookEvent.transmission_time,
+      //   webhook_id: 'WH-6J297149UT492630Y',
+      //   webhook_event: webhookEvent,
+      // });
 
-      const verification = await this.clientPay.execute(verifyRequest);
-      if (verification.result.verification_status !== 'SUCCESS') {
-        console.error('Webhook verification failed');
-        return { status: 'error', message: 'Invalid webhook signature' };
-      }
+      // const verification = await this.clientPay.execute(verifyRequest);
+      // if (verification.result.verification_status !== 'SUCCESS') {
+      //   console.error('Webhook verification failed');
+      //   return { status: 'error', message: 'Invalid webhook signature' };
+      // }
 
-      // Обработка события PAYMENT.CAPTURE.COMPLETED
-      if (webhookEvent.event_type === 'PAYMENT.CAPTURE.COMPLETED') {
-        const orderId = webhookEvent.resource.id;
-        const userId = webhookEvent.resource.custom_id; // Предполагается, что userId передается в custom_id при создании заказа
+      // // Обработка события PAYMENT.CAPTURE.COMPLETED
+      // if (webhookEvent.event_type === 'PAYMENT.CAPTURE.COMPLETED') {
+      //   const orderId = webhookEvent.resource.id;
+      //   const userId = webhookEvent.resource.custom_id; // Предполагается, что userId передается в custom_id при создании заказа
 
-        // Отправляем событие в payments микросервис для обновления статуса
-        // await firstValueFrom(
-        //   this.client.emit('payment_succeeded_paypal', {
-        //     userId: parseInt(userId, 10),
-        //     type: 'premium',
-        //     orderId,
-        //   }),
-        // );
-      }
+      //   // Отправляем событие в payments микросервис для обновления статуса
+      //   // await firstValueFrom(
+      //   //   this.client.emit('payment_succeeded_paypal', {
+      //   //     userId: parseInt(userId, 10),
+      //   //     type: 'premium',
+      //   //     orderId,
+      //   //   }),
+      //   // );
+      // }
 
       return { status: 'success' };
     } catch (error) {

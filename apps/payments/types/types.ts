@@ -13,3 +13,8 @@ export type InsertPaymentsUserData = {
   subscriptionTerm?: string;
   userId: number;
 };
+export enum SubscriptionTerm {
+  OneDay = '1day',
+  SevenDays = '7days',
+  Month = 'month',
+}
