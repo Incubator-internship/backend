@@ -112,7 +112,7 @@ export class PaymentsYooService {
       }
 
       await this.paymentsRepository.cancelAutoPaymentYoo(payYouId.payIdYoo);
-      this.authClient.emit('payment_cancel_status', {
+      this.authClient.emit('payment_change_status', {
         userId: userId,
         type: 'Personal',
       });
@@ -166,7 +166,7 @@ export class PaymentsYooService {
             paymentId,
             subscriptionTerm,
           );
-          this.authClient.emit('payment_succeeded_yoo', {
+          this.authClient.emit('payment_change_status', {
             userId: userId,
             type: 'Business',
           });
@@ -200,7 +200,7 @@ export class PaymentsYooService {
             payment.subscriptionTerm || 'month',
           );
 
-          this.authClient.emit('payment_succeeded_yoo', {
+          this.authClient.emit('payment_change_status', {
             userId: payment.userId,
             type: 'Business',
           });

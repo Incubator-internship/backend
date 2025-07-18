@@ -108,7 +108,7 @@ export class PaymentsRepository {
   async createPaymentsUserYoo(insertPaymentsUserData: InsertPaymentsUserData) {
     await this.prismapaymentsService.paymentsUser.create({
       data: {
-        payIdYoo: insertPaymentsUserData.payIdYoo,
+        providerPayId: insertPaymentsUserData.payIdYoo,
         status: insertPaymentsUserData.status,
         amount: insertPaymentsUserData.amount,
         IPaymentMethodData: insertPaymentsUserData.IPaymentMethodData,
@@ -123,7 +123,7 @@ export class PaymentsRepository {
     const now = new Date();
 
     await this.prismapaymentsService.paymentsUser.update({
-      where: { payIdYoo },
+      where: { providerPayId: payIdYoo },
       data: {
         status: 'succeeded',
         subscriptionStart: now,

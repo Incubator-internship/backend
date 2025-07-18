@@ -25,6 +25,26 @@ export class PaymentsQueryRepository {
       },
     });
   }
+  async getPayPalInformationByUserId(userId: number) {
+    return this.prismaPaymentsService.informatioPayPal.findFirst({
+      where: {
+        userId: userId,
+      },
+      select: {
+        payIdPal: true,
+        status: true,
+        amount: true,
+        createdAt: true,
+        updatedAt: true,
+        subscriptionStart: true,
+        subscriptionEnd: true,
+        subscriptionTerm: true,
+        isRenewed: true,
+        autoPay: true,
+        IPaymentMethodData: true,
+      },
+    });
+  }
 
   async getUserPaymentHistory(userId: number) {
     return this.prismaPaymentsService.paymentsUser.findMany({
