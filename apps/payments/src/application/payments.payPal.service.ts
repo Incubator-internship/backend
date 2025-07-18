@@ -15,7 +15,6 @@ export class PaymentsPaypalService {
     protected paymentsQueryRepository: PaymentsQueryRepository,
     @Inject('AUTH_SERVICE') private readonly authClient: ClientProxy,
   ) {
-    // Настройка PayPal клиента
     const environment = new paypal.core.SandboxEnvironment(
       'AW6UFq0_zfFfhaU0eOtUD9J7mxRv97pjFHo47-06-LlZsB_oUNf_ZtOVQPJ8E1BoQZLUQ83jQeYtMohI',
       'EKsJv3PrIvXA_wUbBXKE8dFcl1UiCgTl6ZMtsGC1g2E4cuHvr29fn-FoZ4almSiHUwQy6KJGT9Grzy7m',
@@ -188,7 +187,6 @@ export class PaymentsPaypalService {
             },
           });
 
-          console.log(userId, 'fsdfsdfsd');
           try {
             this.authClient
               .emit('payment_change_status', {
@@ -212,22 +210,6 @@ export class PaymentsPaypalService {
         clearInterval(interval);
       }
     }, 10000);
-  }
-
-  async getActiveSubscriptions(): Promise<any[]> {
-    try {
-      const now = new Date();
-      return await this.prismaPaymentsService.informatioPayPal.findMany({
-        where: {
-          autoPay: true,
-          subscriptionEnd: { lte: now },
-          IPaymentMethodData: 'paypal',
-        },
-      });
-    } catch (error) {
-      console.error('Error fetching active PayPal subscriptions:', error);
-      return [];
-    }
   }
 
   @Cron(CronExpression.EVERY_5_MINUTES)
@@ -255,8 +237,7 @@ export class PaymentsPaypalService {
               subscriptionStart: now,
               subscriptionEnd: this.calculateEndDate(
                 now,
-                //@ts-ignore
-                payment.subscriptionTerm,
+                payment.subscriptionTerm || 'month',
               ),
               isRenewed: true,
             },
@@ -271,10 +252,15 @@ export class PaymentsPaypalService {
             },
           });
 
-          this.authClient.emit('payment_change_status', {
-            userId: payment.userId,
-            type: 'Business',
-          });
+          this.authClient
+            .emit('payment_change_status', {
+              userId: payment.userId,
+              type: 'Business',
+            })
+            .subscribe({
+              error: (err) => console.error('Emit error:', err),
+              complete: () => console.log('Emit sent'),
+            });
         } else if (status === 'VOIDED' || status === 'CANCELLED') {
           await this.prismaPaymentsService.informatioPayPal.update({
             where: { payIdPal: payment.payIdPal },
@@ -304,10 +290,15 @@ export class PaymentsPaypalService {
       });
     for (const sub of expiredSubscriptions) {
       try {
-        this.authClient.emit('payment_change_status', {
-          userId: sub.userId,
-          type: 'Personal',
-        });
+        this.authClient
+          .emit('payment_change_status', {
+            userId: sub.userId,
+            type: 'Personal',
+          })
+          .subscribe({
+            error: (err) => console.error('Emit error:', err),
+            complete: () => console.log('Emit sent'),
+          });
       } catch (error) {
         console.error(
           `Error processing expired PayPal subscription for user ${sub.userId}:`,
@@ -367,8 +358,7 @@ export class PaymentsPaypalService {
           data: {
             payIdYoo: order.result.id,
             status: order.result.status,
-            //@ts-ignore
-            amount: parseFloat(order.result.purchase_units[0].amount.value),
+            amount: `${parseFloat(order.result.purchase_units[0].amount.value)}`,
             IPaymentMethodData: 'paypal',
             userId: sub.userId,
             autoPay: true,
@@ -384,8 +374,7 @@ export class PaymentsPaypalService {
           data: {
             providerPayId: order.result.id,
             status: order.result.status,
-            //@ts-ignore
-            amount: parseFloat(order.result.purchase_units[0].amount.value),
+            amount: `${parseFloat(order.result.purchase_units[0].amount.value)}`,
             IPaymentMethodData: 'paypal',
             subscriptionStart: now,
             subscriptionTerm: term,
@@ -400,10 +389,7 @@ export class PaymentsPaypalService {
     }
   }
 
-  private calculateEndDate(
-    startDate: Date,
-    term: '1day' | '7days' | 'month',
-  ): Date {
+  private calculateEndDate(startDate: Date, term: string): Date {
     const endDate = new Date(startDate);
     switch (term) {
       case '1day':
