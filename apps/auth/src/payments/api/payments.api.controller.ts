@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Headers,
   HttpCode,
   HttpStatus,
   Inject,
@@ -15,7 +16,6 @@ import { YooInputModel } from './models/input/yooPay-input.model';
 import { JwtAccessAuthGuard } from 'apps/auth/guards/jwt/jwt-header.strategy';
 import { TakeUserId } from 'apps/auth/decorators/authMeTakeUserId.decorator';
 import { firstValueFrom } from 'rxjs';
-import * as paypal from '@paypal/checkout-server-sdk';
 import {
   exceptionHandler,
   ResultCode,
@@ -31,22 +31,16 @@ import {
 import { CommandBus } from '@nestjs/cqrs';
 import { ThrottlerGuard } from '@nestjs/throttler';
 import { PayPalInputModel } from './models/input/payPal-input.model';
+import { PaypalClientService } from '../application/paypal.client.service';
 
 @ApiTags('Payments')
 @Controller('payments')
 export class PaymentsApiController {
-  private clientPay: paypal.core.PayPalHttpClient;
-
   constructor(
     private commandBus: CommandBus,
+    private paypalClientService: PaypalClientService,
     @Inject('PAYMENTS-SERVICE') private client: ClientProxy,
-  ) {
-    const environment = new paypal.core.SandboxEnvironment(
-      'AW6UFq0_zfFfhaU0eOtUD9J7mxRv97pjFHo47-06-LlZsB_oUNf_ZtOVQPJ8E1BoQZLUQ83jQeYtMohI',
-      'EKsJv3PrIvXA_wUbBXKE8dFcl1UiCgTl6ZMtsGC1g2E4cuHvr29fn-FoZ4almSiHUwQy6KJGT9Grzy7m',
-    );
-    this.clientPay = new paypal.core.PayPalHttpClient(environment);
-  }
+  ) {}
 
   @buyYooEndpoint()
   @Post('buyYoo')
@@ -163,50 +157,25 @@ export class PaymentsApiController {
     return result.data;
   }
 
-  // @Post('webhook')
-  // @HttpCode(HttpStatus.OK)
-  // async handlePaypalWebhook(@Body() webhookEvent: any) {
-  //   try {
-  //     console.log(webhookEvent, '=========stasrt=============');
-  //     console.log(webhookEvent, 'aloooooooooooooooo');
+  @Post('webhook')
+  @HttpCode(HttpStatus.OK)
+  async handlePaypalWebhook(
+    @Body() webhookEvent: any,
+    @Headers() headers: Record<string, string>,
+  ) {
+    const transmissionId = headers['paypal-transmission-id'];
+    const transmissionTime = headers['paypal-transmission-time'];
+    const certUrl = headers['paypal-cert-url'];
+    const authAlgo = headers['paypal-auth-algo'];
+    const transmissionSig = headers['paypal-transmission-sig'];
 
-  //     // Верификация вебхука
-  //     // const verifyRequest = new paypal.webhooks.WebhookVerifySignatureRequest();
-  //     // verifyRequest.requestBody({
-  //     //   auth_algo: webhookEvent.auth_algo,
-  //     //   cert_url: webhookEvent.cert_url,
-  //     //   transmission_id: webhookEvent.transmission_id,
-  //     //   transmission_sig: webhookEvent.transmission_sig,
-  //     //   transmission_time: webhookEvent.transmission_time,
-  //     //   webhook_id: 'WH-6J297149UT492630Y',
-  //     //   webhook_event: webhookEvent,
-  //     // });
-
-  //     // const verification = await this.clientPay.execute(verifyRequest);
-  //     // if (verification.result.verification_status !== 'SUCCESS') {
-  //     //   console.error('Webhook verification failed');
-  //     //   return { status: 'error', message: 'Invalid webhook signature' };
-  //     // }
-
-  //     // // Обработка события PAYMENT.CAPTURE.COMPLETED
-  //     // if (webhookEvent.event_type === 'PAYMENT.CAPTURE.COMPLETED') {
-  //     //   const orderId = webhookEvent.resource.id;
-  //     //   const userId = webhookEvent.resource.custom_id; // Предполагается, что userId передается в custom_id при создании заказа
-
-  //     //   // Отправляем событие в payments микросервис для обновления статуса
-  //     //   // await firstValueFrom(
-  //     //   //   this.client.emit('payment_succeeded_paypal', {
-  //     //   //     userId: parseInt(userId, 10),
-  //     //   //     type: 'premium',
-  //     //   //     orderId,
-  //     //   //   }),
-  //     //   // );
-  //     // }
-
-  //     return { status: 'success' };
-  //   } catch (error) {
-  //     console.error('Error processing PayPal webhook:', error);
-  //     return { status: 'error', message: 'Webhook processing failed' };
-  //   }
-  // }
+    console.log('==================start====================');
+    console.log(
+      transmissionId,
+      transmissionTime,
+      certUrl,
+      authAlgo,
+      transmissionSig,
+    );
+  }
 }

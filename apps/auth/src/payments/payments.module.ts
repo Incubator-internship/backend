@@ -5,6 +5,7 @@ import { PaymentsAuthService } from './application/payments.service';
 import { AuthModule } from '../auth.module';
 import { CqrsModule } from '@nestjs/cqrs';
 import { PaymentsEventsHandler } from './api/payments.events.handler';
+import { PaypalClientService } from './application/paypal.client.service';
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { PaymentsEventsHandler } from './api/payments.events.handler';
     AuthModule,
   ],
   controllers: [PaymentsApiController, PaymentsEventsHandler],
-  providers: [PaymentsAuthService],
+  providers: [PaymentsAuthService, PaypalClientService],
   exports: [],
 })
 export class PaymentsApiModule {}
