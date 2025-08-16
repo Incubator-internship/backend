@@ -9,11 +9,18 @@ export class PaymentsEventsHandler {
 
   @EventPattern('payment_change_status')
   async handlePaymentStatusChanged(
-    @Payload() data: { userId: number; type: string },
+    @Payload()
+    data: any,
   ) {
+    console.log('fdsfsdfsdfsd', data);
     try {
       await this.commandBus.execute(
-        new UpdateUserTypeCommand(data.userId, data.type),
+        new UpdateUserTypeCommand(
+          data.userId,
+          data.type,
+          data.term,
+          data.amount,
+        ),
       );
     } catch (error) {
       console.error('Error handling payment_change_status:', error);

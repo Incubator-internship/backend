@@ -45,9 +45,16 @@ export class PaymentsQueryRepository {
       },
     });
   }
-
   async getUserPaymentHistory(userId: number) {
     return this.prismaPaymentsService.paymentsUser.findMany({
+      where: {
+        userId,
+        status: 'succeeded',
+      },
+    });
+  }
+  async getActiveSubscription(userId: number) {
+    return this.prismaPaymentsService.informatioPayPal.findMany({
       where: {
         userId,
         status: 'succeeded',

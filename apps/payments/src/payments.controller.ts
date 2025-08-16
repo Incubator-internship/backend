@@ -114,4 +114,46 @@ export class PaymentsController {
       };
     }
   }
+  @MessagePattern('myActiveSubscription')
+  async getActiveSubscription(@Payload() userId: number) {
+    try {
+      const paymentList =
+        await this.paymentsQueryRepository.getActiveSubscription(userId);
+
+      return {
+        succeeded: true,
+        message: '',
+        data: {
+          userId: userId,
+          subscriptionStart: paymentList[0].subscriptionStart,
+          subscription: paymentList[0].subscriptionEnd,
+        },
+      };
+    } catch (error) {
+      return {
+        succeeded: false,
+        message: 'Error fetching PayPal payments',
+        data: {},
+      };
+    }
+  }
+
+  @MessagePattern('autoRenewEnable')
+  async autoRenewEnable(@Payload() userId: number) {
+    try {
+      await this.paymentsPaypalService.autoRenewEnable(userId);
+
+      return {
+        succeeded: true,
+        message: '',
+        data: {},
+      };
+    } catch (error) {
+      return {
+        succeeded: false,
+        message: 'Error fetching PayPal payments',
+        data: {},
+      };
+    }
+  }
 }
