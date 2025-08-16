@@ -123,6 +123,7 @@ export class PaymentsController {
         userId: userId,
         subscriptionStart: paymentList[0].subscriptionStart,
         subscription: paymentList[0].subscriptionEnd,
+        autoRenewal: paymentList[0].autoPay,
       };
       return data;
     } catch (error) {
@@ -143,6 +144,25 @@ export class PaymentsController {
         succeeded: true,
         message: '',
         data: {},
+      };
+    } catch (error) {
+      return {
+        succeeded: false,
+        message: 'Error fetching PayPal payments',
+        data: {},
+      };
+    }
+  }
+
+  @MessagePattern('getSubscriptionDetails')
+  async getSubscriptionDetails(@Payload() userId: number) {
+    try {
+      const paymentList =
+        await this.paymentsQueryRepository.getActiveSubscription(userId);
+
+      return {
+        subscriptionTerm: paymentList[0].subscriptionTerm,
+        amount: paymentList[0].amount,
       };
     } catch (error) {
       return {

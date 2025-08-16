@@ -28,6 +28,7 @@ import {
   getActiveSubscriptionEndpoint,
   getMyPaymentsEndpoint,
   getMyPaymentsPayPalEndpoint,
+  getSubscriptionDetailsEndpoint,
 } from 'apps/auth/swagger/payments.swagger';
 import { CommandBus } from '@nestjs/cqrs';
 import { ThrottlerGuard } from '@nestjs/throttler';
@@ -172,23 +173,18 @@ export class PaymentsApiController {
   @UseGuards(ThrottlerGuard)
   @HttpCode(HttpStatusCode.Ok)
   async getActiveSubscription(@TakeUserId() { userId }: { userId: number }) {
+    debugger;
     const pattern = 'myActiveSubscription';
     const result = await firstValueFrom(this.client.send(pattern, userId));
 
-    if (!result.succeeded) {
-      return exceptionHandler(
-        ResultCode.ServerError,
-        'Failed to check subscription',
-      );
-    }
-    if (!result.data) {
+    if (!result) {
       return exceptionHandler(
         ResultCode.NotFound,
         'No active subscription found for user',
       );
     }
 
-    return [result.data];
+    return [result];
   }
 
   @autoRenewEnableEndpoint()
@@ -203,6 +199,25 @@ export class PaymentsApiController {
     if (!result.succeeded) {
       return exceptionHandler(ResultCode.ServerError, 'Failed to RenewEnable');
     }
+  }
+
+  @getSubscriptionDetailsEndpoint()
+  @Get('subscription/details')
+  @UseGuards(JwtAccessAuthGuard)
+  @UseGuards(ThrottlerGuard)
+  @HttpCode(HttpStatusCode.Ok)
+  async getSubscriptionDetails(@TakeUserId() { userId }: { userId: number }) {
+    const pattern = 'getSubscriptionDetails';
+    const result = await firstValueFrom(this.client.send(pattern, userId));
+
+    if (!result) {
+      return exceptionHandler(
+        ResultCode.NotFound,
+        'failed to retrieve subscription details',
+      );
+    }
+
+    return [result];
   }
   @MessagePattern('payment_change_status')
   async getPayPalInformation(@Payload() data: DatateT) {

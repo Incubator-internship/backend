@@ -155,6 +155,7 @@ export function getActiveSubscriptionEndpoint() {
           type: 'object',
           properties: {
             userId: { type: 'number', example: 12345 },
+            autoRenewal: { type: 'boolen', example: true },
             subscriptionStart: {
               type: 'string',
               format: 'date-time',
@@ -220,6 +221,52 @@ export function autoRenewEnableEndpoint() {
     ApiResponse({
       status: 500,
       description: 'Internal server error - failed to enable auto-renewal',
+      type: () => ErrorsMessagesSwaggerType,
+    }),
+  );
+}
+
+export function getSubscriptionDetailsEndpoint() {
+  return applyDecorators(
+    ApiBearerAuth(),
+    ApiOperation({
+      summary: 'Get subscription details',
+      description:
+        'Retrieves the subscription term and amount for the current user',
+    }),
+    ApiResponse({
+      status: 200,
+      description: 'Subscription details successfully retrieved',
+      schema: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            subscriptionTerm: { type: 'string' },
+            amount: { type: 'string' },
+          },
+        },
+      },
+    }),
+    ApiResponse({
+      status: 400,
+      description: 'Bad request - invalid request data',
+      type: () => ErrorsMessagesSwaggerType,
+    }),
+    ApiResponse({
+      status: 401,
+      description: 'Unauthorized - invalid or missing access token',
+      type: () => ErrorsMessagesSwaggerType,
+    }),
+    ApiResponse({
+      status: 404,
+      description: 'Not found - no active subscription exists',
+      type: () => ErrorsMessagesSwaggerType,
+    }),
+    ApiResponse({
+      status: 500,
+      description:
+        'Internal server error - failed to retrieve subscription details',
       type: () => ErrorsMessagesSwaggerType,
     }),
   );
