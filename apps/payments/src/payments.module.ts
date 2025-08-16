@@ -5,9 +5,9 @@ import { PaymentsQueryRepository } from './infrastructure/payments-query.reposit
 import { PrismaPaymentsService } from '../prisma-payments-database/prisma.service';
 import { PaymentsConfig } from '../settings/payments.config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { PaymentsYooService } from './application/payments.yoo.service';
+import { PaymentsYooService } from './api/payments.yoo.service';
 import { PaymentsConfigModule } from '../settings/payments.config.module';
-import { PaymentsPaypalService } from './application/payments.payPal.service';
+import { PaymentsPaypalService } from './api/payments.payPal.service';
 
 @Module({
   imports: [

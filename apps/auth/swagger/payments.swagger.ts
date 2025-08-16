@@ -151,8 +151,6 @@ export function getActiveSubscription() {
       schema: {
         type: 'object',
         properties: {
-          succeeded: { type: 'boolean', example: true },
-          message: { type: 'string', example: '' },
           data: {
             type: 'object',
             properties: {
@@ -222,26 +220,6 @@ export function autoRenewEnable() {
     ApiResponse({
       status: 200,
       description: 'Auto-renewal successfully enabled',
-      schema: {
-        type: 'object',
-        properties: {
-          succeeded: {
-            type: 'boolean',
-            example: true,
-            description: 'Indicates if operation was successful',
-          },
-          message: {
-            type: 'string',
-            example: '',
-            description: 'Optional status message',
-          },
-          data: {
-            type: 'object',
-            description: 'Empty object as no additional data returned',
-            example: {},
-          },
-        },
-      },
     }),
     ApiResponse({
       status: 400,
