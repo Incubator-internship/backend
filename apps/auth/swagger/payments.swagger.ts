@@ -7,6 +7,7 @@ import {
 } from '@nestjs/swagger';
 import { YooInputModel } from '../src/payments/api/models/input/yooPay-input.model';
 import { PayPalInputModel } from '../src/payments/api/models/input/payPal-input.model';
+import { ErrorsMessagesSwaggerType } from '../src/auth/api/models/output/auth-output.model';
 
 export function buyYooEndpoint() {
   return applyDecorators(
@@ -141,7 +142,7 @@ export function getMyPaymentsPayPalEndpoint() {
   );
 }
 
-export function getActiveSubscription() {
+export function getActiveSubscriptionEndpoint() {
   return applyDecorators(
     ApiBearerAuth(),
     ApiOperation({ summary: 'Get current active subscription for user' }),
@@ -149,30 +150,22 @@ export function getActiveSubscription() {
       status: 200,
       description: 'Successfully retrieved active subscription',
       schema: {
-        type: 'object',
-        properties: {
-          data: {
-            type: 'object',
-            properties: {
-              userId: {
-                type: 'number',
-                example: 12345,
-                description: 'ID of the subscription owner',
-              },
-              subscriptionStart: {
-                type: 'string',
-                format: 'date-time',
-                example: '2023-10-15T14:30:00Z',
-                nullable: true,
-                description: 'Subscription activation date',
-              },
-              subscriptionEnd: {
-                type: 'string',
-                format: 'date-time',
-                example: '2024-10-15T14:30:00Z',
-                nullable: true,
-                description: 'Subscription expiration date',
-              },
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            userId: { type: 'number', example: 12345 },
+            subscriptionStart: {
+              type: 'string',
+              format: 'date-time',
+              example: '2023-10-15T14:30:00Z',
+              nullable: true,
+            },
+            subscriptionEnd: {
+              type: 'string',
+              format: 'date-time',
+              example: '2024-10-15T14:30:00Z',
+              nullable: true,
             },
           },
         },
@@ -181,35 +174,22 @@ export function getActiveSubscription() {
     ApiResponse({
       status: 401,
       description: 'Unauthorized - invalid or missing access token',
+      type: () => ErrorsMessagesSwaggerType,
     }),
     ApiResponse({
       status: 404,
       description: 'No active subscription found for user',
-      schema: {
-        type: 'object',
-        properties: {
-          succeeded: { type: 'boolean', example: false },
-          message: { type: 'string', example: 'No active subscription' },
-          data: { type: 'object' },
-        },
-      },
+      type: () => ErrorsMessagesSwaggerType,
     }),
     ApiResponse({
       status: 500,
       description: 'Internal server error',
-      schema: {
-        type: 'object',
-        properties: {
-          succeeded: { type: 'boolean', example: false },
-          message: { type: 'string', example: 'Failed to check subscription' },
-          data: { type: 'object' },
-        },
-      },
+      type: () => ErrorsMessagesSwaggerType,
     }),
   );
 }
 
-export function autoRenewEnable() {
+export function autoRenewEnableEndpoint() {
   return applyDecorators(
     ApiBearerAuth(),
     ApiOperation({
@@ -225,50 +205,22 @@ export function autoRenewEnable() {
       status: 400,
       description:
         'Bad request - subscription already has auto-renewal enabled',
-      schema: {
-        type: 'object',
-        properties: {
-          succeeded: { type: 'boolean', example: false },
-          message: { type: 'string', example: 'Auto-renewal already enabled' },
-          data: { type: 'object' },
-        },
-      },
+      type: () => ErrorsMessagesSwaggerType,
     }),
     ApiResponse({
       status: 401,
       description: 'Unauthorized - invalid or missing access token',
-      schema: {
-        type: 'object',
-        properties: {
-          succeeded: { type: 'boolean', example: false },
-          message: { type: 'string', example: 'Unauthorized' },
-          data: { type: 'object' },
-        },
-      },
+      type: () => ErrorsMessagesSwaggerType,
     }),
     ApiResponse({
       status: 404,
       description: 'Not found - no active subscription exists',
-      schema: {
-        type: 'object',
-        properties: {
-          succeeded: { type: 'boolean', example: false },
-          message: { type: 'string', example: 'No active subscription found' },
-          data: { type: 'object' },
-        },
-      },
+      type: () => ErrorsMessagesSwaggerType,
     }),
     ApiResponse({
       status: 500,
       description: 'Internal server error - failed to enable auto-renewal',
-      schema: {
-        type: 'object',
-        properties: {
-          succeeded: { type: 'boolean', example: false },
-          message: { type: 'string', example: 'Failed to enable auto-renewal' },
-          data: { type: 'object' },
-        },
-      },
+      type: () => ErrorsMessagesSwaggerType,
     }),
   );
 }

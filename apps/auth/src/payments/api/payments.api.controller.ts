@@ -20,12 +20,12 @@ import {
   ResultCode,
 } from 'apps/auth/common/exception-filters/exception.handler';
 import {
-  autoRenewEnable,
+  autoRenewEnableEndpoint,
   buyPayPalEndpoint,
   buyYooEndpoint,
   cancelPayPalEndpoint,
   cancelYooEndpoint,
-  getActiveSubscription,
+  getActiveSubscriptionEndpoint,
   getMyPaymentsEndpoint,
   getMyPaymentsPayPalEndpoint,
 } from 'apps/auth/swagger/payments.swagger';
@@ -166,7 +166,7 @@ export class PaymentsApiController {
     return result.data;
   }
 
-  @getActiveSubscription()
+  @getActiveSubscriptionEndpoint()
   @Get('paypal/activeSubscription')
   @UseGuards(JwtAccessAuthGuard)
   @UseGuards(ThrottlerGuard)
@@ -188,10 +188,10 @@ export class PaymentsApiController {
       );
     }
 
-    return result.data;
+    return [result.data];
   }
 
-  @autoRenewEnable()
+  @autoRenewEnableEndpoint()
   @Post('auto-renew/enable')
   @UseGuards(JwtAccessAuthGuard)
   @UseGuards(ThrottlerGuard)

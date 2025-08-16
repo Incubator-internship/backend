@@ -119,13 +119,12 @@ export class PaymentsController {
       const paymentList =
         await this.paymentsQueryRepository.getActiveSubscription(userId);
 
-      return {
-        data: {
-          userId: userId,
-          subscriptionStart: paymentList[0].subscriptionStart,
-          subscription: paymentList[0].subscriptionEnd,
-        },
+      const data = {
+        userId: userId,
+        subscriptionStart: paymentList[0].subscriptionStart,
+        subscription: paymentList[0].subscriptionEnd,
       };
+      return data;
     } catch (error) {
       return {
         succeeded: false,
