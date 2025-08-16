@@ -34,6 +34,9 @@ export class UsersQueryRepository {
       userId: user.id,
       login: user.userName,
       email: user.email,
+      accountType: user.accountType,
+      subscriptionTerm: user.subscriptionTerm,
+      amount: user.amount,
     };
 
     return userMapped;

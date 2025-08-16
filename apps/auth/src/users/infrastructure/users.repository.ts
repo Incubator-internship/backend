@@ -94,11 +94,18 @@ export class UsersRepository {
       data: { userName },
     });
   }
-  async updateUserType(type: string, userId: number) {
+  async updateUserType(
+    type: string,
+    userId: number,
+    term?: string,
+    amount?: string,
+  ) {
     await this.prismaService.user.update({
       where: { id: userId },
       data: {
         accountType: type,
+        amount: amount,
+        subscriptionTerm: term,
       },
     });
   }

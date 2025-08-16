@@ -40,8 +40,8 @@ export class PaymentsPaypalService {
           },
         ],
         application_context: {
-          return_url: 'https://excubator.xyz/api/v1',
-          cancel_url: 'https://excubator.xyz/api/v1/cancel',
+          return_url: 'https://excubator.xyz/profile-settings?success=true',
+          cancel_url: 'https://excubator.xyz/profile-settings?success=false',
         },
       });
       if (!payPalInputModel.userID) {
@@ -101,6 +101,7 @@ export class PaymentsPaypalService {
         order.result.id,
         payPalInputModel.subscriptionTerm || 'month',
         payPalInputModel.userID,
+        order.result.purchase_units[0].amount.value,
       );
       return {
         succeeded: true,
@@ -153,11 +154,48 @@ export class PaymentsPaypalService {
       };
     }
   }
+  async autoRenewEnable(
+    userId: number,
+  ): Promise<{ succeeded: boolean; message?: string; data?: any }> {
+    try {
+      const payment =
+        await this.prismaPaymentsService.informatioPayPal.findFirst({
+          where: { userId, autoPay: false },
+        });
+
+      if (!payment) {
+        return {
+          succeeded: false,
+          message: 'No active subscription found',
+          data: {},
+        };
+      }
+
+      await this.prismaPaymentsService.informatioPayPal.update({
+        where: { payIdPal: payment.payIdPal },
+        data: { autoPay: true },
+      });
+
+      return {
+        succeeded: true,
+        message: 'Auto payment cancelled successfully',
+        data: {},
+      };
+    } catch (error) {
+      console.error('Error cancelling PayPal auto payment:', error);
+      return {
+        succeeded: false,
+        message: 'Error cancelling auto payment',
+        data: {},
+      };
+    }
+  }
 
   private async pollPaymentStatus(
     orderId: string,
     subscriptionTerm: '1day' | '7days' | 'month',
     userId?: number,
+    amount?: string,
   ) {
     const interval = setInterval(async () => {
       try {
@@ -187,11 +225,23 @@ export class PaymentsPaypalService {
             },
           });
 
+          if (!amount) {
+            throw new Error('no amounts');
+          }
+
+          console.log({
+            userId: userId,
+            type: 'Business',
+            term: subscriptionTerm,
+            amount: amount,
+          });
           try {
             this.authClient
               .emit('payment_change_status', {
                 userId: userId,
                 type: 'Business',
+                term: subscriptionTerm,
+                amount: amount,
               })
               .subscribe({
                 error: (err) => console.error('Emit error:', err),
@@ -256,6 +306,8 @@ export class PaymentsPaypalService {
             .emit('payment_change_status', {
               userId: payment.userId,
               type: 'Business',
+              term: payment.subscriptionTerm,
+              amount: payment.amount,
             })
             .subscribe({
               error: (err) => console.error('Emit error:', err),
@@ -293,7 +345,9 @@ export class PaymentsPaypalService {
         this.authClient
           .emit('payment_change_status', {
             userId: sub.userId,
-            type: 'Personal',
+            type: 'Business',
+            term: sub.subscriptionTerm,
+            amount: sub.amount,
           })
           .subscribe({
             error: (err) => console.error('Emit error:', err),

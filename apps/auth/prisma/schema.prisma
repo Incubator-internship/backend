@@ -24,6 +24,8 @@ model User {
   updatedAt    DateTime @updatedAt
   isDelete     Boolean  @default(false)
   accountType  String   @default("Personal")
+  subscriptionTerm   String?
+  amount   String?
 
   emailConfirmation EmailConfirmation?
   sessions          Session[]          @relation("UserSessions")

@@ -5,6 +5,8 @@ export class UpdateUserTypeCommand {
   constructor(
     public userId: number,
     public type: string,
+    public term: string,
+    public amount: string,
   ) {}
 }
 
@@ -15,6 +17,11 @@ export class UpdateUserTypeHandler
   constructor(private userRepository: UsersRepository) {}
 
   async execute(data: UpdateUserTypeCommand): Promise<void> {
-    await this.userRepository.updateUserType(data.type, data.userId);
+    await this.userRepository.updateUserType(
+      data.type,
+      data.userId,
+      data.term,
+      data.amount,
+    );
   }
 }

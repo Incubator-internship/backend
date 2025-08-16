@@ -7,6 +7,7 @@ import {
 } from '@nestjs/swagger';
 import { YooInputModel } from '../src/payments/api/models/input/yooPay-input.model';
 import { PayPalInputModel } from '../src/payments/api/models/input/payPal-input.model';
+import { ErrorsMessagesSwaggerType } from '../src/auth/api/models/output/auth-output.model';
 
 export function buyYooEndpoint() {
   return applyDecorators(
@@ -138,5 +139,88 @@ export function getMyPaymentsPayPalEndpoint() {
     }),
     ApiResponse({ status: 401, description: 'Unauthorized' }),
     ApiResponse({ status: 500, description: 'Failed to fetch payments' }),
+  );
+}
+
+export function getActiveSubscriptionEndpoint() {
+  return applyDecorators(
+    ApiBearerAuth(),
+    ApiOperation({ summary: 'Get current active subscription for user' }),
+    ApiResponse({
+      status: 200,
+      description: 'Successfully retrieved active subscription',
+      schema: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            userId: { type: 'number', example: 12345 },
+            subscriptionStart: {
+              type: 'string',
+              format: 'date-time',
+              example: '2023-10-15T14:30:00Z',
+              nullable: true,
+            },
+            subscriptionEnd: {
+              type: 'string',
+              format: 'date-time',
+              example: '2024-10-15T14:30:00Z',
+              nullable: true,
+            },
+          },
+        },
+      },
+    }),
+    ApiResponse({
+      status: 401,
+      description: 'Unauthorized - invalid or missing access token',
+      type: () => ErrorsMessagesSwaggerType,
+    }),
+    ApiResponse({
+      status: 404,
+      description: 'No active subscription found for user',
+      type: () => ErrorsMessagesSwaggerType,
+    }),
+    ApiResponse({
+      status: 500,
+      description: 'Internal server error',
+      type: () => ErrorsMessagesSwaggerType,
+    }),
+  );
+}
+
+export function autoRenewEnableEndpoint() {
+  return applyDecorators(
+    ApiBearerAuth(),
+    ApiOperation({
+      summary: 'Enable automatic subscription renewal',
+      description:
+        'Activates auto-renewal feature for the current user subscription',
+    }),
+    ApiResponse({
+      status: 200,
+      description: 'Auto-renewal successfully enabled',
+    }),
+    ApiResponse({
+      status: 400,
+      description:
+        'Bad request - subscription already has auto-renewal enabled',
+      type: () => ErrorsMessagesSwaggerType,
+    }),
+    ApiResponse({
+      status: 401,
+      description: 'Unauthorized - invalid or missing access token',
+      type: () => ErrorsMessagesSwaggerType,
+    }),
+    ApiResponse({
+      status: 404,
+      description: 'Not found - no active subscription exists',
+      type: () => ErrorsMessagesSwaggerType,
+    }),
+    ApiResponse({
+      status: 500,
+      description: 'Internal server error - failed to enable auto-renewal',
+      type: () => ErrorsMessagesSwaggerType,
+    }),
   );
 }

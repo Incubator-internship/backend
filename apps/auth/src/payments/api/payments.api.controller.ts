@@ -3,12 +3,11 @@ import {
   Controller,
   Get,
   HttpCode,
-  HttpStatus,
   Inject,
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
+import { ClientProxy, MessagePattern, Payload } from '@nestjs/microservices';
 import { ApiTags } from '@nestjs/swagger';
 import { HttpStatusCode } from 'axios';
 import { YooInputModel } from './models/input/yooPay-input.model';
@@ -21,16 +20,20 @@ import {
   ResultCode,
 } from 'apps/auth/common/exception-filters/exception.handler';
 import {
+  autoRenewEnableEndpoint,
   buyPayPalEndpoint,
   buyYooEndpoint,
   cancelPayPalEndpoint,
   cancelYooEndpoint,
+  getActiveSubscriptionEndpoint,
   getMyPaymentsEndpoint,
   getMyPaymentsPayPalEndpoint,
 } from 'apps/auth/swagger/payments.swagger';
 import { CommandBus } from '@nestjs/cqrs';
 import { ThrottlerGuard } from '@nestjs/throttler';
 import { PayPalInputModel } from './models/input/payPal-input.model';
+import { DatateT } from '../types/types';
+import { UpdateUserTypeCommand } from '../../users/application/use.cases/updateUserType.command';
 
 @ApiTags('Payments')
 @Controller('payments')
@@ -161,6 +164,61 @@ export class PaymentsApiController {
     }
 
     return result.data;
+  }
+
+  @getActiveSubscriptionEndpoint()
+  @Get('paypal/activeSubscription')
+  @UseGuards(JwtAccessAuthGuard)
+  @UseGuards(ThrottlerGuard)
+  @HttpCode(HttpStatusCode.Ok)
+  async getActiveSubscription(@TakeUserId() { userId }: { userId: number }) {
+    const pattern = 'myActiveSubscription';
+    const result = await firstValueFrom(this.client.send(pattern, userId));
+
+    if (!result.succeeded) {
+      return exceptionHandler(
+        ResultCode.ServerError,
+        'Failed to check subscription',
+      );
+    }
+    if (!result.data) {
+      return exceptionHandler(
+        ResultCode.NotFound,
+        'No active subscription found for user',
+      );
+    }
+
+    return [result.data];
+  }
+
+  @autoRenewEnableEndpoint()
+  @Post('auto-renew/enable')
+  @UseGuards(JwtAccessAuthGuard)
+  @UseGuards(ThrottlerGuard)
+  @HttpCode(HttpStatusCode.Ok)
+  async autoRenewEnable(@TakeUserId() { userId }: { userId: number }) {
+    const pattern = 'autoRenewEnable';
+    const result = await firstValueFrom(this.client.send(pattern, userId));
+
+    if (!result.succeeded) {
+      return exceptionHandler(ResultCode.ServerError, 'Failed to RenewEnable');
+    }
+  }
+  @MessagePattern('payment_change_status')
+  async getPayPalInformation(@Payload() data: DatateT) {
+    try {
+      console.log('start');
+      await this.commandBus.execute(
+        new UpdateUserTypeCommand(
+          data.userId,
+          data.type,
+          data.term,
+          data.amount,
+        ),
+      );
+    } catch (error) {
+      console.error('Error handling payment_change_status:', error);
+    }
   }
 
   // @Post('webhook')

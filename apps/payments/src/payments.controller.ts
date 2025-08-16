@@ -1,9 +1,9 @@
-import { Controller, Inject } from '@nestjs/common';
-import { ClientProxy, MessagePattern, Payload } from '@nestjs/microservices';
+import { Controller } from '@nestjs/common';
+import { MessagePattern, Payload } from '@nestjs/microservices';
 import { YooInputModel } from 'apps/auth/src/payments/api/models/input/yooPay-input.model';
 import { PaymentsQueryRepository } from './infrastructure/payments-query.repository';
-import { PaymentsYooService } from './application/payments.yoo.service';
-import { PaymentsPaypalService } from './application/payments.payPal.service';
+import { PaymentsYooService } from './api/payments.yoo.service';
+import { PaymentsPaypalService } from './api/payments.payPal.service';
 import { PayPalInputModel } from 'apps/auth/src/payments/api/models/input/payPal-input.model';
 
 @Controller()
@@ -12,7 +12,6 @@ export class PaymentsController {
     protected paymentsYooService: PaymentsYooService,
     protected paymentsQueryRepository: PaymentsQueryRepository,
     protected paymentsPaypalService: PaymentsPaypalService,
-    @Inject('AUTH_SERVICE') private readonly authClient: ClientProxy,
   ) {}
 
   @MessagePattern('buyYoo')
@@ -105,6 +104,45 @@ export class PaymentsController {
         data: paymentList.filter(
           (payment) => payment.IPaymentMethodData === 'paypal',
         ),
+      };
+    } catch (error) {
+      return {
+        succeeded: false,
+        message: 'Error fetching PayPal payments',
+        data: {},
+      };
+    }
+  }
+  @MessagePattern('myActiveSubscription')
+  async getActiveSubscription(@Payload() userId: number) {
+    try {
+      const paymentList =
+        await this.paymentsQueryRepository.getActiveSubscription(userId);
+
+      const data = {
+        userId: userId,
+        subscriptionStart: paymentList[0].subscriptionStart,
+        subscription: paymentList[0].subscriptionEnd,
+      };
+      return data;
+    } catch (error) {
+      return {
+        succeeded: false,
+        message: 'Error fetching PayPal payments',
+        data: {},
+      };
+    }
+  }
+
+  @MessagePattern('autoRenewEnable')
+  async autoRenewEnable(@Payload() userId: number) {
+    try {
+      await this.paymentsPaypalService.autoRenewEnable(userId);
+
+      return {
+        succeeded: true,
+        message: '',
+        data: {},
       };
     } catch (error) {
       return {
