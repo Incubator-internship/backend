@@ -161,47 +161,50 @@ export function getMyPaymentsPayPalEndpoint() {
 export function getActiveSubscriptionEndpoint() {
   return applyDecorators(
     ApiBearerAuth(),
-    ApiOperation({ summary: 'Get current active subscription for user' }),
+    ApiOperation({ summary: 'Get user’s active subscription' }),
     ApiResponse({
       status: 200,
-      description: 'Successfully retrieved active subscription',
+      description: 'Active subscription retrieved successfully',
       schema: {
-        type: 'array',
-        items: {
-          type: 'object',
-          properties: {
-            userId: { type: 'number', example: 12345 },
-            autoRenewal: { type: 'boolen', example: true },
-            subscriptionStart: {
-              type: 'string',
-              format: 'date-time',
-              example: '2023-10-15T14:30:00Z',
-              nullable: true,
-            },
-            subscriptionEnd: {
-              type: 'string',
-              format: 'date-time',
-              example: '2024-10-15T14:30:00Z',
-              nullable: true,
-            },
+        type: 'object',
+        properties: {
+          userId: { type: 'number', example: 12345 },
+          subscriptionStart: {
+            type: 'string',
+            format: 'date-time',
+            example: '2023-10-15T14:30:00Z',
+            nullable: true,
           },
+          ExpireAt: {
+            type: 'string',
+            format: 'date-time',
+            example: '2024-10-15T14:30:00Z',
+            nullable: true,
+          },
+          nextPayment: {
+            type: 'string',
+            format: 'date-time',
+            example: '2024-11-15T14:30:00Z',
+            nullable: true,
+          },
+          autoPay: { type: 'boolean', example: true },
         },
       },
     }),
     ApiResponse({
       status: 401,
-      description: 'Unauthorized - invalid or missing access token',
-      type: () => ErrorsMessagesSwaggerType,
+      description: 'Unauthorized - invalid or missing token',
+      type: ErrorsMessagesSwaggerType,
     }),
     ApiResponse({
       status: 404,
-      description: 'No active subscription found for user',
-      type: () => ErrorsMessagesSwaggerType,
+      description: 'No active subscription found',
+      type: ErrorsMessagesSwaggerType,
     }),
     ApiResponse({
       status: 500,
       description: 'Internal server error',
-      type: () => ErrorsMessagesSwaggerType,
+      type: ErrorsMessagesSwaggerType,
     }),
   );
 }

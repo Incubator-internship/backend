@@ -129,6 +129,7 @@ export class PaymentsController {
 
       const data = {
         userId: userId,
+        subscriptionStart: paymentList[0].subscriptionStart,
         ExpireAt: resultCalculateSubscriptionDates.expireAt,
         nextPayment: resultCalculateSubscriptionDates.nextPayment,
         autoPay: paymentList[0].autoPay,

@@ -14,7 +14,7 @@ import { PaymentsEventsHandler } from './api/payments.events.handler';
         name: 'PAYMENTS-SERVICE',
         transport: Transport.TCP,
         options: {
-          host: 'payments-backend-service',
+          host: 'localhost',
           port: 3877,
         },
       },
