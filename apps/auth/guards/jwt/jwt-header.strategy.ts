@@ -23,13 +23,13 @@ export class JwtAccessStrategy extends PassportStrategy(
     });
   }
 
-  async validate({ userId }: { userId: number }) {
+  async validate({ userId, deviceId }: { userId: number; deviceId: string }) {
     //Todo delete userId console.log from jwt-header.strategy
     console.log('userId', userId);
     const user = await this.userRepository.getUserById(Number(userId));
     if (!user) {
       throw new UnauthorizedException();
     }
-    return { userId };
+    return { userId, deviceId };
   }
 }

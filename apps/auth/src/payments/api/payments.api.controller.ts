@@ -20,10 +20,9 @@ import {
   ResultCode,
 } from 'apps/auth/common/exception-filters/exception.handler';
 import {
-  autoRenewEnableEndpoint,
   buyPayPalEndpoint,
   buyYooEndpoint,
-  cancelPayPalEndpoint,
+  toggleAutoPayPalEndpoint,
   cancelYooEndpoint,
   getActiveSubscriptionEndpoint,
   getMyPaymentsEndpoint,
@@ -32,9 +31,14 @@ import {
 } from 'apps/auth/swagger/payments.swagger';
 import { CommandBus } from '@nestjs/cqrs';
 import { ThrottlerGuard } from '@nestjs/throttler';
-import { PayPalInputModel } from './models/input/payPal-input.model';
+import {
+  PayPalInputModel,
+  ToggleAutoPayModel,
+} from './models/input/payPal-input.model';
 import { DatateT } from '../types/types';
 import { UpdateUserTypeCommand } from '../../users/application/use.cases/updateUserType.command';
+import { RefreshPayload } from 'apps/auth/decorators/accessPayload.decorator';
+import { SessionsQueryRepository } from '../../devices/infrastructure/sessions-query.repository';
 
 @ApiTags('Payments')
 @Controller('payments')
@@ -43,6 +47,7 @@ export class PaymentsApiController {
 
   constructor(
     private commandBus: CommandBus,
+    private sessionsQueryRepository: SessionsQueryRepository,
     @Inject('PAYMENTS-SERVICE') private client: ClientProxy,
   ) {
     const environment = new paypal.core.SandboxEnvironment(
@@ -115,10 +120,16 @@ export class PaymentsApiController {
   @HttpCode(HttpStatusCode.Created)
   async buyPaypal(
     @Body() dto: PayPalInputModel,
-    @TakeUserId() { userId }: { userId: number },
+    @RefreshPayload()
+    { userId, deviceId }: { userId: number; deviceId: string },
   ) {
     const pattern = 'buyPaypal';
+    const session = await this.sessionsQueryRepository.findSessionByUserId(
+      userId,
+      deviceId,
+    );
     dto.userID = userId;
+    dto.timezone = session?.timezone || 'UTC';
     const result = await firstValueFrom(this.client.send(pattern, dto));
 
     if (!result.succeeded) {
@@ -131,14 +142,21 @@ export class PaymentsApiController {
     return { redirectUrl: result.data };
   }
 
-  @cancelPayPalEndpoint()
-  @Post('cancelPaypal')
+  @toggleAutoPayPalEndpoint()
+  @Post('toggleAutoPay')
   @UseGuards(JwtAccessAuthGuard)
   @UseGuards(ThrottlerGuard)
   @HttpCode(HttpStatusCode.NoContent)
-  async cancelAutoPaymentPaypal(@TakeUserId() { userId }: { userId: number }) {
-    const pattern = 'buyPaypalCancel';
-    const result = await firstValueFrom(this.client.send(pattern, userId));
+  async toggleAutoPayPaypal(
+    @Body() dto: ToggleAutoPayModel,
+    @TakeUserId() { userId }: { userId: number },
+  ) {
+    const body = {
+      userId,
+      ...dto,
+    };
+    const pattern = 'toggleAutoPay';
+    const result = await firstValueFrom(this.client.send(pattern, body));
 
     if (!result.succeeded) {
       return exceptionHandler(
@@ -187,19 +205,19 @@ export class PaymentsApiController {
     return [result];
   }
 
-  @autoRenewEnableEndpoint()
-  @Post('auto-renew/enable')
-  @UseGuards(JwtAccessAuthGuard)
-  @UseGuards(ThrottlerGuard)
-  @HttpCode(HttpStatusCode.Ok)
-  async autoRenewEnable(@TakeUserId() { userId }: { userId: number }) {
-    const pattern = 'autoRenewEnable';
-    const result = await firstValueFrom(this.client.send(pattern, userId));
+  // @autoRenewEnableEndpoint()
+  // @Post('auto-renew/enable')
+  // @UseGuards(JwtAccessAuthGuard)
+  // @UseGuards(ThrottlerGuard)
+  // @HttpCode(HttpStatusCode.Ok)
+  // async autoRenewEnable(@TakeUserId() { userId }: { userId: number }) {
+  //   const pattern = 'autoRenewEnable';
+  //   const result = await firstValueFrom(this.client.send(pattern, userId));
 
-    if (!result.succeeded) {
-      return exceptionHandler(ResultCode.ServerError, 'Failed to RenewEnable');
-    }
-  }
+  //   if (!result.succeeded) {
+  //     return exceptionHandler(ResultCode.ServerError, 'Failed to RenewEnable');
+  //   }
+  // }
 
   @getSubscriptionDetailsEndpoint()
   @Get('subscription/details')

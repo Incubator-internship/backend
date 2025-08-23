@@ -82,9 +82,12 @@ export class PaymentsController {
     };
   }
 
-  @MessagePattern('buyPaypalCancel')
-  async cancelAutoPaymentPaypal(@Payload() userId: number) {
-    const result = await this.paymentsPaypalService.cancelAutoPayment(userId);
+  @MessagePattern('toggleAutoPay')
+  async cancelAutoPaymentPaypal(@Payload() dto: any) {
+    const result = await this.paymentsPaypalService.toggleAutoPayPaypal(
+      dto.userId,
+      dto.enable,
+    );
     return {
       succeeded: result.succeeded,
       message: result.message || '',
@@ -119,11 +122,17 @@ export class PaymentsController {
       const paymentList =
         await this.paymentsQueryRepository.getActiveSubscription(userId);
 
+      const resultCalculateSubscriptionDates =
+        await this.paymentsPaypalService.calculateSubscriptionDates(
+          paymentList[0],
+        );
+
       const data = {
         userId: userId,
         subscriptionStart: paymentList[0].subscriptionStart,
-        subscription: paymentList[0].subscriptionEnd,
-        autoRenewal: paymentList[0].autoPay,
+        ExpireAt: resultCalculateSubscriptionDates.expireAt,
+        nextPayment: resultCalculateSubscriptionDates.nextPayment,
+        autoPay: paymentList[0].autoPay,
       };
       return data;
     } catch (error) {
@@ -160,9 +169,16 @@ export class PaymentsController {
       const paymentList =
         await this.paymentsQueryRepository.getActiveSubscription(userId);
 
+      if (paymentList.length > 0) {
+        return {
+          subscriptionTerm: paymentList[0].subscriptionTerm,
+          amount: paymentList[0].amount,
+        };
+      }
       return {
-        subscriptionTerm: paymentList[0].subscriptionTerm,
-        amount: paymentList[0].amount,
+        succeeded: false,
+        message: 'no payments',
+        data: {},
       };
     } catch (error) {
       return {

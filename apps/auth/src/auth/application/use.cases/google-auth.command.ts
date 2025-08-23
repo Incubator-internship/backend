@@ -12,7 +12,10 @@ import {
   CreateUserProviderCommand,
   CreateUserProviderHandler,
 } from './create-userProvider.command';
-import { CreateUserAndProviderCommand, CreateUserAndProviderHandler } from 'apps/auth/src/users/application/use.cases/createUser-provider.command';
+import {
+  CreateUserAndProviderCommand,
+  CreateUserAndProviderHandler,
+} from 'apps/auth/src/users/application/use.cases/createUser-provider.command';
 
 export class GoogleAuthCommand {
   constructor(public readonly googleDTO: GoogleAuthCommandDTO) {}

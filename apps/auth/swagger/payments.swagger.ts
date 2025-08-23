@@ -6,7 +6,10 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { YooInputModel } from '../src/payments/api/models/input/yooPay-input.model';
-import { PayPalInputModel } from '../src/payments/api/models/input/payPal-input.model';
+import {
+  PayPalInputModel,
+  ToggleAutoPayModel,
+} from '../src/payments/api/models/input/payPal-input.model';
 import { ErrorsMessagesSwaggerType } from '../src/auth/api/models/output/auth-output.model';
 
 export function buyYooEndpoint() {
@@ -63,16 +66,29 @@ export function cancelYooEndpoint() {
   );
 }
 
-export function cancelPayPalEndpoint() {
+export function toggleAutoPayPalEndpoint() {
   return applyDecorators(
     ApiBearerAuth(),
-    ApiOperation({ summary: 'Cancel auto-payment subscription' }),
+    ApiOperation({
+      summary: 'Enable or disable auto-payment subscription',
+      description:
+        'Enables the auto-payment subscription if the input is true, or disables it if the input is false.',
+    }),
+    ApiBody({
+      description:
+        'Payment input model with a boolean to enable (true) or disable (false) auto-payment',
+      type: ToggleAutoPayModel,
+      required: true,
+    }),
     ApiResponse({
       status: 204,
-      description: 'Auto-payment successfully canceled',
+      description: 'Auto-payment subscription successfully enabled or disabled',
     }),
     ApiResponse({ status: 401, description: 'Unauthorized' }),
-    ApiResponse({ status: 500, description: 'Failed to cancel auto-payment' }),
+    ApiResponse({
+      status: 500,
+      description: 'Failed to toggle auto-payment subscription',
+    }),
   );
 }
 
@@ -145,47 +161,50 @@ export function getMyPaymentsPayPalEndpoint() {
 export function getActiveSubscriptionEndpoint() {
   return applyDecorators(
     ApiBearerAuth(),
-    ApiOperation({ summary: 'Get current active subscription for user' }),
+    ApiOperation({ summary: 'Get user’s active subscription' }),
     ApiResponse({
       status: 200,
-      description: 'Successfully retrieved active subscription',
+      description: 'Active subscription retrieved successfully',
       schema: {
-        type: 'array',
-        items: {
-          type: 'object',
-          properties: {
-            userId: { type: 'number', example: 12345 },
-            autoRenewal: { type: 'boolen', example: true },
-            subscriptionStart: {
-              type: 'string',
-              format: 'date-time',
-              example: '2023-10-15T14:30:00Z',
-              nullable: true,
-            },
-            subscriptionEnd: {
-              type: 'string',
-              format: 'date-time',
-              example: '2024-10-15T14:30:00Z',
-              nullable: true,
-            },
+        type: 'object',
+        properties: {
+          userId: { type: 'number', example: 12345 },
+          subscriptionStart: {
+            type: 'string',
+            format: 'date-time',
+            example: '2023-10-15T14:30:00Z',
+            nullable: true,
           },
+          ExpireAt: {
+            type: 'string',
+            format: 'date-time',
+            example: '2024-10-15T14:30:00Z',
+            nullable: true,
+          },
+          nextPayment: {
+            type: 'string',
+            format: 'date-time',
+            example: '2024-11-15T14:30:00Z',
+            nullable: true,
+          },
+          autoPay: { type: 'boolean', example: true },
         },
       },
     }),
     ApiResponse({
       status: 401,
-      description: 'Unauthorized - invalid or missing access token',
-      type: () => ErrorsMessagesSwaggerType,
+      description: 'Unauthorized - invalid or missing token',
+      type: ErrorsMessagesSwaggerType,
     }),
     ApiResponse({
       status: 404,
-      description: 'No active subscription found for user',
-      type: () => ErrorsMessagesSwaggerType,
+      description: 'No active subscription found',
+      type: ErrorsMessagesSwaggerType,
     }),
     ApiResponse({
       status: 500,
       description: 'Internal server error',
-      type: () => ErrorsMessagesSwaggerType,
+      type: ErrorsMessagesSwaggerType,
     }),
   );
 }

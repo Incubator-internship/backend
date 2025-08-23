@@ -16,7 +16,16 @@ export class SessionsQueryRepository {
         title: session.deviceName,
         lastActiveDate: session.issuedAt.toISOString(),
         deviceId: session.deviceId,
+        timezone: session.timezone || 'UTC',
       };
     });
+  }
+
+  async findSessionByUserId(userId: number, deviceId: string) {
+    const data = await this.prismaService.session.findFirst({
+      where: { userId, deviceId },
+    });
+
+    return data;
   }
 }

@@ -97,11 +97,18 @@ export class AuthController {
     @Ip() ip: string,
     @Res({ passthrough: true })
     res: Response,
+    @Req() req: Request,
   ) {
     const deviceId = randomUUID();
     const tokensPair = await this.jwtService.createJWT(userId, deviceId);
+    const validatedTimezone = (req.headers['x-timezone'] as string) || 'UTC';
     await this.commandBus.execute(
-      new CreateDeviceSessionCommand(tokensPair.refreshToken, deviceName, ip),
+      new CreateDeviceSessionCommand(
+        tokensPair.refreshToken,
+        deviceName,
+        ip,
+        validatedTimezone,
+      ),
     );
     res.cookie('refreshToken', tokensPair.refreshToken, {
       httpOnly: true,
