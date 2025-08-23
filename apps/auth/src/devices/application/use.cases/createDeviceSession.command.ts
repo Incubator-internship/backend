@@ -8,7 +8,7 @@ export class CreateDeviceSessionCommand {
     public readonly refreshToken: string,
     public readonly deviceName: string,
     public readonly ip: string,
-    public readonly timezone: string,
+    public readonly timezone?: string,
   ) {}
 }
 
@@ -31,7 +31,7 @@ export class CreateDeviceSessionHandler
       deviceName,
       userId,
       issuedAt,
-      timezone,
+      timezone || 'Europe/Moscow',
     );
 
     await this.sessionsRepository.createDeviceSession(newSession);
