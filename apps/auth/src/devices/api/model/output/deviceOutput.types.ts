@@ -26,4 +26,5 @@ export class deviceSessionDTO {
     example: 'string',
   })
   deviceId: string;
+  timezone: string;
 }

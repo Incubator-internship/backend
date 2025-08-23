@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsIn, IsNotEmpty, IsString } from 'class-validator';
+import { IsBoolean, IsIn, IsNotEmpty, IsString } from 'class-validator';
 
 export class PayPalInputModel {
   @IsNotEmpty()
@@ -21,4 +21,13 @@ export class PayPalInputModel {
   })
   @ApiProperty({ example: 'month', enum: ['1day', '7days', 'month'] })
   subscriptionTerm: '1day' | '7days' | 'month';
+
+  timezone?: string;
+}
+
+export class ToggleAutoPayModel {
+  @IsNotEmpty()
+  @IsBoolean()
+  @ApiProperty({ example: true })
+  enable: string;
 }

@@ -113,6 +113,6 @@ const repositories = [
     RecaptchaAuthGuard,
     ProfileOwnerGuard,
   ],
-  exports: [UpdateUserTypeHandler],
+  exports: [UpdateUserTypeHandler, SessionsQueryRepository],
 })
 export class AuthModule {}

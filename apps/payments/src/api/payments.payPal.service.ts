@@ -5,6 +5,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PayPalInputModel } from 'apps/auth/src/payments/api/models/input/payPal-input.model';
 import { PaymentsQueryRepository } from '../infrastructure/payments-query.repository';
+import { DateTime } from 'luxon';
 
 @Injectable()
 export class PaymentsPaypalService {
@@ -75,6 +76,7 @@ export class PaymentsPaypalService {
             userId: payPalInputModel.userID,
             autoPay: true,
             subscriptionTerm: payPalInputModel.subscriptionTerm || 'month',
+            timezone: payPalInputModel.timezone,
           },
         });
       }
@@ -102,6 +104,7 @@ export class PaymentsPaypalService {
         payPalInputModel.subscriptionTerm || 'month',
         payPalInputModel.userID,
         order.result.purchase_units[0].amount.value,
+        payPalInputModel.timezone,
       );
       return {
         succeeded: true,
@@ -118,13 +121,14 @@ export class PaymentsPaypalService {
     }
   }
 
-  async cancelAutoPayment(
+  async toggleAutoPayPaypal(
     userId: number,
+    enable: boolean,
   ): Promise<{ succeeded: boolean; message?: string; data?: any }> {
     try {
       const payment =
         await this.prismaPaymentsService.informatioPayPal.findFirst({
-          where: { userId, autoPay: true },
+          where: { userId },
         });
 
       if (!payment) {
@@ -137,7 +141,7 @@ export class PaymentsPaypalService {
 
       await this.prismaPaymentsService.informatioPayPal.update({
         where: { payIdPal: payment.payIdPal },
-        data: { autoPay: false, updatedAt: new Date() },
+        data: { autoPay: enable },
       });
 
       return {
@@ -196,6 +200,7 @@ export class PaymentsPaypalService {
     subscriptionTerm: '1day' | '7days' | 'month',
     userId?: number,
     amount?: string,
+    timezone?: string,
   ) {
     const interval = setInterval(async () => {
       try {
@@ -210,7 +215,12 @@ export class PaymentsPaypalService {
               status: 'succeeded',
               updatedAt: now,
               subscriptionStart: now,
-              subscriptionEnd: this.calculateEndDate(now, subscriptionTerm),
+              //@ts-ignore
+              subscriptionEnd: this.calculateEndDate(
+                now,
+                subscriptionTerm,
+                timezone || 'UTC',
+              ),
               subscriptionTerm: subscriptionTerm,
               isRenewed: true,
             },
@@ -285,9 +295,11 @@ export class PaymentsPaypalService {
               status: 'succeeded',
               updatedAt: now,
               subscriptionStart: now,
+              //@ts-ignore
               subscriptionEnd: this.calculateEndDate(
                 now,
                 payment.subscriptionTerm || 'month',
+                payment.timezone || 'UTC',
               ),
               isRenewed: true,
             },
@@ -418,7 +430,12 @@ export class PaymentsPaypalService {
             autoPay: true,
             subscriptionTerm: term,
             subscriptionStart: now,
-            subscriptionEnd: this.calculateEndDate(now, term),
+            //@ts-ignore
+            subscriptionEnd: this.calculateEndDate(
+              now,
+              term,
+              sub.timezone || 'UTC',
+            ),
             renewalDate: now,
             isRenewed: true,
           },
@@ -442,22 +459,54 @@ export class PaymentsPaypalService {
       }
     }
   }
+  async calculateSubscriptionDates(subscription: any) {
+    const expireAt = DateTime.fromJSDate(subscription.subscriptionEnd).setZone(
+      subscription.timezone,
+    );
+    let nextPayment: DateTime;
 
-  private calculateEndDate(startDate: Date, term: string): Date {
-    const endDate = new Date(startDate);
+    if (subscription.autoPay) {
+      // Если автопродление включено, следующий платёж совпадает с subscriptionEnd
+      nextPayment = expireAt;
+    } else {
+      // Если автопродление отключено, рассчитываем начало следующего периода
+      //@ts-ignore
+      nextPayment = this.calculateEndDate(
+        subscription.subscriptionEnd,
+        subscription.subscriptionTerm || 'month',
+        subscription.timezone,
+      );
+    }
+    return {
+      expireAt: expireAt.toJSDate(), // Дата окончания подписки
+      nextPayment: nextPayment.toJSDate(), // Дата следующего платежа
+      autoPay: subscription.autoPay,
+    };
+  }
+
+  private calculateEndDate(
+    baseDate: Date,
+    term: string,
+    timezone: string,
+    returnAsDate: boolean = true,
+  ): Date | DateTime {
+    const date = DateTime.fromJSDate(baseDate).setZone(timezone);
+    let result: DateTime;
+
     switch (term) {
       case '1day':
-        endDate.setDate(endDate.getDate() + 1);
+        result = date.plus({ days: 1 });
         break;
       case '7days':
-        endDate.setDate(endDate.getDate() + 7);
+        result = date.plus({ days: 7 });
         break;
       case 'month':
-        endDate.setMonth(endDate.getMonth() + 1);
+        result = date.plus({ months: 1 });
         break;
       default:
         throw new Error('Неверный период подписки');
     }
-    return endDate;
+
+    return returnAsDate ? result.toJSDate() : result;
   }
 }

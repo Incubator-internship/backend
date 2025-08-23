@@ -8,6 +8,7 @@ export class CreateDeviceSessionCommand {
     public readonly refreshToken: string,
     public readonly deviceName: string,
     public readonly ip: string,
+    public readonly timezone: string,
   ) {}
 }
 
@@ -21,7 +22,7 @@ export class CreateDeviceSessionHandler
   ) {}
 
   async execute(command: CreateDeviceSessionCommand): Promise<void> {
-    const { refreshToken, deviceName, ip } = command;
+    const { refreshToken, deviceName, ip, timezone } = command;
     const { userId, deviceId, iat } = this.jwtService.decode(refreshToken);
     const issuedAt = new Date(iat * 1000).toISOString();
     const newSession = SessionModel.createDeviceSession(
@@ -30,6 +31,7 @@ export class CreateDeviceSessionHandler
       deviceName,
       userId,
       issuedAt,
+      timezone,
     );
 
     await this.sessionsRepository.createDeviceSession(newSession);

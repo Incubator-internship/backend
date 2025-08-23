@@ -16,16 +16,16 @@ datasource db {
 }
 
 model User {
-  id           Int      @id @default(autoincrement())
-  email        String   @unique
-  userName     String   @unique
-  passwordHash String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  isDelete     Boolean  @default(false)
-  accountType  String   @default("Personal")
-  subscriptionTerm   String?
-  amount   String?
+  id               Int      @id @default(autoincrement())
+  email            String   @unique
+  userName         String   @unique
+  passwordHash     String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  isDelete         Boolean  @default(false)
+  accountType      String   @default("Personal")
+  subscriptionTerm String?
+  amount           String?
 
   emailConfirmation EmailConfirmation?
   sessions          Session[]          @relation("UserSessions")
@@ -38,7 +38,7 @@ model User {
 }
 
 model Profile {
-  profileId         Int      @id @default(autoincrement())
+  profileId         Int       @id @default(autoincrement())
   firstName         String?
   lastName          String?
   dateOfBirthday    DateTime?
@@ -86,6 +86,7 @@ model Session {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   userId     Int
+  timezone   String?
   user       User     @relation(fields: [userId], references: [id], name: "UserSessions")
 
   @@map("session")

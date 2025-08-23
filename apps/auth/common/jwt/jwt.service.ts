@@ -22,7 +22,7 @@ export class JWTService {
     }
     return {
       accessToken: await this.jwtService.signAsync(
-        { userId },
+        { userId, deviceId },
         {
           secret: secretKey,
           expiresIn: '600m',

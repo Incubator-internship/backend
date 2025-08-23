@@ -6,7 +6,10 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { YooInputModel } from '../src/payments/api/models/input/yooPay-input.model';
-import { PayPalInputModel } from '../src/payments/api/models/input/payPal-input.model';
+import {
+  PayPalInputModel,
+  ToggleAutoPayModel,
+} from '../src/payments/api/models/input/payPal-input.model';
 import { ErrorsMessagesSwaggerType } from '../src/auth/api/models/output/auth-output.model';
 
 export function buyYooEndpoint() {
@@ -63,16 +66,29 @@ export function cancelYooEndpoint() {
   );
 }
 
-export function cancelPayPalEndpoint() {
+export function toggleAutoPayPalEndpoint() {
   return applyDecorators(
     ApiBearerAuth(),
-    ApiOperation({ summary: 'Cancel auto-payment subscription' }),
+    ApiOperation({
+      summary: 'Enable or disable auto-payment subscription',
+      description:
+        'Enables the auto-payment subscription if the input is true, or disables it if the input is false.',
+    }),
+    ApiBody({
+      description:
+        'Payment input model with a boolean to enable (true) or disable (false) auto-payment',
+      type: ToggleAutoPayModel,
+      required: true,
+    }),
     ApiResponse({
       status: 204,
-      description: 'Auto-payment successfully canceled',
+      description: 'Auto-payment subscription successfully enabled or disabled',
     }),
     ApiResponse({ status: 401, description: 'Unauthorized' }),
-    ApiResponse({ status: 500, description: 'Failed to cancel auto-payment' }),
+    ApiResponse({
+      status: 500,
+      description: 'Failed to toggle auto-payment subscription',
+    }),
   );
 }
 

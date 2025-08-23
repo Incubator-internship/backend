@@ -3,6 +3,7 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiCookieAuth,
+  ApiHeader,
   ApiOperation,
   ApiResponse,
 } from '@nestjs/swagger';
@@ -81,6 +82,15 @@ export function LoginUserEndpoint() {
     ApiResponse({
       status: 429,
       description: 'More than 5 attempts from one IP-address during 10 seconds',
+    }),
+    ApiHeader({
+      name: 'x-timezone',
+      description: 'User timezone (e.g., Europe/Moscow)',
+      required: true,
+      schema: {
+        type: 'string',
+        example: 'Europe/Moscow',
+      },
     }),
   );
 }

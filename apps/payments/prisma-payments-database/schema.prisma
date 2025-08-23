@@ -22,7 +22,7 @@ model InformatioPayYoo {
   subscriptionEnd    DateTime? // Дата окончания текущей подписки
   renewalDate        DateTime? // Дата продления (если было)
   subscriptionTerm   String? // Период подписки (месяц/год)
-
+  timezone String?
   isRenewed Boolean? @default(false)
 
   @@map("InformatioPayYoo")
@@ -42,6 +42,7 @@ model InformatioPayPal {
   subscriptionEnd    DateTime? // Дата окончания текущей подписки
   renewalDate        DateTime? // Дата продления (если было)
   subscriptionTerm   String? // Период подписки (месяц/год)
+  timezone String?
 
   isRenewed Boolean? @default(false)
 
