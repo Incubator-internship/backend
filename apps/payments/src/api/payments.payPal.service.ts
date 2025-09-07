@@ -6,14 +6,25 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { PayPalInputModel } from 'apps/auth/src/payments/api/models/input/payPal-input.model';
 import { PaymentsQueryRepository } from '../infrastructure/payments-query.repository';
 import { DateTime } from 'luxon';
+import { HttpService } from '@nestjs/axios';
+import { AxiosInstance } from 'axios';
+import { randomUUID } from 'crypto';
+import { DtoProductT } from 'apps/payments/types/types';
+import { PaymentsRepository } from '../infrastructure/payments.repository';
 
 @Injectable()
 export class PaymentsPaypalService {
   private client: paypal.core.PayPalHttpClient;
+  private paypalBaseUrl: string = 'https://api-m.sandbox.paypal.com';
 
+  private get axios(): AxiosInstance {
+    return this.httpService.axiosRef;
+  }
   constructor(
     protected prismaPaymentsService: PrismaPaymentsService,
     protected paymentsQueryRepository: PaymentsQueryRepository,
+    protected paymentsRepository: PaymentsRepository,
+    readonly httpService: HttpService,
     @Inject('AUTH_SERVICE') private readonly authClient: ClientProxy,
   ) {
     const environment = new paypal.core.SandboxEnvironment(
@@ -23,100 +34,376 @@ export class PaymentsPaypalService {
     this.client = new paypal.core.PayPalHttpClient(environment);
   }
 
-  async buyPaypal(
-    payPalInputModel: PayPalInputModel,
-  ): Promise<{ succeeded: boolean; data: string; message?: string }> {
-    try {
-      const request = new paypal.orders.OrdersCreateRequest();
-      request.prefer('return=representation');
-      request.requestBody({
-        intent: 'CAPTURE',
-        purchase_units: [
-          {
-            amount: {
-              currency_code: 'USD',
-              value: payPalInputModel.value.toString(),
-            },
-            description: `Payment for user ${payPalInputModel.userID}`,
-          },
-        ],
-        application_context: {
-          return_url: 'https://excubator.xyz/profile-settings?success=true',
-          cancel_url: 'https://excubator.xyz/profile-settings?success=false',
+  async createProduct(dtoProduct: DtoProductT) {
+    const accessToken = await this.getAccessToken();
+    const response = await this.axios.post(
+      `${this.paypalBaseUrl}/v1/catalogs/products`,
+      dtoProduct,
+      {
+        headers: {
+          //@ts-ignore
+          Authorization: `Bearer ${accessToken._accessToken}`,
+          'Content-Type': 'application/json',
+          'PayPal-Request-Id': `PRODUCT-${randomUUID()}`,
         },
-      });
-      if (!payPalInputModel.userID) {
-        throw new Error('user id cannot be null');
-      }
-      const order = await this.client.execute(request);
+      },
+    );
+    console.log(response.data, 'response.data');
+    console.log(response.data.id, 'response.data.id');
 
+    return response.data.id; // Возвращает product_id, например, PROD-5RN21878H3527870P
+  }
+  async getProdect(productId: string) {
+    const accessToken = await this.getAccessToken();
+
+    const response = await this.axios.get(
+      `${this.paypalBaseUrl}/v1/catalogs/products/${productId}`,
+      {
+        headers: {
+          //@ts-ignore
+          Authorization: `Bearer ${accessToken._accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+
+    return response.data.id;
+  }
+  async createSubscriptionPlans(productId: string) {
+    try {
+      const accessToken = await this.getAccessToken();
+      const plans = [
+        {
+          product_id: productId,
+          name: 'Месячная подписка',
+          description:
+            'Месячная подписка для бизнес-аккаунта с расширенными функциями',
+          billing_cycles: [
+            {
+              frequency: {
+                interval_unit: 'MONTH',
+                interval_count: 1,
+              },
+              tenure_type: 'REGULAR',
+              sequence: 1,
+              total_cycles: 0, // Бесконечный план
+              pricing_scheme: {
+                fixed_price: {
+                  value: '100',
+                  currency_code: 'USD',
+                },
+              },
+            },
+          ],
+          payment_preferences: {
+            auto_bill_outstanding: true,
+            setup_fee: { value: '0', currency_code: 'USD' },
+            setup_fee_failure_action: 'CONTINUE',
+            payment_failure_threshold: 3,
+          },
+        },
+        {
+          product_id: productId,
+          name: 'Недельная подписка',
+          description:
+            'Недельная подписка для бизнес-аккаунта с расширенными функциями',
+          billing_cycles: [
+            {
+              frequency: {
+                interval_unit: 'DAY',
+                interval_count: 7,
+              },
+              tenure_type: 'REGULAR',
+              sequence: 1,
+              total_cycles: 0, // Бесконечный план
+              pricing_scheme: {
+                fixed_price: {
+                  value: '50',
+                  currency_code: 'USD',
+                },
+              },
+            },
+          ],
+          payment_preferences: {
+            auto_bill_outstanding: true,
+            setup_fee: { value: '0', currency_code: 'USD' },
+            setup_fee_failure_action: 'CONTINUE',
+            payment_failure_threshold: 3,
+          },
+        },
+        {
+          product_id: productId,
+          name: 'Дневная подписка',
+          description:
+            'Дневная подписка для бизнес-аккаунта с расширенными функциями',
+          billing_cycles: [
+            {
+              frequency: {
+                interval_unit: 'DAY',
+                interval_count: 1,
+              },
+              tenure_type: 'REGULAR',
+              sequence: 1,
+              total_cycles: 0, // Бесконечный план
+              pricing_scheme: {
+                fixed_price: {
+                  value: '10',
+                  currency_code: 'USD',
+                },
+              },
+            },
+          ],
+          payment_preferences: {
+            auto_bill_outstanding: true,
+            setup_fee: { value: '0', currency_code: 'USD' },
+            setup_fee_failure_action: 'CONTINUE',
+            payment_failure_threshold: 3,
+          },
+        },
+      ];
+
+      const createdPlans = [];
+      for (const plan of plans) {
+        const response = await this.axios.post(
+          `${this.paypalBaseUrl}/v1/billing/plans`,
+          plan,
+          {
+            headers: {
+              //@ts-ignore
+              Authorization: `Bearer ${accessToken._accessToken}`,
+              'Content-Type': 'application/json',
+              'PayPal-Request-Id': `PLAN-${randomUUID()}`,
+            },
+          },
+        );
+        //@ts-ignore
+        createdPlans.push(response.data);
+        console.log(response, 'response');
+      }
+      console.log(createdPlans, 'createdPlanscreatedPlans');
+      return createdPlans;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async createSubscription(
+    planId: string,
+    returnUrl: string,
+    cancelUrl: string,
+    payPalInputModel: PayPalInputModel,
+  ) {
+    try {
+      debugger;
+      if (!payPalInputModel.userID) {
+        throw new Error('userID is required');
+      }
+      const accessToken = await this.getAccessToken();
+      const subscription = {
+        plan_id: planId,
+        application_context: {
+          brand_name: 'insta',
+          locale: 'en-US',
+          return_url: returnUrl,
+          cancel_url: cancelUrl,
+        },
+      };
+
+      const response: any = await this.axios.post(
+        `${this.paypalBaseUrl}/v1/billing/subscriptions`,
+        subscription,
+        {
+          headers: {
+            //@ts-ignore
+            Authorization: `Bearer ${accessToken._accessToken}`,
+            'Content-Type': 'application/json',
+            'PayPal-Request-Id': `SUB-${randomUUID()}`,
+          },
+        },
+      );
       const payRes =
         await this.paymentsQueryRepository.getPayPalInformationByUserId(
           payPalInputModel.userID,
         );
 
       if (payRes) {
-        await this.prismaPaymentsService.informatioPayPal.updateMany({
-          where: { userId: payPalInputModel.userID },
-          data: {
-            payIdPal: order.result.id,
-            status: order.result.status,
-            amount: order.result.purchase_units[0].amount.value,
-            autoPay: true,
-            subscriptionTerm: payPalInputModel.subscriptionTerm || 'month',
-          },
-        });
-      } else {
-        await this.prismaPaymentsService.informatioPayPal.create({
-          data: {
-            payIdPal: order.result.id,
-            status: order.result.status,
-            amount: order.result.purchase_units[0].amount.value,
-            IPaymentMethodData: 'paypal',
-            userId: payPalInputModel.userID,
-            autoPay: true,
-            subscriptionTerm: payPalInputModel.subscriptionTerm || 'month',
-            timezone: payPalInputModel.timezone,
-          },
-        });
-      }
-
-      await this.prismaPaymentsService.paymentsUser.create({
-        data: {
-          providerPayId: order.result.id,
-          status: order.result.status,
-          amount: order.result.purchase_units[0].amount.value,
+        const order = {
+          payIdPal: response.id,
+          status: response.status,
+          planId: response.planId,
+          amount: response.shipping_amount.value,
           IPaymentMethodData: 'paypal',
-          subscriptionStart: undefined,
-          subscriptionTerm: payPalInputModel.subscriptionTerm || null,
-          userId: payPalInputModel.userID,
-        },
-      });
-      const approveLink = order.result.links.find(
-        (link) => link.rel === 'approve',
-      )?.href;
+          autoPay: true,
+          subscriptionTerm: payPalInputModel.subscriptionTerm || 'month',
+          timezone: payPalInputModel.timezone,
+        };
 
-      if (!approveLink) {
-        return { succeeded: false, data: '', message: 'No approve link found' };
+        await this.paymentsRepository.updatePayPalInformation(order);
+      } else {
+        const order = {
+          payIdPal: response.data.id,
+          status: response.data.status,
+          planId: planId,
+          amount: payPalInputModel.value,
+          IPaymentMethodData: 'paypal',
+          userId: payPalInputModel.userID,
+          autoPay: true,
+          subscriptionTerm: payPalInputModel.subscriptionTerm || 'month',
+          timezone: payPalInputModel.timezone,
+        };
+        await this.paymentsRepository.createPayPalInformation(order);
       }
-      this.pollPaymentStatus(
-        order.result.id,
-        payPalInputModel.subscriptionTerm || 'month',
-        payPalInputModel.userID,
-        order.result.purchase_units[0].amount.value,
-        payPalInputModel.timezone,
+      return {
+        succeeded: true,
+        message: '',
+        data: response.data.links.find((el) => el['rel'] === 'approve').href,
+      };
+    } catch (error) {
+      console.log(error);
+
+      return {
+        succeeded: false,
+        message: error,
+        data: [],
+      };
+    }
+  }
+  // Приостановка подписки
+  async suspendSubscription(subscriptionId: string, reason: string) {
+    try {
+      const accessToken = await this.getAccessToken();
+      await this.axios.post(
+        `/v1/billing/subscriptions/${subscriptionId}/suspend`,
+        { reason },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+            'PayPal-Request-Id': `SUSPEND-${randomUUID()}`,
+          },
+        },
       );
       return {
         succeeded: true,
-        data: approveLink,
-        message: 'Payment created successfully',
+        message: '',
+        data: [],
       };
     } catch (error) {
-      console.error('Error creating PayPal payment:', error);
       return {
         succeeded: false,
-        data: '',
-        message: 'Error creating PayPal payment',
+        message: '',
+        data: [],
+      };
+    }
+  }
+  async cancelSubscription(subscriptionId: string, reason: string) {
+    try {
+      debugger;
+      const accessToken = await this.getAccessToken();
+      await this.axios.post(
+        `/v1/billing/subscriptions/${subscriptionId}/cancel`,
+        { reason },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+            'PayPal-Request-Id': `CANCEL-${randomUUID()}`,
+          },
+        },
+      );
+      return {
+        succeeded: true,
+        message: '',
+        data: [],
+      };
+    } catch (error) {
+      return {
+        succeeded: false,
+        message: '',
+        data: [],
+      };
+    }
+  }
+  async resumeSubscription(subscriptionId: string, reason: string) {
+    try {
+      const accessToken = await this.getAccessToken();
+      await this.axios.post(
+        `/v1/billing/subscriptions/${subscriptionId}/activate`,
+        { reason },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+            'PayPal-Request-Id': `ACTIVATE-${randomUUID()}`,
+          },
+        },
+      );
+      return {
+        succeeded: true,
+        message: '',
+        data: [],
+      };
+    } catch (error) {
+      return {
+        succeeded: false,
+        message: '',
+        data: [],
+      };
+    }
+  }
+  async getAccessToken() {
+    return await this.client.fetchAccessToken();
+  }
+  async getSubscriptionTransactions(subscriptionId: string) {
+    try {
+      const accessToken = await this.getAccessToken();
+      const response = await this.axios.get(
+        `${this.paypalBaseUrl}/v1/billing/subscriptions/${subscriptionId}/transactions`,
+        {
+          headers: {
+            //@ts-ignore
+            Authorization: `Bearer ${accessToken._accessToken}`,
+            'Content-Type': 'application/json',
+            'PayPal-Request-Id': `TRANSACTIONS-${randomUUID()}`,
+          },
+        },
+      );
+      return {
+        succeeded: true,
+        message: '',
+        data: response.data,
+      };
+    } catch (error) {
+      return {
+        succeeded: false,
+        message: '',
+        data: [],
+      };
+    }
+  }
+  async getSubscription(subscriptionId: string): Promise<any> {
+    try {
+      debugger;
+      const accessToken = await this.getAccessToken();
+      const response = await this.axios.get(
+        `${this.paypalBaseUrl}/v1/billing/subscriptions/${subscriptionId}`,
+        {
+          headers: {
+            //@ts-ignore
+            Authorization: `Bearer ${accessToken._accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+      return {
+        succeeded: true,
+        message: '',
+        data: response.data,
+      };
+    } catch (error) {
+      return {
+        succeeded: false,
+        message: '',
+        data: [],
       };
     }
   }
@@ -138,7 +425,24 @@ export class PaymentsPaypalService {
           data: {},
         };
       }
+      if (!enable) {
+        const res = await this.suspendSubscription(
+          payment.payIdPal,
+          'такая жизнь',
+        );
+        if (!res.succeeded) {
+          throw new Error(res.message);
+        }
+      } else {
+        const resTwo = await this.resumeSubscription(
+          payment.payIdPal,
+          'такая жизнь',
+        );
 
+        if (!resTwo.succeeded) {
+          throw new Error(resTwo.message);
+        }
+      }
       await this.prismaPaymentsService.informatioPayPal.update({
         where: { payIdPal: payment.payIdPal },
         data: { autoPay: enable },
@@ -158,162 +462,18 @@ export class PaymentsPaypalService {
       };
     }
   }
-  async autoRenewEnable(
-    userId: number,
-  ): Promise<{ succeeded: boolean; message?: string; data?: any }> {
-    try {
-      const payment =
-        await this.prismaPaymentsService.informatioPayPal.findFirst({
-          where: { userId, autoPay: false },
-        });
 
-      if (!payment) {
-        return {
-          succeeded: false,
-          message: 'No active subscription found',
-          data: {},
-        };
-      }
+  // @Cron(CronExpression.EVERY_10_SECONDS)
+  async checkPendingSubscriptionPaypal() {
+    const pendings =
+      await this.paymentsQueryRepository.getTransactionsPending();
 
-      await this.prismaPaymentsService.informatioPayPal.update({
-        where: { payIdPal: payment.payIdPal },
-        data: { autoPay: true },
-      });
-
-      return {
-        succeeded: true,
-        message: 'Auto payment cancelled successfully',
-        data: {},
-      };
-    } catch (error) {
-      console.error('Error cancelling PayPal auto payment:', error);
-      return {
-        succeeded: false,
-        message: 'Error cancelling auto payment',
-        data: {},
-      };
-    }
-  }
-
-  private async pollPaymentStatus(
-    orderId: string,
-    subscriptionTerm: '1day' | '7days' | 'month',
-    userId?: number,
-    amount?: string,
-    timezone?: string,
-  ) {
-    const interval = setInterval(async () => {
+    for (const payment of pendings) {
       try {
-        const request = new paypal.orders.OrdersGetRequest(orderId);
-        const order = await this.client.execute(request);
-        const now = new Date();
+        debugger;
+        const result = await this.getSubscription(payment.payIdPal);
 
-        if (order.result.status === 'APPROVED') {
-          await this.prismaPaymentsService.informatioPayPal.update({
-            where: { payIdPal: orderId },
-            data: {
-              status: 'succeeded',
-              updatedAt: now,
-              subscriptionStart: now,
-              //@ts-ignore
-              subscriptionEnd: this.calculateEndDate(
-                now,
-                subscriptionTerm,
-                timezone || 'UTC',
-              ),
-              subscriptionTerm: subscriptionTerm,
-              isRenewed: true,
-            },
-          });
-
-          await this.prismaPaymentsService.paymentsUser.update({
-            where: { providerPayId: orderId },
-            data: {
-              status: 'succeeded',
-              subscriptionStart: new Date(),
-              subscriptionTerm,
-            },
-          });
-
-          if (!amount) {
-            throw new Error('no amounts');
-          }
-
-          console.log({
-            userId: userId,
-            type: 'Business',
-            term: subscriptionTerm,
-            amount: amount,
-          });
-          try {
-            this.authClient
-              .emit('payment_change_status', {
-                userId: userId,
-                type: 'Business',
-                term: subscriptionTerm,
-                amount: amount,
-              })
-              .subscribe({
-                error: (err) => console.error('Emit error:', err),
-                complete: () => console.log('Emit sent'),
-              });
-          } catch (error) {
-            console.log(error, 'error');
-          }
-
-          clearInterval(interval);
-        } else if (order.result.status === 'canceled') {
-          clearInterval(interval);
-        }
-      } catch (error) {
-        console.error('Error polling PayPal payment status:', error);
-        clearInterval(interval);
-      }
-    }, 10000);
-  }
-
-  @Cron(CronExpression.EVERY_5_MINUTES)
-  async checkPendingPaymentsPaypal() {
-    const pending = await this.prismaPaymentsService.informatioPayPal.findMany({
-      where: {
-        status: 'CREATED', // PayPal использует CREATED для незавершенных заказов
-        IPaymentMethodData: 'paypal',
-      },
-    });
-
-    for (const payment of pending) {
-      try {
-        const request = new paypal.orders.OrdersGetRequest(payment.payIdPal);
-        const order = await this.client.execute(request);
-        const status = order.result.status;
-        const now = new Date();
-
-        if (status === 'APPROVED') {
-          await this.prismaPaymentsService.informatioPayPal.update({
-            where: { payIdPal: payment.payIdPal },
-            data: {
-              status: 'succeeded',
-              updatedAt: now,
-              subscriptionStart: now,
-              //@ts-ignore
-              subscriptionEnd: this.calculateEndDate(
-                now,
-                payment.subscriptionTerm || 'month',
-                payment.timezone || 'UTC',
-              ),
-              isRenewed: true,
-            },
-          });
-
-          await this.prismaPaymentsService.paymentsUser.update({
-            where: { providerPayId: payment.payIdPal },
-            data: {
-              status: 'succeeded',
-              subscriptionStart: new Date(),
-              subscriptionTerm: payment.subscriptionTerm || 'month',
-            },
-          });
-
+        if (result.data.status === 'ACTIVE') {
           this.authClient
             .emit('payment_change_status', {
               userId: payment.userId,
@@ -325,14 +485,16 @@ export class PaymentsPaypalService {
               error: (err) => console.error('Emit error:', err),
               complete: () => console.log('Emit sent'),
             });
-        } else if (status === 'VOIDED' || status === 'CANCELLED') {
-          await this.prismaPaymentsService.informatioPayPal.update({
-            where: { payIdPal: payment.payIdPal },
-            data: {
-              status: 'canceled',
-              updatedAt: new Date(),
-            },
-          });
+
+          await this.paymentsRepository.updatePayPalDate(
+            result.data.start_time,
+            result.data.billing_info.next_billing_time,
+            payment.payIdPal,
+          );
+          await this.paymentsRepository.updatePayPalStatus(
+            'ACTIVE',
+            payment.payIdPal,
+          );
         }
       } catch (error) {
         console.error('Error checking PayPal payment status:', error);
@@ -340,173 +502,101 @@ export class PaymentsPaypalService {
     }
   }
 
-  @Cron(CronExpression.EVERY_10_MINUTES)
+  @Cron(CronExpression.EVERY_11_HOURS)
   async checkEndDatePaymentsPaypal() {
-    const now = new Date();
-
     const expiredSubscriptions =
       await this.prismaPaymentsService.informatioPayPal.findMany({
         where: {
-          autoPay: false,
-          subscriptionEnd: { lte: now },
           IPaymentMethodData: 'paypal',
         },
       });
     for (const sub of expiredSubscriptions) {
-      try {
-        this.authClient
-          .emit('payment_change_status', {
-            userId: sub.userId,
-            type: 'Business',
-            term: sub.subscriptionTerm,
-            amount: sub.amount,
-          })
-          .subscribe({
-            error: (err) => console.error('Emit error:', err),
-            complete: () => console.log('Emit sent'),
-          });
-      } catch (error) {
-        console.error(
-          `Error processing expired PayPal subscription for user ${sub.userId}:`,
-          error,
-        );
+      const res = await this.getSubscription(sub.payIdPal);
+
+      if (res.data.status !== 'ACTIVE') {
+        try {
+          await this.paymentsRepository.updatePayPalAutoPay(
+            sub.payIdPal,
+            false,
+          );
+
+          this.authClient
+            .emit('payment_change_status', {
+              userId: sub.userId,
+              type: 'Personal',
+              term: '',
+              amount: '',
+            })
+            .subscribe({
+              error: (err) => console.error('Emit error:', err),
+              complete: () => console.log('Emit sent'),
+            });
+        } catch (error) {
+          console.error(
+            `Error processing expired PayPal subscription for user ${sub.userId}:`,
+            error,
+          );
+        }
       }
     }
   }
 
-  @Cron(CronExpression.EVERY_DAY_AT_3AM)
-  async checkSubscriptionsPaypal() {
-    const now = new Date();
-    const subscriptions =
-      await this.prismaPaymentsService.informatioPayPal.findMany({
-        where: {
-          autoPay: true,
-          subscriptionEnd: { lte: now },
-          IPaymentMethodData: 'paypal',
-        },
-      });
+  @Cron(CronExpression.EVERY_HOUR)
+  async isSubscriptionRenewed() {
+    const subscriptionsRaw =
+      await this.paymentsQueryRepository.getSubscriptions();
 
-    for (const sub of subscriptions) {
-      if (!sub.autoPay) {
-        continue;
+    const now = DateTime.utc();
+
+    const expiredSubscriptions = subscriptionsRaw.filter((sub) => {
+      const subscriptionEndInTZ = DateTime.fromJSDate(sub.subscriptionEnd!, {
+        zone: 'UTC',
+      }).setZone(sub.timezone!, { keepLocalTime: true });
+      if (!subscriptionEndInTZ.isValid) {
+        return false;
       }
-      const term = (sub.subscriptionTerm || 'month') as
-        | '1day'
-        | '7days'
-        | 'month';
 
+      const nowInTZ = now.setZone(sub.timezone!);
+      return subscriptionEndInTZ <= nowInTZ;
+    });
+
+    for (const sub of expiredSubscriptions) {
       try {
-        // Создаем новый заказ PayPal для автоплатежа
-        const request = new paypal.orders.OrdersCreateRequest();
-        request.prefer('return=representation');
-        request.requestBody({
-          intent: 'CAPTURE',
-          purchase_units: [
-            {
-              amount: {
-                currency_code: 'USD',
-                value: sub.amount.toString(),
-              },
-              description: `Auto-renewal for user ${sub.userId}`,
-              custom_id: sub.userId.toString(),
-            },
-          ],
-          application_context: {
-            return_url: 'https://your-app.com/success',
-            cancel_url: 'https://your-app.com/cancel',
-          },
-        });
+        const res = await this.getSubscriptionTransactions(sub.payIdPal);
 
-        const order = await this.client.execute(request);
+        if (!res.data?.length) continue;
+        const subscriptionEndInTZ = DateTime.fromJSDate(sub.subscriptionEnd!, {
+          zone: 'UTC',
+        }).setZone(sub.timezone!, { keepLocalTime: true });
 
-        // Сохраняем новый заказ в базе
-        await this.prismaPaymentsService.informatioPayYoo.create({
-          data: {
-            payIdYoo: order.result.id,
-            status: order.result.status,
-            amount: `${parseFloat(order.result.purchase_units[0].amount.value)}`,
-            IPaymentMethodData: 'paypal',
-            userId: sub.userId,
-            autoPay: true,
-            subscriptionTerm: term,
-            subscriptionStart: now,
-            //@ts-ignore
-            subscriptionEnd: this.calculateEndDate(
-              now,
-              term,
-              sub.timezone || 'UTC',
-            ),
-            renewalDate: now,
-            isRenewed: true,
-          },
-        });
+        const lastPaymentTime = DateTime.fromISO(
+          res.data[res.data.length - 1].time,
+          { zone: 'utc' },
+        );
 
-        await this.prismaPaymentsService.paymentsUser.create({
-          data: {
-            providerPayId: order.result.id,
-            status: order.result.status,
-            amount: `${parseFloat(order.result.purchase_units[0].amount.value)}`,
-            IPaymentMethodData: 'paypal',
-            subscriptionStart: now,
-            subscriptionTerm: term,
-            userId: sub.userId,
-          },
-        });
-
-        this.pollPaymentStatus(order.result.id, term, sub.userId);
+        if (
+          lastPaymentTime < subscriptionEndInTZ ||
+          res.data[res.data.length - 1].status != 'COMPLETED'
+        ) {
+          await this.paymentsRepository.updatePayPalAutoPay(
+            sub.payIdPal,
+            false,
+          );
+          this.authClient
+            .emit('payment_change_status', {
+              userId: sub.userId,
+              type: 'Personal',
+              term: '',
+              amount: '',
+            })
+            .subscribe({
+              error: (err) => console.error('Emit error:', err),
+              complete: () => console.log('Emit sent'),
+            });
+        }
       } catch (error) {
         console.error('Error processing PayPal subscription:', error);
       }
     }
-  }
-  async calculateSubscriptionDates(subscription: any) {
-    const expireAt = DateTime.fromJSDate(subscription.subscriptionEnd).setZone(
-      subscription.timezone,
-    );
-    let nextPayment: DateTime;
-
-    if (subscription.autoPay) {
-      // Если автопродление включено, следующий платёж совпадает с subscriptionEnd
-      nextPayment = expireAt;
-    } else {
-      // Если автопродление отключено, рассчитываем начало следующего периода
-      //@ts-ignore
-      nextPayment = this.calculateEndDate(
-        subscription.subscriptionEnd,
-        subscription.subscriptionTerm || 'month',
-        subscription.timezone,
-      );
-    }
-    return {
-      expireAt: expireAt.toJSDate(), // Дата окончания подписки
-      nextPayment: nextPayment.toJSDate(), // Дата следующего платежа
-      autoPay: subscription.autoPay,
-    };
-  }
-
-  private calculateEndDate(
-    baseDate: Date,
-    term: string,
-    timezone: string,
-    returnAsDate: boolean = true,
-  ): Date | DateTime {
-    const date = DateTime.fromJSDate(baseDate).setZone(timezone);
-    let result: DateTime;
-
-    switch (term) {
-      case '1day':
-        result = date.plus({ days: 1 });
-        break;
-      case '7days':
-        result = date.plus({ days: 7 });
-        break;
-      case 'month':
-        result = date.plus({ months: 1 });
-        break;
-      default:
-        throw new Error('Неверный период подписки');
-    }
-
-    return returnAsDate ? result.toJSDate() : result;
   }
 }

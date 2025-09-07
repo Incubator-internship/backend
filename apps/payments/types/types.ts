@@ -18,3 +18,12 @@ export enum SubscriptionTerm {
   SevenDays = '7days',
   Month = 'month',
 }
+
+export type DtoProductT = {
+  name: string;
+  description: string;
+  type: string;
+  category: string;
+  image_url: string;
+  home_url: string;
+};

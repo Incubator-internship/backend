@@ -8,10 +8,17 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { PaymentsYooService } from './api/payments.yoo.service';
 import { PaymentsConfigModule } from '../settings/payments.config.module';
 import { PaymentsPaypalService } from './api/payments.payPal.service';
+import { ScheduleModule } from '@nestjs/schedule';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
     PaymentsConfigModule,
+    ScheduleModule.forRoot(),
+    HttpModule.register({
+      timeout: 5000, // Таймаут для запросов
+      maxRedirects: 5,
+    }),
     ClientsModule.registerAsync([
       {
         name: 'AUTH_SERVICE',

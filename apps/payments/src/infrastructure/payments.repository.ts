@@ -131,4 +131,62 @@ export class PaymentsRepository {
       },
     });
   }
+  async createPayPalInformation(order) {
+    await this.prismapaymentsService.informatioPayPal.create({
+      data: {
+        payIdPal: order.payIdPal,
+        status: order.status,
+        planId: order.planId,
+        amount: order.amount,
+        IPaymentMethodData: 'paypal',
+        userId: order.userId,
+        autoPay: true,
+        subscriptionTerm: order.subscriptionTerm || 'month',
+        timezone: order.timezone,
+      },
+    });
+  }
+
+  async updatePayPalInformation(order) {
+    await this.prismapaymentsService.informatioPayPal.updateMany({
+      where: { userId: order.userID },
+      data: {
+        payIdPal: order.result.id,
+        status: order.result.status,
+        amount: order.result.purchase_units[0].amount.value,
+        autoPay: true,
+        subscriptionTerm: order.subscriptionTerm || 'month',
+      },
+    });
+  }
+  async updatePayPalStatus(status: string, payIdPal: string) {
+    await this.prismapaymentsService.informatioPayPal.update({
+      where: { payIdPal: payIdPal },
+      data: {
+        status: status,
+      },
+    });
+  }
+  async updatePayPalDate(
+    subscriptionStart: string,
+    subscriptionEnd: string,
+    payIdPal: string,
+  ) {
+    await this.prismapaymentsService.informatioPayPal.update({
+      where: { payIdPal: payIdPal },
+      data: {
+        subscriptionStart,
+        subscriptionEnd,
+        payIdPal,
+      },
+    });
+  }
+  async updatePayPalAutoPay(payIdPal: string, autoPay: boolean) {
+    await this.prismapaymentsService.informatioPayPal.update({
+      where: { payIdPal: payIdPal },
+      data: {
+        autoPay,
+      },
+    });
+  }
 }

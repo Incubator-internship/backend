@@ -191,7 +191,6 @@ export class PaymentsApiController {
   @UseGuards(ThrottlerGuard)
   @HttpCode(HttpStatusCode.Ok)
   async getActiveSubscription(@TakeUserId() { userId }: { userId: number }) {
-    debugger;
     const pattern = 'myActiveSubscription';
     const result = await firstValueFrom(this.client.send(pattern, userId));
 
@@ -205,22 +204,8 @@ export class PaymentsApiController {
     return [result];
   }
 
-  // @autoRenewEnableEndpoint()
-  // @Post('auto-renew/enable')
-  // @UseGuards(JwtAccessAuthGuard)
-  // @UseGuards(ThrottlerGuard)
-  // @HttpCode(HttpStatusCode.Ok)
-  // async autoRenewEnable(@TakeUserId() { userId }: { userId: number }) {
-  //   const pattern = 'autoRenewEnable';
-  //   const result = await firstValueFrom(this.client.send(pattern, userId));
-
-  //   if (!result.succeeded) {
-  //     return exceptionHandler(ResultCode.ServerError, 'Failed to RenewEnable');
-  //   }
-  // }
-
   @getSubscriptionDetailsEndpoint()
-  @Get('subscription/details')
+  @Get('paypal/details')
   @UseGuards(JwtAccessAuthGuard)
   @UseGuards(ThrottlerGuard)
   @HttpCode(HttpStatusCode.Ok)
