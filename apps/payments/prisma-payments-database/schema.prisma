@@ -16,14 +16,14 @@ model InformatioPayYoo {
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
   IPaymentMethodData String
-  userId             Int    
+  userId             Int
   autoPay            Boolean
   subscriptionStart  DateTime? // Дата начала текущей подписки
   subscriptionEnd    DateTime? // Дата окончания текущей подписки
   renewalDate        DateTime? // Дата продления (если было)
   subscriptionTerm   String? // Период подписки (месяц/год)
-  timezone String?
-  isRenewed Boolean? @default(false)
+  timezone           String?
+  isRenewed          Boolean?  @default(false)
 
   @@map("InformatioPayYoo")
 }
@@ -32,34 +32,33 @@ model InformatioPayPal {
   payid              Int       @id @default(autoincrement())
   payIdPal           String    @unique
   status             String
+  planId             String?
   amount             String
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
   IPaymentMethodData String
-  userId             Int    
+  userId             Int
   autoPay            Boolean
   subscriptionStart  DateTime? // Дата начала текущей подписки
   subscriptionEnd    DateTime? // Дата окончания текущей подписки
   renewalDate        DateTime? // Дата продления (если было)
   subscriptionTerm   String? // Период подписки (месяц/год)
-  timezone String?
+  timezone           String?
 
   isRenewed Boolean? @default(false)
 
   @@map("InformatioPayPal")
 }
 
-
 model paymentsUser {
   payid              Int       @id @default(autoincrement())
-  providerPayId          String    @unique
+  providerPayId      String    @unique
   status             String
   amount             String
   subscriptionStart  DateTime? // Дата начала текущей подписки
   subscriptionTerm   String? // Период подписки (месяц/год)
-  userId             Int      
+  userId             Int
   IPaymentMethodData String
 
   @@map("paymentsUser")
 }
-

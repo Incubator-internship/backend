@@ -5,6 +5,7 @@ import { PaymentsQueryRepository } from './infrastructure/payments-query.reposit
 import { PaymentsYooService } from './api/payments.yoo.service';
 import { PaymentsPaypalService } from './api/payments.payPal.service';
 import { PayPalInputModel } from 'apps/auth/src/payments/api/models/input/payPal-input.model';
+import { DateTime } from 'luxon';
 
 @Controller()
 export class PaymentsController {
@@ -72,8 +73,26 @@ export class PaymentsController {
   }
   @MessagePattern('buyPaypal')
   async buyPaypal(@Payload() paypalInputModel: PayPalInputModel) {
-    const redirectUrl =
-      await this.paymentsPaypalService.buyPaypal(paypalInputModel);
+    // await this.paymentsPaypalService.cancelSubscription('I-XM1YB83SPD92', 'asdasdasd')
+    let planId = '';
+    switch (paypalInputModel.value) {
+      case '100.00':
+        planId = 'P-3FV91190N57053939NC555NY';
+        break;
+      case '50.00':
+        planId = 'P-1AF62965E2633264ENC555XA';
+        break;
+      case '10.00':
+        planId = 'P-34T904862D4239434NC5553Y';
+        break;
+    }
+
+    const redirectUrl = await this.paymentsPaypalService.createSubscription(
+      planId,
+      'https://excubator.xyz/profile-settings?success=true',
+      'https://excubator.xyz/profile-settings?success=false',
+      paypalInputModel,
+    );
 
     return {
       succeeded: redirectUrl.succeeded,
@@ -98,15 +117,35 @@ export class PaymentsController {
   @MessagePattern('myPaymentsPaypal')
   async getPayPalInformation(@Payload() userId: number) {
     try {
-      const paymentList =
-        await this.paymentsQueryRepository.getUserPaymentHistory(userId);
+      const payment =
+        await this.paymentsQueryRepository.getPayPalInformationByUserId(userId);
+
+      const transactions =
+        await this.paymentsPaypalService.getSubscriptionTransactions(
+          //@ts-ignore
+          payment?.payIdPal,
+        );
+
+      let data = [];
+      if (transactions.data.length > 0) {
+        data = transactions.data.map((el) => {
+          return {
+            userId: payment?.userId,
+            payid: el.id,
+            payIdPayPal: payment?.payIdPal,
+            status: el.status,
+            amount: el.amount_with_breakdown.gross_amount.value,
+            IPaymentMethodData: 'paypal',
+            subscriptionStart: payment?.subscriptionStart,
+            subscriptionTerm: payment?.subscriptionTerm,
+          };
+        });
+      }
 
       return {
         succeeded: true,
         message: '',
-        data: paymentList.filter(
-          (payment) => payment.IPaymentMethodData === 'paypal',
-        ),
+        data: data,
       };
     } catch (error) {
       return {
@@ -122,38 +161,24 @@ export class PaymentsController {
       const paymentList =
         await this.paymentsQueryRepository.getActiveSubscription(userId);
 
-      const resultCalculateSubscriptionDates =
-        await this.paymentsPaypalService.calculateSubscriptionDates(
-          paymentList[0],
-        );
+      if (!paymentList[0].subscriptionEnd || !paymentList[0].timezone) {
+        throw new Error();
+      }
+      const result = await this.paymentsPaypalService.getSubscription(
+        paymentList[0].payIdPal,
+      );
 
+      const expireAt = DateTime.fromJSDate(paymentList[0].subscriptionEnd, {
+        zone: 'UTC',
+      }).setZone(paymentList[0].timezone, { keepLocalTime: true });
       const data = {
         userId: userId,
         subscriptionStart: paymentList[0].subscriptionStart,
-        ExpireAt: resultCalculateSubscriptionDates.expireAt,
-        nextPayment: resultCalculateSubscriptionDates.nextPayment,
+        ExpireAt: expireAt,
+        nextPayment: result.data.billing_info.next_billing_time,
         autoPay: paymentList[0].autoPay,
       };
       return data;
-    } catch (error) {
-      return {
-        succeeded: false,
-        message: 'Error fetching PayPal payments',
-        data: {},
-      };
-    }
-  }
-
-  @MessagePattern('autoRenewEnable')
-  async autoRenewEnable(@Payload() userId: number) {
-    try {
-      await this.paymentsPaypalService.autoRenewEnable(userId);
-
-      return {
-        succeeded: true,
-        message: '',
-        data: {},
-      };
     } catch (error) {
       return {
         succeeded: false,

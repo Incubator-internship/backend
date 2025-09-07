@@ -41,6 +41,7 @@ export class PaymentsQueryRepository {
         subscriptionTerm: true,
         isRenewed: true,
         autoPay: true,
+        userId: true,
         IPaymentMethodData: true,
       },
     });
@@ -57,7 +58,23 @@ export class PaymentsQueryRepository {
     return this.prismaPaymentsService.informatioPayPal.findMany({
       where: {
         userId,
-        status: 'succeeded',
+        status: 'ACTIVE',
+      },
+    });
+  }
+  async getTransactionsPending() {
+    return await this.prismaPaymentsService.informatioPayPal.findMany({
+      where: {
+        status: 'APPROVAL_PENDING',
+        IPaymentMethodData: 'paypal',
+      },
+    });
+  }
+  async getSubscriptions() {
+    return await this.prismaPaymentsService.informatioPayPal.findMany({
+      where: {
+        autoPay: true,
+        IPaymentMethodData: 'paypal',
       },
     });
   }
