@@ -7,7 +7,7 @@ export class PayPalInputModel {
   @IsIn(['10.00', '50.00', '100.00'], {
     message: 'Value must be one of: "10.00", "50.00" or "100.00"',
   })
-  @ApiProperty({ example: '2.00' })
+  @ApiProperty({ example: '10.00', enum: ['10.00', '50.00', '100.00'] })
   value: string;
 
   @IsNotEmpty()
