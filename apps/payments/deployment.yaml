@@ -27,6 +27,16 @@ spec:
                  secretKeyRef:
                    name: payments-backend-production-config-secret
                    key: RABBIT_URL
+             - name: CLIENT_PAYPAL_ID
+               valueFrom:
+                 secretKeyRef:
+                   name: payments-backend-production-config-secret
+                   key: CLIENT_PAYPAL_ID
+             - name: CLIENT_PAYPAL_SECRET
+               valueFrom:
+                 secretKeyRef:
+                   name: payments-backend-production-config-secret
+                   key: CLIENT_PAYPAL_SECRET
              - name: PAYMENTS_DATABASE_URL
                valueFrom:
                  secretKeyRef:
