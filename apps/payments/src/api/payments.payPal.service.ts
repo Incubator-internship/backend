@@ -193,7 +193,6 @@ export class PaymentsPaypalService {
     payPalInputModel: PayPalInputModel,
   ) {
     try {
-      debugger;
       if (!payPalInputModel.userID) {
         throw new Error('userID is required');
       }
@@ -297,16 +296,15 @@ export class PaymentsPaypalService {
   }
   async cancelSubscription(subscriptionId: string, reason: string) {
     try {
-      debugger;
       const accessToken = await this.getAccessToken();
       await this.axios.post(
-        `/v1/billing/subscriptions/${subscriptionId}/cancel`,
+        `${this.paypalBaseUrl}/v1/billing/subscriptions/${subscriptionId}/cancel`,
         { reason },
         {
           headers: {
-            Authorization: `Bearer ${accessToken}`,
+            //@ts-ignore
+            Authorization: `Bearer ${accessToken._accessToken}`,
             'Content-Type': 'application/json',
-            'PayPal-Request-Id': `CANCEL-${randomUUID()}`,
           },
         },
       );
@@ -353,8 +351,16 @@ export class PaymentsPaypalService {
   async getAccessToken() {
     return await this.client.fetchAccessToken();
   }
-  async getSubscriptionTransactions(subscriptionId: string) {
+  async getSubscriptionTransactions(subscriptionId: string, createdAt: any) {
     try {
+      const transactionStartTime = DateTime.fromJSDate(createdAt)
+        .toUTC() // переводим в UTC
+        .toISO({ suppressMilliseconds: false });
+
+      const transactionEndTime = DateTime.now()
+        .toUTC()
+        .toISO({ suppressMilliseconds: false });
+
       const accessToken = await this.getAccessToken();
       const response = await this.axios.get(
         `${this.paypalBaseUrl}/v1/billing/subscriptions/${subscriptionId}/transactions`,
@@ -364,6 +370,10 @@ export class PaymentsPaypalService {
             Authorization: `Bearer ${accessToken._accessToken}`,
             'Content-Type': 'application/json',
             'PayPal-Request-Id': `TRANSACTIONS-${randomUUID()}`,
+          },
+          params: {
+            start_time: transactionStartTime,
+            end_time: transactionEndTime,
           },
         },
       );
@@ -375,14 +385,13 @@ export class PaymentsPaypalService {
     } catch (error) {
       return {
         succeeded: false,
-        message: '',
+        message: error,
         data: [],
       };
     }
   }
   async getSubscription(subscriptionId: string): Promise<any> {
     try {
-      debugger;
       const accessToken = await this.getAccessToken();
       const response = await this.axios.get(
         `${this.paypalBaseUrl}/v1/billing/subscriptions/${subscriptionId}`,
@@ -463,14 +472,37 @@ export class PaymentsPaypalService {
     }
   }
 
-  // @Cron(CronExpression.EVERY_10_SECONDS)
+  async listSubscriptions(customer_ids: string) {
+    try {
+      const accessToken = await this.getAccessToken();
+
+      const response = await this.axios.get(
+        `${this.paypalBaseUrl}/v1/billing/subscriptions/`,
+        {
+          headers: {
+            //@ts-ignore
+            Authorization: `Bearer ${accessToken._accessToken}`,
+            'Content-Type': 'application/json',
+          },
+          params: {
+            customer_ids: customer_ids,
+          },
+        },
+      );
+
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  @Cron(CronExpression.EVERY_30_SECONDS)
   async checkPendingSubscriptionPaypal() {
     const pendings =
       await this.paymentsQueryRepository.getTransactionsPending();
 
     for (const payment of pendings) {
       try {
-        debugger;
         const result = await this.getSubscription(payment.payIdPal);
 
         if (result.data.status === 'ACTIVE') {
@@ -562,7 +594,10 @@ export class PaymentsPaypalService {
 
     for (const sub of expiredSubscriptions) {
       try {
-        const res = await this.getSubscriptionTransactions(sub.payIdPal);
+        const res = await this.getSubscriptionTransactions(
+          sub.payIdPal,
+          sub.createdAt,
+        );
 
         if (!res.data?.length) continue;
         const subscriptionEndInTZ = DateTime.fromJSDate(sub.subscriptionEnd!, {
@@ -570,13 +605,14 @@ export class PaymentsPaypalService {
         }).setZone(sub.timezone!, { keepLocalTime: true });
 
         const lastPaymentTime = DateTime.fromISO(
-          res.data[res.data.length - 1].time,
+          res.data.transactions[res.data.transactions.length - 1].time,
           { zone: 'utc' },
         );
 
         if (
           lastPaymentTime < subscriptionEndInTZ ||
-          res.data[res.data.length - 1].status != 'COMPLETED'
+          res.data.transactions[res.data.transactions.length - 1].status !=
+            'COMPLETED'
         ) {
           await this.paymentsRepository.updatePayPalAutoPay(
             sub.payIdPal,

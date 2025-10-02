@@ -73,7 +73,6 @@ export class PaymentsController {
   }
   @MessagePattern('buyPaypal')
   async buyPaypal(@Payload() paypalInputModel: PayPalInputModel) {
-    // await this.paymentsPaypalService.cancelSubscription('I-XM1YB83SPD92', 'asdasdasd')
     let planId = '';
     switch (paypalInputModel.value) {
       case '100.00':
@@ -120,15 +119,15 @@ export class PaymentsController {
       const payment =
         await this.paymentsQueryRepository.getPayPalInformationByUserId(userId);
 
-      const transactions =
+      const orders =
         await this.paymentsPaypalService.getSubscriptionTransactions(
-          //@ts-ignore
-          payment?.payIdPal,
+          payment!.payIdPal,
+          payment!.createdAt,
         );
 
       let data = [];
-      if (transactions.data.length > 0) {
-        data = transactions.data.map((el) => {
+      if (orders.data.transactions.length > 0) {
+        data = orders.data.transactions.map((el) => {
           return {
             userId: payment?.userId,
             payid: el.id,

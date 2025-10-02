@@ -4,6 +4,9 @@ import { IsBoolean, IsIn, IsNotEmpty, IsString } from 'class-validator';
 export class PayPalInputModel {
   @IsNotEmpty()
   @IsString()
+  @IsIn(['10.00', '50.00', '100.00'], {
+    message: 'Value must be one of: "10.00", "50.00" or "100.00"',
+  })
   @ApiProperty({ example: '2.00' })
   value: string;
 
