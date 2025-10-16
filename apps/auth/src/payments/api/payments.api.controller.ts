@@ -28,6 +28,7 @@ import {
   getMyPaymentsEndpoint,
   getMyPaymentsPayPalEndpoint,
   getSubscriptionDetailsEndpoint,
+  WebSocketConnectionEndpoint,
 } from 'apps/auth/swagger/payments.swagger';
 import { CommandBus } from '@nestjs/cqrs';
 import { ThrottlerGuard } from '@nestjs/throttler';
@@ -35,10 +36,11 @@ import {
   PayPalInputModel,
   ToggleAutoPayModel,
 } from './models/input/payPal-input.model';
-import { DatateT } from '../types/types';
+import { DatateT, UpcomingPaymentT } from '../types/types';
 import { UpdateUserTypeCommand } from '../../users/application/use.cases/updateUserType.command';
 import { RefreshPayload } from 'apps/auth/decorators/accessPayload.decorator';
 import { SessionsQueryRepository } from '../../devices/infrastructure/sessions-query.repository';
+import { PaymentsNotification } from '../application/payments.notification';
 
 @ApiTags('Payments')
 @Controller('payments')
@@ -49,6 +51,7 @@ export class PaymentsApiController {
     private commandBus: CommandBus,
     private sessionsQueryRepository: SessionsQueryRepository,
     @Inject('PAYMENTS-SERVICE') private client: ClientProxy,
+    protected paymentsNotification: PaymentsNotification,
   ) {
     const environment = new paypal.core.SandboxEnvironment(
       'AW6UFq0_zfFfhaU0eOtUD9J7mxRv97pjFHo47-06-LlZsB_oUNf_ZtOVQPJ8E1BoQZLUQ83jQeYtMohI',
@@ -225,7 +228,6 @@ export class PaymentsApiController {
   @MessagePattern('payment_change_status')
   async getPayPalInformation(@Payload() data: DatateT) {
     try {
-      console.log('start');
       await this.commandBus.execute(
         new UpdateUserTypeCommand(
           data.userId,
@@ -234,11 +236,30 @@ export class PaymentsApiController {
           data.amount,
         ),
       );
+      this.paymentsNotification.sendPaymentSuccess(
+        data.userId.toString(),
+        data.nextPayment,
+      );
     } catch (error) {
       console.error('Error handling payment_change_status:', error);
     }
   }
 
+  @MessagePattern('subscription_expiry_reminder')
+  async sendUpcomingPaymentReminder(@Payload() data: UpcomingPaymentT) {
+    try {
+      this.paymentsNotification.sendUpcomingPaymentReminder(
+        data.userId.toString(),
+        data,
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  @WebSocketConnectionEndpoint()
+  @Get('notification')
+  async swaggerSoket() {}
   // @Post('webhook')
   // @HttpCode(HttpStatus.OK)
   // async handlePaypalWebhook(@Body() webhookEvent: any) {
