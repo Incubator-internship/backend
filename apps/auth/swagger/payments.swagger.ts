@@ -290,3 +290,36 @@ export function getSubscriptionDetailsEndpoint() {
     }),
   );
 }
+export function WebSocketConnectionEndpoint() {
+  return applyDecorators(
+    ApiBearerAuth(),
+    ApiOperation({
+      summary: 'Establish WebSocket connection for payment notifications',
+      description: `
+**WebSocket Endpoint:** \`/api/v1/payments/notification\`
+
+**Authentication:** 
+- Required Authorization header with JWT token
+- Token must be valid and not expired
+
+**Connection Process:**
+1. Client connects to WebSocket endpoint
+2. Server validates JWT token from Authorization header
+3. If valid, client joins room with userId
+4. Client can receive payment notifications in real-time
+
+**Events:**
+- \`payment.success\` - Successful payment notification
+- \`payment.upcoming\` - Upcoming payment reminder (sent 1 day before charge, except for 1-day subscriptions)
+      `,
+    }),
+    ApiResponse({
+      status: 200,
+      description: 'WebSocket connection established successfully',
+    }),
+    ApiResponse({
+      status: 401,
+      description: 'Unauthorized - invalid or missing token',
+    }),
+  );
+}

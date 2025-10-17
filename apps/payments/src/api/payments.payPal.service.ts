@@ -512,6 +512,7 @@ export class PaymentsPaypalService {
               type: 'Business',
               term: payment.subscriptionTerm,
               amount: payment.amount,
+              nextPayment: result.data.billing_info.next_billing_time,
             })
             .subscribe({
               error: (err) => console.error('Emit error:', err),
@@ -632,6 +633,39 @@ export class PaymentsPaypalService {
         }
       } catch (error) {
         console.error('Error processing PayPal subscription:', error);
+      }
+    }
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_1AM)
+  async sendUpcomingPaymentReminder() {
+    const subscriptions = await this.paymentsQueryRepository.getSubscriptions();
+
+    const now = DateTime.utc();
+    for (const sub of subscriptions) {
+      if (sub.subscriptionTerm === '1day') {
+        continue;
+      }
+      if (!sub.subscriptionEnd || !sub.timezone) continue;
+
+      const endDate = DateTime.fromJSDate(sub.subscriptionEnd, {
+        zone: 'UTC',
+      }).setZone(sub.timezone, { keepLocalTime: true });
+
+      const diffInHours = endDate.diff(
+        now.setZone(sub.timezone),
+        'hours',
+      ).hours;
+      if (diffInHours > 23 && diffInHours < 25) {
+        this.authClient
+          .emit('subscription_expiry_reminder', {
+            userId: sub.userId,
+            daysUntilExpiry: 1,
+          })
+          .subscribe({
+            error: (err) => console.error('Emit error:', err),
+            complete: () => console.log('Emit sent'),
+          });
       }
     }
   }

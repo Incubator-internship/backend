@@ -3,4 +3,10 @@ export type DatateT = {
   type: string;
   term: string;
   amount: string;
+  nextPayment: string;
+};
+
+export type UpcomingPaymentT = {
+  userId: number;
+  daysUntilExpiry: number;
 };
