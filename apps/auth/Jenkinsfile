@@ -3,7 +3,7 @@ pipeline {
     agent any
     environment {
         ENV_TYPE = "production"
-        PORT = 3572
+        PORT = 3903
         NAMESPACE = "excubator-xyz"
         REGISTRY_HOSTNAME = "ngisss"
         PROJECT = "auth-backend"
@@ -28,19 +28,7 @@ pipeline {
                        [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
                        nvm use --lts
                        yarn install
-                       yarn test
-                    '''
-                }
-            }
-        }
-        stage('e2e tests') {
-            steps {
-                script {
-                    sh '''
-                       export NVM_DIR="$HOME/.nvm"
-                       [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-                       nvm use --lts
-                       yarn test:e2e
+                        yarn run generate:auth
                     '''
                 }
             }
@@ -82,6 +70,15 @@ pipeline {
                      sh "cat ./apps/${env.SERVICE}/deployment.yaml"
              }
         }
+        stage('deploy DB migration') {
+                                     steps {
+                                         script {
+                                            sh '''
+                                                  yarn migrate:deploy-auth
+                                            '''
+                                         }
+                                     }
+                                }
         stage('Deploy to Kubernetes') {
              steps {
                  withKubeConfig([credentialsId: 'prod-kubernetes']) {

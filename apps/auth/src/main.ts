@@ -1,16 +1,16 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import * as dotenv from 'dotenv';
-
-dotenv.config();
+import { AuthConfig } from '../settings/auth.config';
+import { applyAppSettings } from '../settings/apply-app-setting';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  console.log('rocess.env.PORT', process.env.PORT)
-  const port = process.env.PORT ?? 3000
-  app.setGlobalPrefix('api/v1')
-  //await app.listen(process.env.PORT ?? 3000);
-  console.log('post', port)
-  await app.listen(port);
+
+  applyAppSettings(app);
+  const authConfig = app.get<AuthConfig>(AuthConfig);
+  await app.startAllMicroservices();
+  await app.listen(authConfig.port);
+  //todo delete console.log auth main
+  console.log(`Auth microservice is running on ${authConfig.port} port`);
 }
 bootstrap();
